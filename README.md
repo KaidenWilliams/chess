@@ -1,2 +1,2 @@
 # chess
-CS 240 Chess Repository Kaiden Williams
+Kaiden Williams's CS 240 Chess Repository
