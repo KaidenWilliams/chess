@@ -13,11 +13,22 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
+    private final PieceMovesCalculator movesCalculator;
 
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+
+        switch(type) {
+            case KING -> movesCalculator = new KingMovesCalculator();
+            case QUEEN -> movesCalculator = new QueenMovesCalculator();
+            case BISHOP -> movesCalculator = new BishopMovesCalculator();
+            case KNIGHT -> movesCalculator = new KnightMovesCalculator();
+            case ROOK -> movesCalculator = new RookMovesCalculator();
+            case PAWN -> movesCalculator = new PawnMovesCalculator();
+            default -> movesCalculator = null;
+        }
     }
 
     /**
@@ -54,8 +65,11 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
-    }
+        // Have to check if opponent is there and not out of bounds, maybe make 2 functions?
+        // I will return array list of ChessMoves
+        // Does order matter? We will see.
+        return movesCalculator.pieceMoves(board, myPosition);
+        }
 
     @Override
     public boolean equals(Object o) {
