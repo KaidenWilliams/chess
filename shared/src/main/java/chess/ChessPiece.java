@@ -11,6 +11,7 @@ import java.util.Objects;
  */
 public class ChessPiece {
 
+
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
     private final PieceMovesCalculator movesCalculator;
@@ -68,8 +69,9 @@ public class ChessPiece {
         // Have to check if opponent is there and not out of bounds, maybe make 2 functions?
         // I will return array list of ChessMoves
         // Does order matter? We will see.
-        return movesCalculator.pieceMoves(board, myPosition);
+        return movesCalculator.pieceMoves(board, myPosition, pieceColor);
         }
+
 
     @Override
     public boolean equals(Object o) {

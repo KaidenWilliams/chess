@@ -18,6 +18,7 @@ public class ChessMove {
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
+        // This works because if promotionPiece not passed, it is null, don't need checks
         this.promotionPiece = promotionPiece;
     }
 
