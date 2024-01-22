@@ -3,6 +3,5 @@ package chess;
 import java.util.Collection;
 
 public interface PieceMovesCalculator {
-    Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position, ChessGame.TeamColor pieceColor);
-
+    Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor);
     }
