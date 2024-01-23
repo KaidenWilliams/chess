@@ -26,7 +26,7 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
             ChessPosition newPosition = new ChessPosition(moveRow, moveCol);
 
-            if (isValidNoCheck(board, oldPosition, newPosition, pieceColor)) {
+            if (isValidNoCheck(board, newPosition, pieceColor)) {
                 ChessMove currMove = new ChessMove(oldPosition, newPosition, null);
                 possibleMoves.add(currMove);
             }
@@ -36,7 +36,7 @@ public class KingMovesCalculator implements PieceMovesCalculator {
     }
 
 
-    private boolean isValidNoCheck(ChessBoard board, ChessPosition oldPosition, ChessPosition newPosition, ChessGame.TeamColor pieceColor) {
+    private boolean isValidNoCheck(ChessBoard board, ChessPosition newPosition, ChessGame.TeamColor pieceColor) {
         // Checks if in Bounds
         if (board.inBounds(newPosition)) {
 
@@ -46,15 +46,10 @@ public class KingMovesCalculator implements PieceMovesCalculator {
             if (otherPiece == null) {
                 return true;
             }
-            //If piece is friendly, can't move. If no, list as move then can't move.
+            //If piece is friendly, can't move. Don't need queen unlimited move logic.
             else {
-                if (otherPiece.getTeamColor() == pieceColor) {
+                if (otherPiece.getTeamColor() != pieceColor) {
                     return true;
-                }
-                else {
-                    ChessMove currMove = new ChessMove(oldPosition, newPosition, null);
-                    possibleMoves.add(currMove);
-                    return false;
                 }
             }
         }
