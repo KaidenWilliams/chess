@@ -70,7 +70,7 @@ public class ChessPiece {
         // I will return array list of ChessMoves
         // Does order matter? We will see.
         return movesCalculator.pieceMoves(board, myPosition, pieceColor);
-        }
+    }
 
 
     @Override
