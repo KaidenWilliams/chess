@@ -47,8 +47,32 @@ public class ChessBoard {
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
+
+    // Make new chessboard, then put pieces down in normal order
     public void resetBoard() {
-//        this.squares = new ChessPiece[8][8];
+        this.squares = new ChessPiece[8][8];
+
+        initializePieces(0, ChessGame.TeamColor.WHITE);
+        initializePawns(1, ChessGame.TeamColor.WHITE);
+        initializePawns(6, ChessGame.TeamColor.BLACK);
+        initializePieces(7, ChessGame.TeamColor.BLACK);
+    }
+
+    private void initializePieces(int row, ChessGame.TeamColor teamColor) {
+        squares[row][0] = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK);
+        squares[row][1] = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT);
+        squares[row][2] = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP);
+        squares[row][3] = new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN);
+        squares[row][4] = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
+        squares[row][5] = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP);
+        squares[row][6] = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT);
+        squares[row][7] = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK);
+    }
+
+    private void initializePawns(int row, ChessGame.TeamColor teamColor) {
+        for (int j = 0; j < squares[row].length; j++) {
+            squares[row][j] = new ChessPiece(teamColor, ChessPiece.PieceType.PAWN);
+        }
     }
 
     @Override
