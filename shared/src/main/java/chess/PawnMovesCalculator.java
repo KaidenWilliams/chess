@@ -25,11 +25,8 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
             }
         }
 
-
         addMoveEnemy(board, oldPosition, currRow + direction, currCol - 1, pieceColor, promoteRow);
         addMoveEnemy(board, oldPosition, currRow + direction, currCol + 1, pieceColor, promoteRow);
-
-        // Add logic for position {8, x}, needing a promote piece if necessary
 
         return possibleMoves;
     }

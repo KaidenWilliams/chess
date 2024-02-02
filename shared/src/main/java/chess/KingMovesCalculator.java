@@ -19,7 +19,7 @@ public class KingMovesCalculator implements PieceMovesCalculator {
         int currRow = oldPosition.getRow();
         int currCol = oldPosition.getColumn();
 
-        for (int[] move: kingMoves) {
+        for (int[] move : kingMoves) {
 
             int moveRow = currRow + move[0];
             int moveCol = currCol + move[1];
@@ -55,5 +55,4 @@ public class KingMovesCalculator implements PieceMovesCalculator {
         }
         return false;
     }
-
 }
