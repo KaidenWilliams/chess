@@ -21,7 +21,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        squares[position.getRow()][position.getColumn()] = piece;
+        squares[position.getArrayRow()][position.getArrayColumn()] = piece;
     }
 
     /**
@@ -32,13 +32,13 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return squares[position.getRow()][position.getColumn()];
+        return squares[position.getArrayRow()][position.getArrayColumn()];
     }
 
     //Difference between array (0 indexing) and board (1 indexing)
     public boolean inBounds(ChessPosition position) {
-        int x = position.getRow();
-        int y = position.getColumn();
+        int x = position.getArrayRow();
+        int y = position.getArrayColumn();
 
         return x >= 0 && x < squares.length && y >= 0 && y < squares[0].length;
     }

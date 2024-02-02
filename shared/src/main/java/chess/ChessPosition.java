@@ -23,7 +23,7 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return this.row-1;
+        return this.row;
     }
 
     /**
@@ -31,8 +31,12 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-       return this.col-1;
+       return this.col;
     }
+
+    public int getArrayRow() {return this.row-1;}
+
+    public int getArrayColumn() {return this.col-1;}
 
     @Override
     public boolean equals(Object o) {
