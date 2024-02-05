@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -14,11 +16,14 @@ public class ChessGame {
 
     private ChessBoard myBoard;
     private TeamColor teamTurn;
+    private chessTeamTracker whiteTeamTracker;
+    private chessTeamTracker blackTeamTracker;
 
 
-    // TODO - Maybe make this default teamTurn WHite?
     public ChessGame() {
-
+        teamTurn = TeamColor.WHITE;
+        whiteTeamTracker = new chessTeamTracker(TeamColor.WHITE);
+        blackTeamTracker = new chessTeamTracker(TeamColor.BLACK);
     }
 
     /**
@@ -66,16 +71,15 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = myBoard.getPiece(startPosition);
         Collection<ChessMove> possibleMoves = piece.pieceMoves(myBoard, startPosition);
-
-        // Will see if its this easy, probably need to do more than isInCheck()
-        // - I need to actually apply the move then check, I'm currently just checking w/o changing anything
-
         ChessBoard newBoard = new ChessBoard(myBoard);
+
         for (ChessMove move: possibleMoves) {
 
+            newBoard.addPiece(move.getEndPosition(), piece);
             if (isInCheckTakesBoard(piece.getTeamColor(), newBoard)) {
                 possibleMoves.remove(move);
             }
+            newBoard.removePiece(move.getEndPosition());
         }
         return possibleMoves;
     }
@@ -91,12 +95,21 @@ public class ChessGame {
     // Don't know if I just try to make move and do try catch, or if I actually check if valid
     // Don't think I need to do my own valid checking, we will see
     // If I need to add own checking I will add those functions, potential to move
+    // This code is absolutely not readable, definetly need to define local variables at top
     public void makeMove(ChessMove move) throws InvalidMoveException {
 
         try {
-            ChessPiece piece = myBoard.getPiece(move.getStartPosition());
-            myBoard.removePiece(move.getStartPosition());
-            myBoard.addPiece(move.getEndPosition(), piece);
+            ChessPosition startPosition = move.getStartPosition();
+            ChessPosition endPosition = move.getEndPosition();
+            ChessPiece piece = myBoard.getPiece(startPosition);
+            assert (piece != null);
+            assert(piece.pieceMoves(myBoard, startPosition).contains(move));
+            myBoard.removePiece(startPosition);
+            myBoard.addPiece(endPosition, piece);
+            if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                chessTeamTracker tracker = (piece.getTeamColor() == TeamColor.WHITE ? whiteTeamTracker : blackTeamTracker);
+                tracker.setKingPosition(endPosition);
+            }
             changeTeamTurn();
         }
         catch(Exception e) {
@@ -115,13 +128,31 @@ public class ChessGame {
     //This will be expensive operation, don't really know how to do
     //
     public boolean isInCheck(TeamColor teamColor) {
-
+        return isInCheckTakesBoard(teamColor, myBoard);
     }
 
     // Used for testing valid moves, takes copy board so tested moves aren't applied to actual board
     // Just like isInCheck, just need to replace myBoard with newBoard
-    public boolean isInCheckTakesBoard(TeamColor teamColor, ChessBoard newboard) {
+    public boolean isInCheckTakesBoard(TeamColor teamColor, ChessBoard newBoard) {
+        ChessPiece[][] newSquares = newBoard.getSquares();
 
+        for (int i = 0; i < newSquares.length; i++) {
+            for (int j = 0; j < newSquares[i].length; j++) {
+                ChessPosition currPosition = new ChessPosition(i+1, j+1);
+                ChessPiece currPiece = newBoard.getPiece(currPosition);
+                if (currPiece.getTeamColor() != teamColor) {
+
+                    ArrayList<ChessPosition> endPositionList = currPiece.pieceMoves(newBoard, currPosition).stream()
+                            .map(ChessMove::getEndPosition)
+                            .collect(Collectors.toCollection(ArrayList::new));
+
+                    if (endPositionList.contains(getKingPosition(teamColor))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 
@@ -138,7 +169,7 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return false;
         }
-        if (validMoves(KING).length != 0){
+        if (!validMoves(getKingPosition(teamColor)).isEmpty()){
             return false;
         }
         return true;
@@ -159,11 +190,21 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         }
-        if (validMoves(KING).length != 0){
+        if (!validMoves(getKingPosition(teamColor)).isEmpty()){
             return false;
         }
         return true;
     }
+
+    public ChessPosition getKingPosition(ChessGame.TeamColor teamColor) {
+        chessTeamTracker tracker = (teamColor == TeamColor.WHITE ? whiteTeamTracker : blackTeamTracker);
+        return tracker.getKingPosition();
+    }
+
+    //TODO EN PASSANT and CASTLING if I have the time
+//    public void castling
+//
+//    public void enPassant()
 
     /**
      * Sets this game's chessboard with a given board

@@ -9,6 +9,7 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
+
     private ChessPiece[][] squares;
     public ChessBoard() {
         squares = new ChessPiece[8][8];
@@ -48,6 +49,10 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return squares[position.getArrayRow()][position.getArrayColumn()];
+    }
+
+    public ChessPiece[][] getSquares() {
+        return squares;
     }
 
     //Difference between array (0 indexing) and board (1 indexing)
