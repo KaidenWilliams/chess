@@ -10,6 +10,9 @@ import java.util.Collection;
  */
 public class ChessGame {
 
+    private ChessBoard myBoard;
+    private TeamColor teamTurn;
+
     public ChessGame() {
 
     }
@@ -18,7 +21,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return teamTurn;
     }
 
     /**
@@ -27,7 +30,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        teamTurn = team;
     }
 
     /**
@@ -46,17 +49,44 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = myBoard.getPiece(startPosition);
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(myBoard, startPosition);
+
+        // Will see if its this easy, probably need to do more than isInCheck()
+        // - I need to actually apply the move then check, I'm currently just checking w/o changing anything
+
+        ChessBoard newBoard = new ChessBoard(myBoard);
+        for (ChessMove move: possibleMoves) {
+
+            if (isInCheckTakesBoard(piece.getTeamColor(), newBoard)) {
+                possibleMoves.remove(move);
+            }
+        }
+        return possibleMoves;
     }
 
     /**
      * Makes a move in a chess game
      *
-     * @param move chess move to preform
+     * @param move chess move to preform\
      * @throws InvalidMoveException if move is invalid
      */
+
+
+    // Don't know if I just try to make move and do try catch, or if I actually check if valid
+    // Don't think I need to do my own valid checking, we will see
+    // If I need to add own checking I will add those functions, potential to move
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+
+        try {
+            ChessPiece piece = myBoard.getPiece(move.getStartPosition());
+            myBoard.removePiece(move.getStartPosition());
+            myBoard.addPiece(move.getEndPosition(), piece);
+        }
+        catch(Exception e) {
+            throw new InvalidMoveException("Could not make move. Error: " +  e.getMessage());
+        }
+
     }
 
     /**
@@ -65,9 +95,19 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
+
+    //This will be expensive operation, don't really know how to do
+    //
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
     }
+
+    // Used for testing valid moves, takes copy board so tested moves aren't applied to actual board
+    // Just like isInCheck, just need to replace myBoard with newBoard
+    public boolean isInCheckTakesBoard(TeamColor teamColor, ChessBoard newboard) {
+
+    }
+
 
     /**
      * Determines if the given team is in checkmate
@@ -96,7 +136,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        myBoard = board;
     }
 
     /**
@@ -105,6 +145,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return myBoard;
     }
 }

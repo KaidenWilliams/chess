@@ -32,6 +32,12 @@ public class ChessPiece {
         }
     }
 
+    public ChessPiece(ChessPiece copyPiece) {
+        this.pieceColor = copyPiece.pieceColor;
+        this.type = copyPiece.type;
+        this.movesCalculator = copyPiece.movesCalculator;
+    }
+
     /**
      * The various different chess piece options
      */

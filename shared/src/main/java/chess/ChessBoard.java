@@ -9,9 +9,21 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares;
     public ChessBoard() {
-        
+        squares = new ChessPiece[8][8];
+    }
+
+    // I don't want to use clone
+    public ChessBoard(ChessBoard copyBoard) {
+        this.squares = new ChessPiece[8][8];
+        for (int i = 0; i < copyBoard.squares.length; i++) {
+            for (int j = 0; j < copyBoard.squares[i].length; j++) {
+                if (copyBoard.squares[i][j] != null) {
+                    this.squares[i][j] = new ChessPiece(copyBoard.squares[i][j]);
+                }
+            }
+        }
     }
 
     /**
@@ -22,6 +34,9 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getArrayRow()][position.getArrayColumn()] = piece;
+    }
+    public void removePiece(ChessPosition position) {
+        squares[position.getArrayRow()][position.getArrayColumn()] = null;
     }
 
     /**
@@ -86,7 +101,9 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(squares);
+
     }
+
 
     @Override
     public String toString() {
