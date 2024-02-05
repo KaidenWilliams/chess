@@ -206,7 +206,27 @@ public class ChessGame {
 
     public ChessPosition getKingPosition(ChessGame.TeamColor teamColor) {
         ChessTeamTracker tracker = (teamColor == TeamColor.WHITE ? whiteTeamTracker : blackTeamTracker);
-        return tracker.getKingPosition();
+        ChessPosition kingPosition = tracker.getKingPosition();
+        ChessPiece kingPiece = myBoard.getPiece(kingPosition);
+        if (kingPiece != null && kingPiece.getPieceType() == ChessPiece.PieceType.KING && kingPiece.getTeamColor() == teamColor) {
+            return kingPosition;
+        }
+
+        ChessPiece[][] squares = myBoard.getSquares();
+
+        for (int i = 0; i < squares.length; i++) {
+            for (int j = 0; j < squares[i].length; j++) {
+                ChessPosition currPosition = new ChessPosition(i + 1, j + 1);
+                ChessPiece currPiece = myBoard.getPiece(currPosition);
+                if (currPiece == null) {
+                    continue;
+                }
+                if (currPiece.getPieceType() == ChessPiece.PieceType.KING && currPiece.getTeamColor() == teamColor) {
+                    return currPosition;
+                }
+            }
+        }
+        return null;
     }
 
     //TODO EN PASSANT and CASTLING if I have the time
