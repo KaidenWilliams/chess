@@ -16,14 +16,14 @@ public class ChessGame {
 
     private ChessBoard myBoard;
     private TeamColor teamTurn;
-    private chessTeamTracker whiteTeamTracker;
-    private chessTeamTracker blackTeamTracker;
+    private ChessTeamTracker whiteTeamTracker;
+    private ChessTeamTracker blackTeamTracker;
 
 
     public ChessGame() {
         teamTurn = TeamColor.WHITE;
-        whiteTeamTracker = new chessTeamTracker(TeamColor.WHITE);
-        blackTeamTracker = new chessTeamTracker(TeamColor.BLACK);
+        whiteTeamTracker = new ChessTeamTracker(TeamColor.WHITE);
+        blackTeamTracker = new ChessTeamTracker(TeamColor.BLACK);
     }
 
     /**
@@ -103,14 +103,19 @@ public class ChessGame {
             ChessPosition endPosition = move.getEndPosition();
             ChessPiece piece = myBoard.getPiece(startPosition);
             assert (piece != null);
+            TeamColor color = piece.getTeamColor();
+            assert(getTeamTurn() == color);
             assert(piece.pieceMoves(myBoard, startPosition).contains(move));
             myBoard.removePiece(startPosition);
             myBoard.addPiece(endPosition, piece);
             if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                chessTeamTracker tracker = (piece.getTeamColor() == TeamColor.WHITE ? whiteTeamTracker : blackTeamTracker);
+                ChessTeamTracker tracker = (color == TeamColor.WHITE ? whiteTeamTracker : blackTeamTracker);
                 tracker.setKingPosition(endPosition);
             }
             changeTeamTurn();
+        }
+        catch(AssertionError ae) {
+            throw new InvalidMoveException("Could not make move. Error: " +  ae.getMessage());
         }
         catch(Exception e) {
             throw new InvalidMoveException("Could not make move. Error: " +  e.getMessage());
@@ -140,6 +145,9 @@ public class ChessGame {
             for (int j = 0; j < newSquares[i].length; j++) {
                 ChessPosition currPosition = new ChessPosition(i+1, j+1);
                 ChessPiece currPiece = newBoard.getPiece(currPosition);
+                if (currPiece == null){
+                    continue;
+                }
                 if (currPiece.getTeamColor() != teamColor) {
 
                     ArrayList<ChessPosition> endPositionList = currPiece.pieceMoves(newBoard, currPosition).stream()
@@ -197,7 +205,7 @@ public class ChessGame {
     }
 
     public ChessPosition getKingPosition(ChessGame.TeamColor teamColor) {
-        chessTeamTracker tracker = (teamColor == TeamColor.WHITE ? whiteTeamTracker : blackTeamTracker);
+        ChessTeamTracker tracker = (teamColor == TeamColor.WHITE ? whiteTeamTracker : blackTeamTracker);
         return tracker.getKingPosition();
     }
 

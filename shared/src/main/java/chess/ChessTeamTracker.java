@@ -7,13 +7,13 @@ package chess;
 // - Need to be able to work backwards, for every current position figure out what previous positions/moves were
 // - Needs to track location and piece (AT this point doesn't this make having a chessboard irrelevant?)
 // 3.
-public class chessTeamTracker {
+public class ChessTeamTracker {
 
     private boolean canCastleQueenSide;
     private boolean canCastleKingSide;
     private ChessPosition kingPosition;
 
-    public chessTeamTracker(ChessGame.TeamColor teamColor) {
+    public ChessTeamTracker(ChessGame.TeamColor teamColor) {
         if (teamColor == ChessGame.TeamColor.WHITE) {
             kingPosition = new ChessPosition(0,4);
         }
