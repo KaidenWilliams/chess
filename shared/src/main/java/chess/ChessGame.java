@@ -10,9 +10,13 @@ import java.util.Collection;
  */
 public class ChessGame {
 
+    // TODO - Implement data structure to store moves
+
     private ChessBoard myBoard;
     private TeamColor teamTurn;
 
+
+    // TODO - Maybe make this default teamTurn WHite?
     public ChessGame() {
 
     }
@@ -31,6 +35,17 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         teamTurn = team;
+    }
+
+    /**
+     * Changes teamTurn from one to another, uses current teamTurn
+     */
+    public void changeTeamTurn() {
+        if (teamTurn == TeamColor.WHITE) {
+            teamTurn = TeamColor.BLACK;
+        } else {
+            teamTurn = TeamColor.WHITE;
+        }
     }
 
     /**
@@ -82,6 +97,7 @@ public class ChessGame {
             ChessPiece piece = myBoard.getPiece(move.getStartPosition());
             myBoard.removePiece(move.getStartPosition());
             myBoard.addPiece(move.getEndPosition(), piece);
+            changeTeamTurn();
         }
         catch(Exception e) {
             throw new InvalidMoveException("Could not make move. Error: " +  e.getMessage());
@@ -116,18 +132,37 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (getTeamTurn() != teamColor) {
+            return false;
+        }
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        if (validMoves(KING).length != 0){
+            return false;
+        }
+        return true;
     }
 
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
+     * Different from Checkmate in that isInCheck is false
      *
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (getTeamTurn() != teamColor) {
+            return false;
+        }
+        if (isInCheck(teamColor)) {
+            return false;
+        }
+        if (validMoves(KING).length != 0){
+            return false;
+        }
+        return true;
     }
 
     /**
