@@ -1,11 +1,11 @@
 package chess;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Collection;
 
 public class KingMovesCalculator implements PieceMovesCalculator {
 
-    ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+    HashSet<ChessMove> possibleMoves = new HashSet<>();
     int[][] kingMoves = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
 
     @Override

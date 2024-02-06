@@ -1,13 +1,13 @@
 package chess;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Collection;
 
 //5. En passant (probably will be in game state like castling). If enemy pawn on either side {same, 1}
 //   or {same, -1} last pieceMove was {2, 0}, can move to {enemy, enemy-1 (behind enemy)
 
 public class PawnMovesCalculator implements PieceMovesCalculator{
-    ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+    HashSet<ChessMove> possibleMoves = new HashSet<>();
     ChessPiece.PieceType[] promotionPieces = {ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.QUEEN};
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor) {

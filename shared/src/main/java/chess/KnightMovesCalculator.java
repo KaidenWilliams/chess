@@ -1,10 +1,10 @@
 package chess;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Collection;
 
 public class KnightMovesCalculator implements PieceMovesCalculator{
-    ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+    HashSet<ChessMove> possibleMoves = new HashSet<>();
     int[][] knightMoves = {{2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}, {1, -2}, {2, -1}};
 
     @Override

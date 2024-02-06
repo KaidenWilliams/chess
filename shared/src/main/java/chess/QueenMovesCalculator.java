@@ -1,10 +1,10 @@
 package chess;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Collection;
 
 public class QueenMovesCalculator implements PieceMovesCalculator{
-    ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+    HashSet<ChessMove> possibleMoves = new HashSet<>();
     int[][] queenMoves = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor) {

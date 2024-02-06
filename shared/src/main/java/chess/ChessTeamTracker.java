@@ -15,10 +15,10 @@ public class ChessTeamTracker {
 
     public ChessTeamTracker(ChessGame.TeamColor teamColor) {
         if (teamColor == ChessGame.TeamColor.WHITE) {
-            kingPosition = new ChessPosition(0,4);
+            kingPosition = new ChessPosition(1,5);
         }
         else {
-            kingPosition = new ChessPosition(7,4);
+            kingPosition = new ChessPosition(8,5);
         }
         canCastleQueenSide = true;
         canCastleKingSide = false;

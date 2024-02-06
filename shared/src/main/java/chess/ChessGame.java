@@ -1,6 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -73,16 +73,38 @@ public class ChessGame {
         Collection<ChessMove> possibleMoves = piece.pieceMoves(myBoard, startPosition);
         ChessBoard newBoard = new ChessBoard(myBoard);
 
+        Collection<ChessPosition> endPositionList = getEnemyPositions(piece.getTeamColor(), newBoard);
+
         for (ChessMove move: possibleMoves) {
 
             newBoard.addPiece(move.getEndPosition(), piece);
-            if (isInCheckTakesBoard(piece.getTeamColor(), newBoard)) {
+            if (isInCheckTakesBoard(piece.getTeamColor(), endPositionList)) {
                 possibleMoves.remove(move);
             }
             newBoard.removePiece(move.getEndPosition());
         }
         return possibleMoves;
     }
+
+
+
+//    public Collection<ChessMove> validMovesTakesMove(ChessMove move) {
+//        ChessPiece piece = myBoard.getPiece(move.getStartPosition());
+//        Collection<ChessMove> possibleMoves = new HashSet<>();
+//        possibleMoves.add(move);
+//        ChessBoard newBoard = new ChessBoard(myBoard);
+//        Collection<ChessPosition> endPositionList = getEnemyPositions(piece.getTeamColor(), newBoard);
+//
+//        newBoard.addPiece(move.getEndPosition(), piece);
+//        if (isInCheckTakesBoard(piece.getTeamColor(), endPositionList)) {
+//            possibleMoves.remove(move);
+//        }
+//        newBoard.removePiece(move.getEndPosition());
+//
+//        return possibleMoves;
+//    }
+
+
 
     /**
      * Makes a move in a chess game
@@ -105,7 +127,9 @@ public class ChessGame {
             assert (piece != null);
             TeamColor color = piece.getTeamColor();
             assert(getTeamTurn() == color);
-            assert(piece.pieceMoves(myBoard, startPosition).contains(move));
+
+            assert(validMoves(startPosition).contains(move));
+
             myBoard.removePiece(startPosition);
             myBoard.addPiece(endPosition, piece);
             if (piece.getPieceType() == ChessPiece.PieceType.KING) {
@@ -133,34 +157,37 @@ public class ChessGame {
     //This will be expensive operation, don't really know how to do
     //
     public boolean isInCheck(TeamColor teamColor) {
-        return isInCheckTakesBoard(teamColor, myBoard);
+        Collection<ChessPosition> endPositionList = getEnemyPositions(teamColor, myBoard);
+        return isInCheckTakesBoard(teamColor, endPositionList);
     }
 
     // Used for testing valid moves, takes copy board so tested moves aren't applied to actual board
     // Just like isInCheck, just need to replace myBoard with newBoard
-    public boolean isInCheckTakesBoard(TeamColor teamColor, ChessBoard newBoard) {
+    public boolean isInCheckTakesBoard(TeamColor teamColor, Collection<ChessPosition> endPositionList) {
+
+        return endPositionList.contains(getKingPosition(teamColor));
+    }
+
+    public Collection<ChessPosition> getEnemyPositions(TeamColor teamColor, ChessBoard newBoard) {
         ChessPiece[][] newSquares = newBoard.getSquares();
+        HashSet<ChessPosition> endPositionList = new HashSet<>();
 
         for (int i = 0; i < newSquares.length; i++) {
             for (int j = 0; j < newSquares[i].length; j++) {
-                ChessPosition currPosition = new ChessPosition(i+1, j+1);
+                ChessPosition currPosition = new ChessPosition(i + 1, j + 1);
                 ChessPiece currPiece = newBoard.getPiece(currPosition);
-                if (currPiece == null){
+                if (currPiece == null) {
                     continue;
                 }
                 if (currPiece.getTeamColor() != teamColor) {
 
-                    ArrayList<ChessPosition> endPositionList = currPiece.pieceMoves(newBoard, currPosition).stream()
+                    endPositionList.addAll(currPiece.pieceMoves(newBoard, currPosition).stream()
                             .map(ChessMove::getEndPosition)
-                            .collect(Collectors.toCollection(ArrayList::new));
-
-                    if (endPositionList.contains(getKingPosition(teamColor))) {
-                        return true;
-                    }
+                            .collect(Collectors.toCollection(HashSet::new)));
                 }
             }
         }
-        return false;
+        return endPositionList;
     }
 
 
@@ -228,11 +255,6 @@ public class ChessGame {
         }
         return null;
     }
-
-    //TODO EN PASSANT and CASTLING if I have the time
-//    public void castling
-//
-//    public void enPassant()
 
     /**
      * Sets this game's chessboard with a given board

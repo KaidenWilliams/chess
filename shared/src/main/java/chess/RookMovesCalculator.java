@@ -1,12 +1,12 @@
 package chess;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Collection;
 
 // I don't know when I will do Castling, kinda worried about it
 
 public class RookMovesCalculator implements PieceMovesCalculator{
-    ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+    HashSet<ChessMove> possibleMoves = new HashSet<>();
     int[][] rookMoves = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor) {
