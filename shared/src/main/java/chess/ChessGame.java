@@ -131,7 +131,12 @@ public class ChessGame {
             assert(validMoves(startPosition).contains(move));
 
             myBoard.removePiece(startPosition);
-            myBoard.addPiece(endPosition, piece);
+            if (piece.getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null) {
+                myBoard.addPiece(endPosition, new ChessPiece(color, move.getPromotionPiece()));
+            }
+            else {
+                myBoard.addPiece(endPosition, piece);
+            }
             if (piece.getPieceType() == ChessPiece.PieceType.KING) {
                 ChessTeamTracker tracker = (color == TeamColor.WHITE ? whiteTeamTracker : blackTeamTracker);
                 tracker.setKingPosition(endPosition);
