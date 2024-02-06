@@ -71,6 +71,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = myBoard.getPiece(startPosition);
         Collection<ChessMove> possibleMoves = piece.pieceMoves(myBoard, startPosition);
+        HashSet<ChessMove> validMoves = new HashSet<>();
         ChessBoard newBoard = new ChessBoard(myBoard);
 
         Collection<ChessPosition> endPositionList = getEnemyPositions(piece.getTeamColor(), newBoard);
@@ -78,12 +79,12 @@ public class ChessGame {
         for (ChessMove move: possibleMoves) {
 
             newBoard.addPiece(move.getEndPosition(), piece);
-            if (isInCheckTakesBoard(piece.getTeamColor(), endPositionList)) {
-                possibleMoves.remove(move);
+            if (!isInCheckTakesBoard(piece.getTeamColor(), endPositionList)) {
+                validMoves.add(move);
             }
             newBoard.removePiece(move.getEndPosition());
         }
-        return possibleMoves;
+        return validMoves;
     }
 
 
