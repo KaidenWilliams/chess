@@ -4,8 +4,6 @@ import java.util.HashSet;
 import java.util.Collection;
 
 public class KingMovesCalculator implements PieceMovesCalculator {
-
-    HashSet<ChessMove> possibleMoves = new HashSet<>();
     int[][] kingMoves = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
 
     @Override
@@ -15,6 +13,8 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
         //Do I just store all possible moves and apply them in order, or do loop
         // - problems with loop if I need specific order, dumb test cases bc of that
+
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
 
         int currRow = oldPosition.getRow();
         int currCol = oldPosition.getColumn();

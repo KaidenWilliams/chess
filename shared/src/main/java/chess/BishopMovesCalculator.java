@@ -1,13 +1,14 @@
 package chess;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Collection;
 
 public class BishopMovesCalculator implements PieceMovesCalculator{
-    ArrayList<ChessMove> possibleMoves = new ArrayList<>();
     int[][] bishopMoves = {{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor) {
+
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
 
         int currRow = oldPosition.getRow();
         int currCol = oldPosition.getColumn();
@@ -17,9 +18,13 @@ public class BishopMovesCalculator implements PieceMovesCalculator{
             int moveRow = currRow + move[0];
             int moveCol = currCol + move[1];
 
+            if (moveRow == 5) {
+                System.out.println("ready");
+            }
+
             ChessPosition newPosition = new ChessPosition(moveRow, moveCol);
 
-            while (isValidNoCheck(board, oldPosition, newPosition, pieceColor)) {
+            while (isValidNoCheck(board, oldPosition, newPosition, pieceColor, possibleMoves)) {
                 ChessMove currMove = new ChessMove(oldPosition, newPosition, null);
                 possibleMoves.add(currMove);
 
@@ -33,7 +38,7 @@ public class BishopMovesCalculator implements PieceMovesCalculator{
     }
 
 
-    private boolean isValidNoCheck(ChessBoard board, ChessPosition oldPosition, ChessPosition newPosition, ChessGame.TeamColor pieceColor) {
+    private boolean isValidNoCheck(ChessBoard board, ChessPosition oldPosition, ChessPosition newPosition, ChessGame.TeamColor pieceColor, Collection<ChessMove> possibleMoves) {
         // Checks if in Bounds
         if (board.inBounds(newPosition)) {
 

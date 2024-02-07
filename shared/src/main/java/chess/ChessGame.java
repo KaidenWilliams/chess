@@ -16,14 +16,10 @@ public class ChessGame {
 
     private ChessBoard myBoard;
     private TeamColor teamTurn;
-    private ChessTeamTracker whiteTeamTracker;
-    private ChessTeamTracker blackTeamTracker;
 
 
     public ChessGame() {
         teamTurn = TeamColor.WHITE;
-        whiteTeamTracker = new ChessTeamTracker(TeamColor.WHITE);
-        blackTeamTracker = new ChessTeamTracker(TeamColor.BLACK);
     }
 
     /**
@@ -68,21 +64,45 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
+
+    // - for some reason blocking doesn't work, idk why
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = myBoard.getPiece(startPosition);
         Collection<ChessMove> possibleMoves = piece.pieceMoves(myBoard, startPosition);
         HashSet<ChessMove> validMoves = new HashSet<>();
         ChessBoard newBoard = new ChessBoard(myBoard);
 
-        Collection<ChessPosition> endPositionList = getEnemyPositions(piece.getTeamColor(), newBoard);
+        Collection<ChessPosition> endPositionList;
 
         for (ChessMove move: possibleMoves) {
 
-            newBoard.addPiece(move.getEndPosition(), piece);
-            if (!isInCheckTakesBoard(piece.getTeamColor(), endPositionList)) {
-                validMoves.add(move);
+            // Edge case for capturing and bringing out of check, need to implement check for that
+            ChessPiece endPiece = newBoard.getPiece(move.getEndPosition());
+            if (newBoard.getPiece(move.getEndPosition()) != null) {
+                newBoard.removePiece(move.getStartPosition());
+                newBoard.addPiece(move.getEndPosition(), piece);
+                endPositionList = getEnemyPositions(piece.getTeamColor(), newBoard);
+
+                if (!isInCheckTakesBoard(piece.getTeamColor(), endPositionList, newBoard)) {
+                    validMoves.add(move);
+                }
+
+                newBoard.addPiece(move.getEndPosition(), endPiece);
+                newBoard.addPiece(move.getStartPosition(), piece);
             }
-            newBoard.removePiece(move.getEndPosition());
+
+            else {
+                newBoard.removePiece(move.getStartPosition());
+                newBoard.addPiece(move.getEndPosition(), piece);
+                endPositionList = getEnemyPositions(piece.getTeamColor(), newBoard);
+
+                if (!isInCheckTakesBoard(piece.getTeamColor(), endPositionList, newBoard)) {
+                    validMoves.add(move);
+                }
+
+                newBoard.removePiece(move.getEndPosition());
+                newBoard.addPiece(move.getStartPosition(), piece);
+            }
         }
         return validMoves;
     }
@@ -132,15 +152,15 @@ public class ChessGame {
             assert(validMoves(startPosition).contains(move));
 
             myBoard.removePiece(startPosition);
+            if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                ChessTeamTracker tracker = (color == TeamColor.WHITE ? myBoard.getWhiteTeamTracker() : myBoard.getBlackTeamTracker());
+                tracker.setKingPosition(endPosition);
+            }
             if (piece.getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null) {
                 myBoard.addPiece(endPosition, new ChessPiece(color, move.getPromotionPiece()));
             }
             else {
                 myBoard.addPiece(endPosition, piece);
-            }
-            if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                ChessTeamTracker tracker = (color == TeamColor.WHITE ? whiteTeamTracker : blackTeamTracker);
-                tracker.setKingPosition(endPosition);
             }
             changeTeamTurn();
         }
@@ -160,18 +180,18 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
 
-    //This will be expensive operation, don't really know how to do
     //
     public boolean isInCheck(TeamColor teamColor) {
         Collection<ChessPosition> endPositionList = getEnemyPositions(teamColor, myBoard);
-        return isInCheckTakesBoard(teamColor, endPositionList);
+        return isInCheckTakesBoard(teamColor, endPositionList, myBoard);
     }
 
     // Used for testing valid moves, takes copy board so tested moves aren't applied to actual board
     // Just like isInCheck, just need to replace myBoard with newBoard
-    public boolean isInCheckTakesBoard(TeamColor teamColor, Collection<ChessPosition> endPositionList) {
+    // Need to call boards get king method
+    public boolean isInCheckTakesBoard(TeamColor teamColor, Collection<ChessPosition> endPositionList, ChessBoard newBoard) {
 
-        return endPositionList.contains(getKingPosition(teamColor));
+        return endPositionList.contains(getKingPosition(teamColor, newBoard));
     }
 
     public Collection<ChessPosition> getEnemyPositions(TeamColor teamColor, ChessBoard newBoard) {
@@ -187,9 +207,18 @@ public class ChessGame {
                 }
                 if (currPiece.getTeamColor() != teamColor) {
 
-                    endPositionList.addAll(currPiece.pieceMoves(newBoard, currPosition).stream()
-                            .map(ChessMove::getEndPosition)
-                            .collect(Collectors.toCollection(HashSet::new)));
+                    // Edge case with pawns, where they can attack is different
+                    int direction = (currPiece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1;
+                    if (currPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                        endPositionList.add(new ChessPosition(currPosition.getRow() + direction, currPosition.getColumn()-1));
+                        endPositionList.add(new ChessPosition(currPosition.getRow() + direction, currPosition.getColumn()+1));
+                    }
+
+                    else {
+                        endPositionList.addAll(currPiece.pieceMoves(newBoard, currPosition).stream()
+                                .map(ChessMove::getEndPosition)
+                                .collect(Collectors.toCollection(HashSet::new)));
+                    }
                 }
             }
         }
@@ -210,7 +239,7 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return false;
         }
-        if (!validMoves(getKingPosition(teamColor)).isEmpty()){
+        if (!validMoves(getKingPosition(teamColor, myBoard)).isEmpty()){
             return false;
         }
         return true;
@@ -231,26 +260,26 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         }
-        if (!validMoves(getKingPosition(teamColor)).isEmpty()){
+        if (!validMoves(getKingPosition(teamColor, myBoard)).isEmpty()){
             return false;
         }
         return true;
     }
 
-    public ChessPosition getKingPosition(ChessGame.TeamColor teamColor) {
-        ChessTeamTracker tracker = (teamColor == TeamColor.WHITE ? whiteTeamTracker : blackTeamTracker);
+    public ChessPosition getKingPosition(ChessGame.TeamColor teamColor, ChessBoard board) {
+        ChessTeamTracker tracker = (teamColor == TeamColor.WHITE ? board.getWhiteTeamTracker() : board.getBlackTeamTracker());
         ChessPosition kingPosition = tracker.getKingPosition();
-        ChessPiece kingPiece = myBoard.getPiece(kingPosition);
+        ChessPiece kingPiece = board.getPiece(kingPosition);
         if (kingPiece != null && kingPiece.getPieceType() == ChessPiece.PieceType.KING && kingPiece.getTeamColor() == teamColor) {
             return kingPosition;
         }
 
-        ChessPiece[][] squares = myBoard.getSquares();
+        ChessPiece[][] squares = board.getSquares();
 
         for (int i = 0; i < squares.length; i++) {
             for (int j = 0; j < squares[i].length; j++) {
                 ChessPosition currPosition = new ChessPosition(i + 1, j + 1);
-                ChessPiece currPiece = myBoard.getPiece(currPosition);
+                ChessPiece currPiece = board.getPiece(currPosition);
                 if (currPiece == null) {
                     continue;
                 }

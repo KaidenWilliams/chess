@@ -11,12 +11,19 @@ import java.util.Arrays;
 public class ChessBoard {
 
     private ChessPiece[][] squares;
+
+    private ChessTeamTracker whiteTeamTracker;
+    private ChessTeamTracker blackTeamTracker;
     public ChessBoard() {
         squares = new ChessPiece[8][8];
+        whiteTeamTracker = new ChessTeamTracker(ChessGame.TeamColor.WHITE);
+        blackTeamTracker = new ChessTeamTracker(ChessGame.TeamColor.BLACK);
     }
 
     // I don't want to use clone
     public ChessBoard(ChessBoard copyBoard) {
+        this.whiteTeamTracker = new ChessTeamTracker(ChessGame.TeamColor.WHITE, copyBoard.whiteTeamTracker.getKingPosition());
+        this.blackTeamTracker = new ChessTeamTracker(ChessGame.TeamColor.BLACK, copyBoard.blackTeamTracker.getKingPosition());
         this.squares = new ChessPiece[8][8];
         for (int i = 0; i < copyBoard.squares.length; i++) {
             for (int j = 0; j < copyBoard.squares[i].length; j++) {
@@ -25,6 +32,14 @@ public class ChessBoard {
                 }
             }
         }
+    }
+
+    public ChessTeamTracker getWhiteTeamTracker() {
+        return whiteTeamTracker;
+    }
+
+    public ChessTeamTracker getBlackTeamTracker() {
+        return blackTeamTracker;
     }
 
     /**

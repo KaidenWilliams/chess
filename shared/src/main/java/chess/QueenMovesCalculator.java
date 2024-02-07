@@ -4,10 +4,11 @@ import java.util.HashSet;
 import java.util.Collection;
 
 public class QueenMovesCalculator implements PieceMovesCalculator{
-    HashSet<ChessMove> possibleMoves = new HashSet<>();
     int[][] queenMoves = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor) {
+
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
 
         int currRow = oldPosition.getRow();
         int currCol = oldPosition.getColumn();
@@ -19,7 +20,7 @@ public class QueenMovesCalculator implements PieceMovesCalculator{
 
             ChessPosition newPosition = new ChessPosition(moveRow, moveCol);
 
-            while (isValidNoCheck(board, oldPosition, newPosition, pieceColor)) {
+            while (isValidNoCheck(board, oldPosition, newPosition, pieceColor, possibleMoves)) {
                 ChessMove currMove = new ChessMove(oldPosition, newPosition, null);
                 possibleMoves.add(currMove);
 
@@ -33,7 +34,7 @@ public class QueenMovesCalculator implements PieceMovesCalculator{
     }
 
 
-    private boolean isValidNoCheck(ChessBoard board, ChessPosition oldPosition, ChessPosition newPosition, ChessGame.TeamColor pieceColor) {
+    private boolean isValidNoCheck(ChessBoard board, ChessPosition oldPosition, ChessPosition newPosition, ChessGame.TeamColor pieceColor, Collection<ChessMove> possibleMoves) {
         // Checks if in Bounds
         if (board.inBounds(newPosition)) {
 

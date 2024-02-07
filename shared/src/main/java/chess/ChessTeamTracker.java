@@ -9,8 +9,8 @@ package chess;
 // 3.
 public class ChessTeamTracker {
 
-    private boolean canCastleQueenSide;
-    private boolean canCastleKingSide;
+//    private boolean canCastleQueenSide;
+//    private boolean canCastleKingSide;
     private ChessPosition kingPosition;
 
     public ChessTeamTracker(ChessGame.TeamColor teamColor) {
@@ -20,23 +20,35 @@ public class ChessTeamTracker {
         else {
             kingPosition = new ChessPosition(8,5);
         }
-        canCastleQueenSide = true;
-        canCastleKingSide = false;
-
+//        canCastleQueenSide = true;
+//        canCastleKingSide = false;
     }
 
-    public boolean isCanCastleKingSide() {
-        return canCastleKingSide;
+    public ChessTeamTracker(ChessGame.TeamColor teamColor, ChessPosition position) {
+        if (teamColor == ChessGame.TeamColor.WHITE) {
+            kingPosition = new ChessPosition(position.getRow(), position.getColumn());
+        }
+        else {
+            kingPosition = new ChessPosition(position.getRow(), position.getColumn());
+        }
+//        canCastleQueenSide = true;
+//        canCastleKingSide = false;
     }
-    public void setCanCastleKingSide(boolean canCastleKingSide) {
-        this.canCastleKingSide = canCastleKingSide;
-    }
-    public boolean isCanCastleQueenSide() {
-        return canCastleQueenSide;
-    }
-    public void setCanCastleQueenSide(boolean canCastleKingSide) {
-        this.canCastleQueenSide = canCastleQueenSide;
-    }
+
+
+//
+//    public boolean isCanCastleKingSide() {
+//        return canCastleKingSide;
+//    }
+//    public void setCanCastleKingSide(boolean canCastleKingSide) {
+//        this.canCastleKingSide = canCastleKingSide;
+//    }
+//    public boolean isCanCastleQueenSide() {
+//        return canCastleQueenSide;
+//    }
+//    public void setCanCastleQueenSide(boolean canCastleKingSide) {
+//        this.canCastleQueenSide = canCastleQueenSide;
+//    }
 
     public ChessPosition getKingPosition() {
         return kingPosition;

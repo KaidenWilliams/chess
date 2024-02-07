@@ -7,10 +7,12 @@ import java.util.Collection;
 //   or {same, -1} last pieceMove was {2, 0}, can move to {enemy, enemy-1 (behind enemy)
 
 public class PawnMovesCalculator implements PieceMovesCalculator{
-    HashSet<ChessMove> possibleMoves = new HashSet<>();
     ChessPiece.PieceType[] promotionPieces = {ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.QUEEN};
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor) {
+
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
+
         int currRow = oldPosition.getRow();
         int currCol = oldPosition.getColumn();
 
@@ -19,19 +21,19 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         int promoteRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 8 : 1;
 
 
-        if (addMove(board, oldPosition, currRow + direction, currCol, promoteRow)) {
+        if (addMove(board, oldPosition, currRow + direction, currCol, promoteRow, possibleMoves)) {
             if (currRow == startRow) {
-                addMove(board, oldPosition, currRow + 2 * direction, currCol, promoteRow);
+                addMove(board, oldPosition, currRow + 2 * direction, currCol, promoteRow, possibleMoves);
             }
         }
 
-        addMoveEnemy(board, oldPosition, currRow + direction, currCol - 1, pieceColor, promoteRow);
-        addMoveEnemy(board, oldPosition, currRow + direction, currCol + 1, pieceColor, promoteRow);
+        addMoveEnemy(board, oldPosition, currRow + direction, currCol - 1, pieceColor, promoteRow, possibleMoves);
+        addMoveEnemy(board, oldPosition, currRow + direction, currCol + 1, pieceColor, promoteRow, possibleMoves);
 
         return possibleMoves;
     }
 
-    private boolean addMove(ChessBoard board, ChessPosition oldPosition, int moveRow, int moveCol, int promoteRow) {
+    private boolean addMove(ChessBoard board, ChessPosition oldPosition, int moveRow, int moveCol, int promoteRow, Collection<ChessMove> possibleMoves) {
         ChessPosition newPosition = new ChessPosition(moveRow, moveCol);
 
         if (board.inBounds(newPosition)) {
@@ -39,10 +41,10 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
 
             if (otherPiece == null) {
                 if (moveRow == promoteRow) {
-                    addPiece(oldPosition, newPosition, this.promotionPieces);
+                    addPiece(oldPosition, newPosition, this.promotionPieces, possibleMoves);
                 }
                 else {
-                    addPiece(oldPosition, newPosition, null);
+                    addPiece(oldPosition, newPosition, null, possibleMoves);
                 }
                 return true;
             }
@@ -50,7 +52,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         return false;
     }
 
-    private void addMoveEnemy(ChessBoard board, ChessPosition oldPosition, int moveRow, int moveCol, ChessGame.TeamColor pieceColor, int promoteRow) {
+    private void addMoveEnemy(ChessBoard board, ChessPosition oldPosition, int moveRow, int moveCol, ChessGame.TeamColor pieceColor, int promoteRow, Collection<ChessMove> possibleMoves) {
         ChessPosition newPosition = new ChessPosition(moveRow, moveCol);
 
         if (board.inBounds(newPosition)) {
@@ -58,15 +60,15 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
 
             if (otherPiece != null && otherPiece.getTeamColor() != pieceColor) {
                 if (moveRow == promoteRow) {
-                    addPiece(oldPosition, newPosition, this.promotionPieces);
+                    addPiece(oldPosition, newPosition, this.promotionPieces, possibleMoves);
                 }
                 else {
-                    addPiece(oldPosition, newPosition, null);
+                    addPiece(oldPosition, newPosition, null, possibleMoves);
                 }
             }
         }
     }
-    private void addPiece(ChessPosition oldPosition, ChessPosition newPosition, ChessPiece.PieceType[] promotionPieces ) {
+    private void addPiece(ChessPosition oldPosition, ChessPosition newPosition, ChessPiece.PieceType[] promotionPieces, Collection<ChessMove> possibleMoves) {
         if (promotionPieces == null) {
             ChessMove currMove = new ChessMove(oldPosition, newPosition, null);
             possibleMoves.add(currMove);
