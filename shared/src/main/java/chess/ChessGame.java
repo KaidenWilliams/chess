@@ -141,15 +141,21 @@ public class ChessGame {
     // This code is absolutely not readable, definetly need to define local variables at top
     public void makeMove(ChessMove move) throws InvalidMoveException {
 
-        try {
             ChessPosition startPosition = move.getStartPosition();
             ChessPosition endPosition = move.getEndPosition();
             ChessPiece piece = myBoard.getPiece(startPosition);
-            assert (piece != null);
+            if (piece == null) {
+                throw new InvalidMoveException("Null Piece");
+            }
             TeamColor color = piece.getTeamColor();
-            assert(getTeamTurn() == color);
 
-            assert(validMoves(startPosition).contains(move));
+            if (getTeamTurn() != color) {
+                throw new InvalidMoveException("Wrong Color Turn");
+            }
+
+            if (!validMoves(startPosition).contains(move)) {
+                throw new InvalidMoveException("Not a valid move");
+            }
 
             myBoard.removePiece(startPosition);
             if (piece.getPieceType() == ChessPiece.PieceType.KING) {
@@ -163,13 +169,6 @@ public class ChessGame {
                 myBoard.addPiece(endPosition, piece);
             }
             changeTeamTurn();
-        }
-        catch(AssertionError ae) {
-            throw new InvalidMoveException("Could not make move. Error: " +  ae.getMessage());
-        }
-        catch(Exception e) {
-            throw new InvalidMoveException("Could not make move. Error: " +  e.getMessage());
-        }
 
     }
 
