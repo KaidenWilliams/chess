@@ -1,4 +1,4 @@
-package passoffTests.chessTests.chessTests0;
+package passoffTests.chessTests;
 
 import chess.ChessMove;
 import chess.ChessPiece;
