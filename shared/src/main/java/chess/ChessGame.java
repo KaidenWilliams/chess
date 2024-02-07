@@ -308,4 +308,5 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return myBoard;
     }
+
 }
