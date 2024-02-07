@@ -18,9 +18,6 @@ public class BishopMovesCalculator implements PieceMovesCalculator{
             int moveRow = currRow + move[0];
             int moveCol = currCol + move[1];
 
-            if (moveRow == 5) {
-                System.out.println("ready");
-            }
 
             ChessPosition newPosition = new ChessPosition(moveRow, moveCol);
 
