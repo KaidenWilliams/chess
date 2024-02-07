@@ -19,6 +19,7 @@ public class BishopMovesCalculator implements PieceMovesCalculator{
             int moveCol = currCol + move[1];
 
 
+
             ChessPosition newPosition = new ChessPosition(moveRow, moveCol);
 
             while (isValidNoCheck(board, oldPosition, newPosition, pieceColor, possibleMoves)) {
