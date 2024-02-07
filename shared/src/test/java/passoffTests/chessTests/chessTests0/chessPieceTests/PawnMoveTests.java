@@ -1,4 +1,4 @@
-package passoffTests.chessTests.chessPieceTests;
+package passoffTests.chessTests.chessTests0.chessPieceTests;
 
 import chess.*;
 import org.junit.jupiter.api.Test;
