@@ -9,13 +9,9 @@ import java.util.stream.Collectors;
 
 // TODO error throwing
 
-abstract class GeneralMemoryDAO<T> implements IGeneralMemoryDAO<T> {
+abstract class GeneralMemoryDAO<T> {
 
-    protected ArrayList<T> data;
-
-    public GeneralMemoryDAO() {
-        this.data = new ArrayList<>();
-    }
+    protected ArrayList<T> data = new ArrayList<>();
 
     // Create
     public T create(T entity) {
@@ -75,7 +71,7 @@ abstract class GeneralMemoryDAO<T> implements IGeneralMemoryDAO<T> {
     }
 
     // Destroy
-    public T delete(Predicate<T> predicate) {
+    public T deleteBy(Predicate<T> predicate) {
         T entityToDelete = findOne(predicate);
         if (entityToDelete != null) {
             data.remove(entityToDelete);

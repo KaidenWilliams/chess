@@ -7,16 +7,14 @@ import model.UserModel;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+// My in-memory DB
 public class MemoryDB {
     private static MemoryDB instance;
-    public final HashSet<Integer, UserModel> userData;
-    public final ArrayList<GameModel> gameData;
-    public final ArrayList<AuthModel> authData;
+    public final ArrayList<UserModel> userData = new ArrayList<>();
+    public final ArrayList<GameModel> gameData = new ArrayList<>();
+    public final ArrayList<AuthModel> authData = new ArrayList<>();
 
     private MemoryDB() {
-        this.userData = new HashSet<>();
-        this.gameData = new HashSet<>();
-        this.authData = new HashSet<>();
     }
 
     public static MemoryDB getInstance() {
@@ -26,6 +24,7 @@ public class MemoryDB {
         return instance;
     }
 
+    //TODO make sure these actually work like they should
     public ArrayList<UserModel> getUserData() {
         return userData;
     }

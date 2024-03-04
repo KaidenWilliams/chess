@@ -11,12 +11,10 @@ import java.util.ArrayList;
 
 public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameDAO {
 
-    private final MemoryDB memoryDB;
 
     public MemoryGameDAO() {
         super();
-        this.memoryDB = MemoryDB.getInstance();
-        this.data = memoryDB.gameData;
+        this.data = MemoryDB.getInstance().getGameData();
     }
 
 
@@ -25,12 +23,12 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
     //2. Insert row - already implemented
 
     //3. Get game from gameID
-    public GameModel getRowFromGameID(int gameID) {
+    public GameModel getRowByGameID(int gameID) {
         return findOne(model -> Integer.valueOf(model.gameID()).equals(gameID));
     }
 
     //4. Update username for correct color with id TODO needs work
-    public GameModel deleteRowFromAuthtoken(GameModel entityNew, ChessGame.TeamColor color) {
+    public GameModel deleteRowByAuthtoken(GameModel entityNew, ChessGame.TeamColor color) {
         if (color == ChessGame.TeamColor.WHITE) {
             return update(entityNew, model -> Integer.valueOf(model.gameID()).equals(entityNew.gameID()));
         } else {
