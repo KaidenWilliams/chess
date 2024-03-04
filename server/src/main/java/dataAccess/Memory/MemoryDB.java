@@ -5,17 +5,18 @@ import model.GameModel;
 import model.UserModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class MemoryDB {
     private static MemoryDB instance;
-    public final ArrayList<UserModel> userData;
+    public final HashSet<Integer, UserModel> userData;
     public final ArrayList<GameModel> gameData;
     public final ArrayList<AuthModel> authData;
 
     private MemoryDB() {
-        this.userData = new ArrayList<>();
-        this.gameData = new ArrayList<>();
-        this.authData = new ArrayList<>();
+        this.userData = new HashSet<>();
+        this.gameData = new HashSet<>();
+        this.authData = new HashSet<>();
     }
 
     public static MemoryDB getInstance() {

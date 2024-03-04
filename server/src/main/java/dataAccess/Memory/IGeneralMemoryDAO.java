@@ -10,6 +10,7 @@ public interface IGeneralMemoryDAO<T> {
 
     // Read
     List<T> findAll(Predicate<T> predicate);
+
     T findOne(Predicate<T> predicate);
 
     List<T> listAll();

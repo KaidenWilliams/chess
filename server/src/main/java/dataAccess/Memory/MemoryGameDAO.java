@@ -1,7 +1,7 @@
 package dataAccess.Memory;
 
 import chess.ChessGame;
-import dataAccess.IAuthDAO;
+import dataAccess.IGameDAO;
 import model.AuthModel;
 import model.GameModel;
 
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 // TODO error throwing
 
-public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IAuthDAO {
+public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameDAO {
 
     private final MemoryDB memoryDB;
 
