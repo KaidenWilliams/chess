@@ -1,7 +1,9 @@
 package service;
 import dataAccess.*;
-import spark.Request;
-import spark.Response;
+import model.*;
+import server.JsonRequestObjects.RegisterRequest;
+
+import java.util.UUID;
 
 
 public class ChessService {
@@ -17,17 +19,19 @@ public class ChessService {
     }
 
     //1. Register User
-    public Object registerUser(Request req, Response res) {
-        var id = Integer.parseInt(req.params(":id"));
-        var pet = service.getPet(id);
-        if (pet != null) {
-            service.deletePet(id);
-            webSocketHandler.makeNoise(pet.name(), pet.sound());
-            res.status(204);
-        } else {
-            res.status(404);
+    public String registerUser(RegisterRequest user) throws DataAccessException{
+
+        UserModel userExisting = userDAO.getRowByUsername(user.username());
+
+        if (userExisting != null) {
+            throw new DataAccessException("Error: already taken", 403);
         }
-        return "";
+        else {
+            userDAO.create(new UserModel(user.username(), user.password(), user.email()));
+            AuthModel authRow = authDAO.create(new AuthModel(UUID.randomUUID().toString(), user.username()));
+
+            return authRow.authToken();
+        }
     }
 
     //2. Login User

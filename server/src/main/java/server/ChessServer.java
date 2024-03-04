@@ -1,8 +1,15 @@
 package server;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import dataAccess.DataAccessException;
 import dataAccess.Memory.MemoryDataAccess;
+import server.JsonRequestObjects.RegisterRequest;
+import server.JsonResponseObjects.ExceptionResponse;
+import server.JsonResponseObjects.RegisterResponse;
 import spark.*;
 import service.ChessService;
+import model.*;
 
 public class ChessServer {
 
@@ -13,7 +20,7 @@ public class ChessServer {
         this.service = new ChessService(new MemoryDataAccess());
     }
 
-    public void run(int desiredPort) {
+    public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
@@ -31,6 +38,7 @@ public class ChessServer {
 //        Spark.exception(ResponseException.class, this::exceptionHandler);
 
         Spark.awaitInitialization();
+        return port();
     }
 
 
@@ -39,9 +47,9 @@ public class ChessServer {
         Spark.awaitStop();
     }
 
-//    public int port() {
-//        return Spark.port();
-//    }
+    public int port() {
+        return Spark.port();
+    }
 
 
     //1. Register User
@@ -52,17 +60,29 @@ public class ChessServer {
     //	- Failure: [403] { "message": "Error: already taken" }
     //	- Failure: [500] { "message": "Error: description" }
     private Object registerUser(Request req, Response res) {
-        var id = Integer.parseInt(req.params(":id"));
-        var pet = service.getPet(id);
 
-        if (pet != null) {
-            service.registerUser(id);
-            webSocketHandler.makeNoise(pet.name(), pet.sound());
-            res.status(204);
-        } else {
-            res.status(404);
+        try {
+            RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
+
+            String authToken = service.registerUser(user);
+
+            res.status(200);
+            return new Gson().toJson(authToken, RegisterResponse.class);
+
         }
-        return "";
+        catch (DataAccessException e) {
+            res.status(e.getStatusCode());
+            return new Gson().toJson(e.getMessage(), ExceptionResponse.class);
+        }
+        catch (JsonSyntaxException e) {
+            res.status(400);
+            return new Gson().toJson("Error: bad request", ExceptionResponse.class);
+        }
+        catch (Exception e){
+            res.status(500);
+            return new Gson().toJson(e.getMessage(), ExceptionResponse.class);
+        }
+
     }
 
     //2. Login User

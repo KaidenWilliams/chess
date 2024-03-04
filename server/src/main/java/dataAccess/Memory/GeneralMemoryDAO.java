@@ -15,15 +15,15 @@ abstract class GeneralMemoryDAO<T> {
 
     // Create
     public T create(T entity) {
-        data.add(entity);
-        return entity;
+        return data.add(entity) ? entity : null;
     }
 
     // Read
     public List<T> findAll(Predicate<T> predicate) {
-        return data.stream()
+        List<T> result = data.stream()
                 .filter(predicate)
-                .collect(Collectors.toList());
+                .toList();
+        return result.isEmpty() ? null : result;
     }
 
     public T findOne(Predicate<T> predicate) {
@@ -33,16 +33,18 @@ abstract class GeneralMemoryDAO<T> {
                 .orElse(null);
     }
 
+    // Just make sure not to change the data, technically exposing db to frontend
     public List<T> listAll()  {
-        return data;
+        return data.isEmpty() ? null : data;
     }
 
     //Update TODO needs work, will figure it our
     public T update(T entityNew, Predicate<T> predicate) {
         T entityOld = findOne(predicate);
-        if (entityOld != null) {
-            updateFields(entityNew, entityOld);
+        if (entityOld == null) {
+            return null;
         }
+        updateFields(entityNew, entityOld);
         return entityOld;
     }
 
@@ -73,10 +75,11 @@ abstract class GeneralMemoryDAO<T> {
     // Destroy
     public T deleteBy(Predicate<T> predicate) {
         T entityToDelete = findOne(predicate);
-        if (entityToDelete != null) {
-            data.remove(entityToDelete);
+        if (entityToDelete == null) {
+            return null;
         }
-        return entityToDelete;
+        data.remove(entityToDelete);
+        return data.remove(entityToDelete) ? entityToDelete : null;
     }
 
     public void deleteAll() {
