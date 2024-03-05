@@ -28,15 +28,14 @@ public class ChessServer {
 
         // Register your endpoints and handle exceptions here.
 
-//        Spark.delete("/db", (req, res) -> clear(req, res));
         Spark.post("/user", this::registerUser);
 //        Spark.post("/db", this::loginUser);
 //        Spark.delete("/user", this::logoutUser);
 //        Spark.get("/db", this::listGames);
 //        Spark.post("/user", this::createGame);
 //        Spark.put("/db", this::joinGame);
-//        Spark.delete("/db", this::clearAll);
-//        Spark.exception(ResponseException.class, this::exceptionHandler);
+        Spark.delete("/db", this::clearAll);
+        Spark.exception(Exception.class, this::exceptionHandler);
 
         Spark.awaitInitialization();
         return port();
@@ -60,37 +59,19 @@ public class ChessServer {
     //	- Failure: [400] { "message": "Error: bad request" }
     //	- Failure: [403] { "message": "Error: already taken" }
     //	- Failure: [500] { "message": "Error: description" }
-    private Object registerUser(Request req, Response res) {
+    private Object registerUser(Request req, Response res) throws DataAccessException {
 
-        try {
-            RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
-            new RegisterValidation().validate(user);
 
-            String authToken = service.registerUser(user);
+        RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
+        new RegisterValidation().validate(user);
 
-            RegisterResponse registerResponse = new RegisterResponse(authToken);
+        String authToken = service.registerUser(user);
 
-            res.status(200);
+        RegisterResponse registerResponse = new RegisterResponse(authToken);
 
-            // Error here
-            return new Gson().toJson(registerResponse);
+        res.status(200);
 
-        }
-        catch (DataAccessException e) {
-            res.status(e.getStatusCode());
-            ExceptionResponse dataException = new ExceptionResponse(e.getMessage());
-            return new Gson().toJson(dataException);
-        }
-        catch (JsonSyntaxException | IllegalArgumentException e) {
-            res.status(400);
-            ExceptionResponse formatException = new ExceptionResponse("Error: bad request");
-            return new Gson().toJson(formatException);
-        }
-        catch (Exception e){
-            res.status(500);
-            ExceptionResponse generalException = new ExceptionResponse(e.getMessage());
-            return new Gson().toJson(generalException);
-        }
+        return new Gson().toJson(registerResponse);
 
     }
 
@@ -173,26 +154,32 @@ public class ChessServer {
 //    }
 
 
-
     //7. Clear all DB
-    //  Clear Application: [Delete] /db
-    //  - clears db, removes users, games, authTokens
-    //  - Success: 200
-    //  - Failure: 500 {"message": "Error: description" }
-//    private Object clearAll(Request req, Response res) {
-//        service.deleteAllPets();
-//        res.status(204);
-//        return "";
+    private Object clearAll(Request req, Response res) {
+        service.deleteAll();
+        res.status(200);
+        res.type("application/json");
+        return "{}";
+    }
 
-//          service.clearAll()
-//    }
-
-
-
-    //8. Exception Hander, will do later
-//    private void exceptionHandler(ResponseException ex, Request req, Response res) {
-//        res.status(ex.StatusCode());
-//    }
+    //8. Exception Handler, very useful
+    private void exceptionHandler(Exception ex, Request req, Response res) {
+        if (ex instanceof DataAccessException) {
+            res.status(((DataAccessException) ex).getStatusCode());
+            ExceptionResponse dataException = new ExceptionResponse(ex.getMessage());
+            res.body(new Gson().toJson(dataException));
+        }
+        else if (ex instanceof JsonSyntaxException || ex instanceof IllegalArgumentException) {
+            res.status(400);
+            ExceptionResponse formatException = new ExceptionResponse("Error: bad request");
+            res.body(new Gson().toJson(formatException));
+        }
+        else {
+            res.status(500);
+            ExceptionResponse generalException = new ExceptionResponse(ex.getMessage());
+            res.body(new Gson().toJson(generalException));
+        }
+    }
 
 
 }

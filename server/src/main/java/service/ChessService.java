@@ -64,12 +64,11 @@ public class ChessService {
 //    }
 
     //7. Clear all DB
-//    public void deleteAllPets() throws ResponseException {
-//        authDao.deleteAll();
-//        gameDao.deleteAll();
-//        userDao.deleteAll();
-//
-//    }
+    public void deleteAll() {
+        authDAO.deleteAll();
+        gameDAO.deleteAll();
+        userDAO.deleteAll();
+    }
 //
 
 

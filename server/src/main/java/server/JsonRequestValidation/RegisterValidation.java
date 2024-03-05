@@ -5,6 +5,10 @@ import server.JsonRequestObjects.RegisterRequest;
 public class RegisterValidation {
     public void validate(RegisterRequest registerRecord){
 
+        if (registerRecord == null) {
+            throw new IllegalArgumentException("Error: bad request");
+        }
+
         if (registerRecord.username() == null ) {
             throw new IllegalArgumentException("Error: bad request");
         }
