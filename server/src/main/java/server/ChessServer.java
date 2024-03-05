@@ -61,7 +61,6 @@ public class ChessServer {
     //	- Failure: [500] { "message": "Error: description" }
     private Object registerUser(Request req, Response res) throws DataAccessException {
 
-
         RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
         new RegisterValidation().validate(user);
 
@@ -72,7 +71,6 @@ public class ChessServer {
         res.status(200);
 
         return new Gson().toJson(registerResponse);
-
     }
 
     //2. Login User
@@ -81,10 +79,18 @@ public class ChessServer {
     //	- Sucess: [200] { "username":"", "authToken":"" }
     //	- Failure: [401] { "message": "Error: unauthorized" }
     //	- Failure: [500] { "message": "Error: description" }
-//    private Object loginUser(Request req, Response res) {
+    private Object loginUser(Request req, Response res) {
+        RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
+        new RegisterValidation().validate(user);
 
-//      service.loginUser()
-//    }
+        String authToken = service.loginUser(user);
+
+        RegisterResponse registerResponse = new RegisterResponse(authToken);
+
+        res.status(200);
+
+        return new Gson().toJson(registerResponse);
+    }
 
 
     //3. Logout User
