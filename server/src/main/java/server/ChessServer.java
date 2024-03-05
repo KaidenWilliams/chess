@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import dataAccess.DataAccessException;
 import dataAccess.Memory.MemoryDataAccess;
 import server.JsonRequestObjects.RegisterRequest;
+import server.JsonRequestValidation.RegisterValidation;
 import server.JsonResponseObjects.ExceptionResponse;
 import server.JsonResponseObjects.RegisterResponse;
 import spark.*;
@@ -63,24 +64,32 @@ public class ChessServer {
 
         try {
             RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
+            new RegisterValidation().validate(user);
 
             String authToken = service.registerUser(user);
 
+            RegisterResponse registerResponse = new RegisterResponse(authToken);
+
             res.status(200);
-            return new Gson().toJson(authToken, RegisterResponse.class);
+
+            // Error here
+            return new Gson().toJson(registerResponse);
 
         }
         catch (DataAccessException e) {
             res.status(e.getStatusCode());
-            return new Gson().toJson(e.getMessage(), ExceptionResponse.class);
+            ExceptionResponse dataException = new ExceptionResponse(e.getMessage());
+            return new Gson().toJson(dataException);
         }
-        catch (JsonSyntaxException e) {
+        catch (JsonSyntaxException | IllegalArgumentException e) {
             res.status(400);
-            return new Gson().toJson("Error: bad request", ExceptionResponse.class);
+            ExceptionResponse formatException = new ExceptionResponse("Error: bad request");
+            return new Gson().toJson(formatException);
         }
         catch (Exception e){
             res.status(500);
-            return new Gson().toJson(e.getMessage(), ExceptionResponse.class);
+            ExceptionResponse generalException = new ExceptionResponse(e.getMessage());
+            return new Gson().toJson(generalException);
         }
 
     }

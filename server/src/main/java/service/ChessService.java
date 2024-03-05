@@ -29,7 +29,6 @@ public class ChessService {
         else {
             userDAO.create(new UserModel(user.username(), user.password(), user.email()));
             AuthModel authRow = authDAO.create(new AuthModel(UUID.randomUUID().toString(), user.username()));
-
             return authRow.authToken();
         }
     }

@@ -1,4 +1,4 @@
 package server.JsonResponseObjects;
 
-public record RegisterResponse(String username, String authToken) {
+public record RegisterResponse(String authToken) {
 }
