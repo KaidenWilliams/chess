@@ -11,10 +11,12 @@ import java.util.ArrayList;
 
 public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameDAO {
 
+    private int currId;
 
     public MemoryGameDAO() {
         super();
         this.data = MemoryDB.getInstance().getGameData();
+        this.currId = 0;
     }
 
 
@@ -34,6 +36,12 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
         } else {
             return update(entityNew, model -> Integer.valueOf(model.gameID()).equals(entityNew.gameID()));
         }
+    }
+
+    public int getGameId() {
+        int oldId = currId;
+        currId++;
+        return oldId;
     }
 
 

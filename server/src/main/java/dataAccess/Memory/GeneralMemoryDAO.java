@@ -78,7 +78,6 @@ abstract class GeneralMemoryDAO<T> {
         if (entityToDelete == null) {
             return null;
         }
-        data.remove(entityToDelete);
         return data.remove(entityToDelete) ? entityToDelete : null;
     }
 

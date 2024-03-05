@@ -1,8 +1,9 @@
 package service;
 import dataAccess.*;
 import model.*;
-import server.JsonRequestObjects.RegisterRequest;
+import server.JsonRequestObjects.*;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -19,7 +20,7 @@ public class ChessService {
     }
 
     //1. Register User
-    public String registerUser(RegisterRequest user) throws DataAccessException{
+    public AuthModel registerUser(RegisterRequest user) throws DataAccessException {
 
         UserModel userExisting = userDAO.getRowByUsername(user.username());
 
@@ -28,39 +29,70 @@ public class ChessService {
         }
         else {
             userDAO.create(new UserModel(user.username(), user.password(), user.email()));
-            AuthModel authRow = authDAO.create(new AuthModel(UUID.randomUUID().toString(), user.username()));
-            return authRow.authToken();
+            return authDAO.create(new AuthModel(UUID.randomUUID().toString(), user.username()));
         }
     }
 
     //2. Login User
-//    public Object loginUser(Request req, Response res) {
-//
-//    }
-//
+    public AuthModel loginUser(LoginRequest user) throws DataAccessException {
+        UserModel userExisting = userDAO.getRowByUsernameAndPassword(user.username(), user.password());
+
+        if (userExisting == null) {
+            throw new DataAccessException("Error: already taken", 401);
+        }
+        else {
+            return authDAO.create(new AuthModel(UUID.randomUUID().toString(), user.username()));
+        }
+    }
+
     //3. Logout User
-//    public Object logoutUser(Request req, Response res) {
-//
-//    }
-//
+    public void logoutUser(LogoutRequest user) throws DataAccessException {
+
+       AuthModel userExisting = authDAO.deleteRowByAuthtoken(user.authToken());
+
+        if (userExisting == null) {
+            throw new DataAccessException("Error: unauthorized", 401);
+        }
+    }
+
     //4. ListGames
-//    public Object listGames(Request req, Response res) {
-//        res.type("application/json");
-//        var list = service.listPets().toArray();
-//        return new Gson().toJson(Map.of("pet", list));
-//    }
-//
+    public List<GameModel> listGames(ListGamesRequest listGames) throws DataAccessException {
+        AuthModel userExisting = authDAO.getRowByAuthtoken(listGames.authToken());
+
+        if (userExisting == null) {
+            throw new DataAccessException("Error: unauthorized", 401);
+        }
+        else {
+            return gameDAO.listAll();
+        }
+    }
+
+
     //5. createGame
-//    public Object createGame(Request req, Response res) {
-//        var pet = new Gson().fromJson(req.body(), Pet.class);
-//        pet = service.addPet(pet);
-//        webSocketHandler.makeNoise(pet.name(), pet.sound());
-//        return new Gson().toJson(pet);
-//    }
+
+    public GameModel createGame(CreateGameRequest createGame) throws DataAccessException {
+         AuthModel userExisting = authDAO.getRowByAuthtoken(createGame.authToken());
+
+         if (userExisting == null) {
+             throw new DataAccessException("Error: unauthorized", 401);
+         }
+        else {
+             return gameDAO.create(new GameModel(gameDAO.getGameId(), null, null, createGame.body().gameName(), null));
+        }
+    }
 
     //6. joinGame
-//    public Object joinGame(Request req, Response res) {
+//    public Object joinGame(JoinGameRequest joinGame) throws DataAccessException {
+//       UserModel userExisting = userDAO.getRowByUsername(user.username());
 //
+//        if (userExisting != null) {
+//            throw new DataAccessException("Error: already taken", 403);
+//        }
+//        else {
+//            userDAO.create(new UserModel(user.username(), user.password(), user.email()));
+//            AuthModel authRow = authDAO.create(new AuthModel(UUID.randomUUID().toString(), user.username()));
+//            return authRow.authToken();
+//        }
 //    }
 
     //7. Clear all DB

@@ -4,13 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataAccess.DataAccessException;
 import dataAccess.Memory.MemoryDataAccess;
-import server.JsonRequestObjects.RegisterRequest;
-import server.JsonRequestValidation.RegisterValidation;
-import server.JsonResponseObjects.ExceptionResponse;
-import server.JsonResponseObjects.RegisterResponse;
+import model.AuthModel;
+import server.JsonRequestObjects.*;
+import server.JsonRequestValidation.*;
+import server.JsonResponseObjects.*;
 import spark.*;
 import service.ChessService;
 import model.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChessServer {
 
@@ -29,11 +32,11 @@ public class ChessServer {
         // Register your endpoints and handle exceptions here.
 
         Spark.post("/user", this::registerUser);
-//        Spark.post("/db", this::loginUser);
-//        Spark.delete("/user", this::logoutUser);
-//        Spark.get("/db", this::listGames);
-//        Spark.post("/user", this::createGame);
-//        Spark.put("/db", this::joinGame);
+        Spark.post("/session", this::loginUser);
+        Spark.delete("/session", this::logoutUser);
+        Spark.get("/game", this::listGames);
+        Spark.post("/game", this::createGame);
+//        Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clearAll);
         Spark.exception(Exception.class, this::exceptionHandler);
 
@@ -53,20 +56,14 @@ public class ChessServer {
 
 
     //1. Register User
-    // [Post] /user {username, pasword, email}
-    //	- register new user
-    //	- Success: [200] { "username":"", "authToken":"" }
-    //	- Failure: [400] { "message": "Error: bad request" }
-    //	- Failure: [403] { "message": "Error: already taken" }
-    //	- Failure: [500] { "message": "Error: description" }
     private Object registerUser(Request req, Response res) throws DataAccessException {
 
         RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
         new RegisterValidation().validate(user);
 
-        String authToken = service.registerUser(user);
+        AuthModel auth = service.registerUser(user);
 
-        RegisterResponse registerResponse = new RegisterResponse(authToken);
+        RegisterResponse registerResponse = new RegisterResponse(auth.username(), auth.authToken());
 
         res.status(200);
 
@@ -74,18 +71,13 @@ public class ChessServer {
     }
 
     //2. Login User
-    //Login: [Post] /session {username, pasword}
-    //	- logs in existing user (returns new authToken)
-    //	- Sucess: [200] { "username":"", "authToken":"" }
-    //	- Failure: [401] { "message": "Error: unauthorized" }
-    //	- Failure: [500] { "message": "Error: description" }
-    private Object loginUser(Request req, Response res) {
-        RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
-        new RegisterValidation().validate(user);
+    private Object loginUser(Request req, Response res) throws DataAccessException {
+        LoginRequest user = new Gson().fromJson(req.body(), LoginRequest.class);
+        new LoginValidation().validate(user);
 
-        String authToken = service.loginUser(user);
+        AuthModel auth = service.loginUser(user);
 
-        RegisterResponse registerResponse = new RegisterResponse(authToken);
+        LoginResponse registerResponse = new LoginResponse(auth.username(), auth.authToken());
 
         res.status(200);
 
@@ -94,19 +86,19 @@ public class ChessServer {
 
 
     //3. Logout User
-    // Logout: [Delete] /session authToken
-    //	- Logs out user represented by authToken
-    //	- Header: authorization: <authToken>
-    //	- Success: 200
-    //  - Failure: [401] { "message": "Error: unauthorized" }
-    //	- Failure: [500] { "message": "Error: description" }
-//    private Object logoutUser(Request req, Response res) {
-//
-//        service.logoutUser()
-//
-//    }
+    private Object logoutUser(Request req, Response res) throws DataAccessException {
 
+        // Probably won't work, we will see
+        LogoutRequest user = new LogoutRequest(req.headers("Authorization"));
+        new LogoutValidation().validate(user);
 
+        service.logoutUser(user);
+
+        res.status(200);
+        res.type("application/json");
+        return "{}";
+
+    }
 
 
     //4. ListGames
@@ -116,13 +108,29 @@ public class ChessServer {
     //	- Success: [200] { "games": [{"gameID": 1234, "whiteUsername":", "blackUsername":"", "gameName:""} ]}
     //  - Failure: [401] { "message": "Error: unauthorized" }
     //  - Failure: [500] { "message": "Error: description" }
-//    private Object listGames(Request req, Response res) {
-//        res.type("application/json");
-//        var list = service.listPets().toArray();
-//        return new Gson().toJson(Map.of("pet", list));
+    // TODO check if this works
+    private Object listGames(Request req, Response res) throws DataAccessException {
 
-//        service.listGames()
-//    }
+        ListGamesRequest user = new ListGamesRequest(req.headers("Authorization"));
+        new ListGamesValidation().validate(user);
+
+        List<GameModel> listGameModel = service.listGames(user);
+
+        List<ListGamesResponse.Game> games = listGameModel.stream()
+                .map(gameModel -> new ListGamesResponse.Game(
+                        gameModel.gameID(),
+                        gameModel.whiteUsername(),
+                        gameModel.blackUsername(),
+                        gameModel.gameName()
+                ))
+                .collect(Collectors.toList());
+        ListGamesResponse listGames = new ListGamesResponse(games);
+
+        res.status(200);
+
+        return new Gson().toJson(listGames);
+
+    }
 //
 
 
@@ -134,14 +142,20 @@ public class ChessServer {
     //  - Failure: [400] { "message": "Error: bad request" }
     //  - Failure: [401] { "message": "Error: unauthorized" }
     //  - Failure: [500] { "message": "Error: description" }
-//    private Object createGame(Request req, Response res) {
-//        var pet = new Gson().fromJson(req.body(), Pet.class);
-//        pet = service.addPet(pet);
-//        webSocketHandler.makeNoise(pet.name(), pet.sound());
-//        return new Gson().toJson(pet);
+    private Object createGame(Request req, Response res) throws DataAccessException {
 
-//        service.createGame()
-//    }
+        CreateGameRequest user = new CreateGameRequest(req.headers("Authorization"), (new Gson().fromJson(req.body(), CreateGameRequest.RequestBody.class)));
+        new CreateGameValidation().validate(user);
+
+        GameModel newGame = service.createGame(user);
+
+        CreateGameResponse createGameResponse = new CreateGameResponse(newGame.gameID());
+
+        res.status(200);
+
+        return new Gson().toJson(createGameResponse);
+
+    }
 
 
 
@@ -154,10 +168,21 @@ public class ChessServer {
     //  - Failure: [400] { "message": "Error: bad request" }
     //  - Failure: [401] { "message": "Error: unauthorized" }
     //  - Failure: [500] { "message": "Error: description" }
-//    private Object joinGame(Request req, Response res) {
-//
-//      service.joinGame();
-//    }
+    private Object joinGame(Request req, Response res) throws DataAccessException {
+
+        JoinGameRequest user = new JoinGameRequest(req.headers("Authorization"), (new Gson().fromJson(req.body(), JoinGameRequest.RequestBody.class)));
+        new JoinGameValidation().validate(user);
+
+        AuthModel auth = service.loginUser(user);
+
+        LoginResponse registerResponse = new LoginResponse(auth.username(), auth.authToken());
+
+        res.status(200);
+
+        return new Gson().toJson(registerResponse);
+
+      service.joinGame();
+    }
 
 
     //7. Clear all DB
