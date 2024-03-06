@@ -12,6 +12,7 @@ import spark.*;
 import service.ChessService;
 import model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,7 @@ public class ChessServer {
         Spark.delete("/session", this::logoutUser);
         Spark.get("/game", this::listGames);
         Spark.post("/game", this::createGame);
-//        Spark.put("/game", this::joinGame);
+        Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clearAll);
         Spark.exception(Exception.class, this::exceptionHandler);
 
@@ -59,7 +60,7 @@ public class ChessServer {
     private Object registerUser(Request req, Response res) throws DataAccessException {
 
         RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
-        new RegisterValidation().validate(user);
+        RegisterValidation.validate(user);
 
         AuthModel auth = service.registerUser(user);
 
@@ -73,7 +74,7 @@ public class ChessServer {
     //2. Login User
     private Object loginUser(Request req, Response res) throws DataAccessException {
         LoginRequest user = new Gson().fromJson(req.body(), LoginRequest.class);
-        new LoginValidation().validate(user);
+        LoginValidation.validate(user);
 
         AuthModel auth = service.loginUser(user);
 
@@ -90,7 +91,7 @@ public class ChessServer {
 
         // Probably won't work, we will see
         LogoutRequest user = new LogoutRequest(req.headers("Authorization"));
-        new LogoutValidation().validate(user);
+        LogoutValidation.validate(user);
 
         service.logoutUser(user);
 
@@ -112,23 +113,31 @@ public class ChessServer {
     private Object listGames(Request req, Response res) throws DataAccessException {
 
         ListGamesRequest user = new ListGamesRequest(req.headers("Authorization"));
-        new ListGamesValidation().validate(user);
+        ListGamesValidation.validate(user);
 
         List<GameModel> listGameModel = service.listGames(user);
 
-        List<ListGamesResponse.Game> games = listGameModel.stream()
-                .map(gameModel -> new ListGamesResponse.Game(
-                        gameModel.gameID(),
-                        gameModel.whiteUsername(),
-                        gameModel.blackUsername(),
-                        gameModel.gameName()
-                ))
-                .collect(Collectors.toList());
-        ListGamesResponse listGames = new ListGamesResponse(games);
 
-        res.status(200);
+        if (listGameModel != null ) {
+            List<ListGamesResponse.Game> games = listGameModel.stream()
+                    .map(gameModel -> new ListGamesResponse.Game(
+                            gameModel.gameID(),
+                            gameModel.whiteUsername(),
+                            gameModel.blackUsername(),
+                            gameModel.gameName()
+                    ))
+                    .collect(Collectors.toList());
+            ListGamesResponse listGames = new ListGamesResponse(games);
 
-        return new Gson().toJson(listGames);
+            res.status(200);
+            return new Gson().toJson(listGames);
+        }
+        else {
+            List<ListGamesResponse.Game> games = new ArrayList<>();
+            ListGamesResponse listGames = new ListGamesResponse(games);
+            res.status(200);
+            return new Gson().toJson(listGames);
+        }
 
     }
 //
@@ -145,7 +154,7 @@ public class ChessServer {
     private Object createGame(Request req, Response res) throws DataAccessException {
 
         CreateGameRequest user = new CreateGameRequest(req.headers("Authorization"), (new Gson().fromJson(req.body(), CreateGameRequest.RequestBody.class)));
-        new CreateGameValidation().validate(user);
+        CreateGameValidation.validate(user);
 
         GameModel newGame = service.createGame(user);
 
@@ -171,17 +180,13 @@ public class ChessServer {
     private Object joinGame(Request req, Response res) throws DataAccessException {
 
         JoinGameRequest user = new JoinGameRequest(req.headers("Authorization"), (new Gson().fromJson(req.body(), JoinGameRequest.RequestBody.class)));
-        new JoinGameValidation().validate(user);
+        JoinGameValidation.validate(user);
 
-        AuthModel auth = service.loginUser(user);
-
-        LoginResponse registerResponse = new LoginResponse(auth.username(), auth.authToken());
+        service.joinGame(user);
 
         res.status(200);
-
-        return new Gson().toJson(registerResponse);
-
-      service.joinGame();
+        res.type("application/json");
+        return "{}";
     }
 
 

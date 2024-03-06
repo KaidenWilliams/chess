@@ -38,7 +38,7 @@ public class ChessService {
         UserModel userExisting = userDAO.getRowByUsernameAndPassword(user.username(), user.password());
 
         if (userExisting == null) {
-            throw new DataAccessException("Error: already taken", 401);
+            throw new DataAccessException("Error: unauthorized", 401);
         }
         else {
             return authDAO.create(new AuthModel(UUID.randomUUID().toString(), user.username()));
@@ -82,18 +82,22 @@ public class ChessService {
     }
 
     //6. joinGame
-//    public Object joinGame(JoinGameRequest joinGame) throws DataAccessException {
-//       UserModel userExisting = userDAO.getRowByUsername(user.username());
-//
-//        if (userExisting != null) {
-//            throw new DataAccessException("Error: already taken", 403);
-//        }
-//        else {
-//            userDAO.create(new UserModel(user.username(), user.password(), user.email()));
-//            AuthModel authRow = authDAO.create(new AuthModel(UUID.randomUUID().toString(), user.username()));
-//            return authRow.authToken();
-//        }
-//    }
+    public void joinGame(JoinGameRequest joinGame) throws DataAccessException {
+        AuthModel userExisting = authDAO.getRowByAuthtoken(joinGame.authToken());
+        if (userExisting == null) {
+            throw new DataAccessException("Error: unauthorized", 401);
+        }
+
+        GameModel oldGame = gameDAO.getRowByGameID(joinGame.body().gameID());
+        if (oldGame == null) {
+            throw new DataAccessException("Error: bad request", 400);
+        }
+
+        GameModel updatedGame = gameDAO.updateUsername(oldGame, userExisting.username(), joinGame.body().playerColor());
+        if (updatedGame == null) {
+            throw new DataAccessException("Error: already taken", 403);
+        }
+    }
 
     //7. Clear all DB
     public void deleteAll() {

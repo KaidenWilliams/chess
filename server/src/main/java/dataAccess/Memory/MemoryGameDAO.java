@@ -1,11 +1,7 @@
 package dataAccess.Memory;
 
-import chess.ChessGame;
 import dataAccess.IGameDAO;
-import model.AuthModel;
 import model.GameModel;
-
-import java.util.ArrayList;
 
 // TODO error throwing
 
@@ -16,7 +12,7 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
     public MemoryGameDAO() {
         super();
         this.data = MemoryDB.getInstance().getGameData();
-        this.currId = 0;
+        this.currId = 1;
     }
 
 
@@ -30,12 +26,37 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
     }
 
     //4. Update username for correct color with id TODO needs work
-    public GameModel deleteRowByAuthtoken(GameModel entityNew, ChessGame.TeamColor color) {
-        if (color == ChessGame.TeamColor.WHITE) {
-            return update(entityNew, model -> Integer.valueOf(model.gameID()).equals(entityNew.gameID()));
-        } else {
-            return update(entityNew, model -> Integer.valueOf(model.gameID()).equals(entityNew.gameID()));
+    public GameModel updateUsername(GameModel oldGame, String usernameNew, String color) {
+
+        if (color == null) {
+            //Add Spectator here
+            return oldGame;
         }
+
+        if (color.equalsIgnoreCase("WHITE") ) {
+            if (oldGame.whiteUsername() == null) {
+                GameModel newGame = new GameModel(oldGame.gameID(), usernameNew, oldGame.blackUsername(), oldGame.gameName(), oldGame.chessGame());
+                data.set(data.indexOf(oldGame), newGame);
+                return newGame;
+            }
+            else {
+                return null;
+            }
+        }
+
+        if (color.equalsIgnoreCase("BLACK") ) {
+            if (oldGame.blackUsername() == null) {
+                GameModel newGame = new GameModel(oldGame.gameID(), oldGame.whiteUsername(), usernameNew, oldGame.gameName(), oldGame.chessGame());
+                data.set(data.indexOf(oldGame), newGame);
+                return newGame;
+            }
+            else {
+                return null;
+            }
+
+        }
+
+        return oldGame;
     }
 
     public int getGameId() {
