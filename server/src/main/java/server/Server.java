@@ -103,13 +103,6 @@ public class Server {
 
 
     //4. ListGames
-    // List Games: [Get] /game authToken
-    //	- gives a list of all games
-    //	- Header: authorization: <authToken>
-    //	- Success: [200] { "games": [{"gameID": 1234, "whiteUsername":", "blackUsername":"", "gameName:""} ]}
-    //  - Failure: [401] { "message": "Error: unauthorized" }
-    //  - Failure: [500] { "message": "Error: description" }
-    // TODO check if this works
     private Object listGames(Request req, Response res) throws DataAccessException {
 
         ListGamesRequest user = new ListGamesRequest(req.headers("Authorization"));
@@ -140,17 +133,9 @@ public class Server {
         }
 
     }
-//
 
 
     //5. createGame
-    //  Create Game: [Post] /game authToken {gameName}
-    //  - Creates a new game
-    //  - Header: authorization: <authToken>
-    //  - Success:  [200] { "gameID": 1234 }
-    //  - Failure: [400] { "message": "Error: bad request" }
-    //  - Failure: [401] { "message": "Error: unauthorized" }
-    //  - Failure: [500] { "message": "Error: description" }
     private Object createGame(Request req, Response res) throws DataAccessException {
 
         CreateGameRequest user = new CreateGameRequest(req.headers("Authorization"), (new Gson().fromJson(req.body(), CreateGameRequest.RequestBody.class)));
@@ -170,13 +155,6 @@ public class Server {
 
 
     //6. joinGame
-    //  Join Game: [Put] /game authToken {ClientColor, gameID}
-    //  - Verifies that the specified game exists, and, if a color is specified, adds the caller as the requested color to the game. If 	no color is specified the user is joined as an observer. This 	request is idempotent.
-    //  - Header: authorization: <authToken>
-    //  - Success: 200
-    //  - Failure: [400] { "message": "Error: bad request" }
-    //  - Failure: [401] { "message": "Error: unauthorized" }
-    //  - Failure: [500] { "message": "Error: description" }
     private Object joinGame(Request req, Response res) throws DataAccessException {
 
         JoinGameRequest user = new JoinGameRequest(req.headers("Authorization"), (new Gson().fromJson(req.body(), JoinGameRequest.RequestBody.class)));

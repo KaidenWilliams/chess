@@ -108,25 +108,6 @@ public class ChessGame {
     }
 
 
-
-//    public Collection<ChessMove> validMovesTakesMove(ChessMove move) {
-//        ChessPiece piece = myBoard.getPiece(move.getStartPosition());
-//        Collection<ChessMove> possibleMoves = new HashSet<>();
-//        possibleMoves.add(move);
-//        ChessBoard newBoard = new ChessBoard(myBoard);
-//        Collection<ChessPosition> endPositionList = getEnemyPositions(piece.getTeamColor(), newBoard);
-//
-//        newBoard.addPiece(move.getEndPosition(), piece);
-//        if (isInCheckTakesBoard(piece.getTeamColor(), endPositionList)) {
-//            possibleMoves.remove(move);
-//        }
-//        newBoard.removePiece(move.getEndPosition());
-//
-//        return possibleMoves;
-//    }
-
-
-
     /**
      * Makes a move in a chess game
      *

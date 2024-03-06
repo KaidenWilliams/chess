@@ -44,12 +44,6 @@ public class ChessMove {
     public ChessPiece.PieceType getPromotionPiece() {
         return this.promotionPiece;    }
 
-    //TODO maybe
-//    public boolean isValid(ChessBoard board, )
-//    {return true;
-//    }
-
-
 
     @Override
     public boolean equals(Object o) {
