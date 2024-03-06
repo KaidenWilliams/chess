@@ -96,7 +96,7 @@ public class ChessServiceTest {
     }
 
     @Test
-    void ListGamesSuccess() throws DataAccessException {
+    void listGamesSuccess() throws DataAccessException {
 
         new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
         new MemoryGameDAO().create(new GameModel(1, "test1", "test1", "testGame1", null));
@@ -108,7 +108,7 @@ public class ChessServiceTest {
         assertEquals(3, criteriaRegisterObject.size());
     }
     @Test
-    void ListGamesFailure() {
+    void listGamesFailure() {
         new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
         new MemoryGameDAO().create(new GameModel(1, "test1", "test1", "testGame1", null));
         new MemoryGameDAO().create(new GameModel(2, "test1", "test1", "testGame2", null));
@@ -119,7 +119,7 @@ public class ChessServiceTest {
     }
 
     @Test
-    void CreateGameSuccess() throws DataAccessException {
+    void createGameSuccess() throws DataAccessException {
 
         new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
         CreateGameRequest inputLoginObject = new CreateGameRequest("testAuthToken", new CreateGameRequest.RequestBody("testGameName"));
@@ -130,7 +130,7 @@ public class ChessServiceTest {
         assertEquals(1, criteriaGame.size());
     }
     @Test
-    void CreateGameFailure()  {
+    void createGameFailure()  {
         new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
         CreateGameRequest inputLoginObject = new CreateGameRequest("failAuthToken", new CreateGameRequest.RequestBody("testGameName"));
 
@@ -138,7 +138,7 @@ public class ChessServiceTest {
     }
 
     @Test
-    void JoinGameSuccess() throws DataAccessException {
+    void joinGameSuccess() throws DataAccessException {
 
         new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
         new MemoryGameDAO().create(new GameModel(1, "boing", null, "testGame1", null));
@@ -154,7 +154,7 @@ public class ChessServiceTest {
         assertEquals(1, criteriaGame.size());
     }
     @Test
-    void JoinGameFailure() {
+    void joinGameFailure() {
         new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
         new MemoryGameDAO().create(new GameModel(1, "boing", null, "testGame1", null));
         new MemoryGameDAO().create(new GameModel(2, null, null, "testGame2", null));
@@ -188,6 +188,5 @@ public class ChessServiceTest {
         assertEquals(0, MemoryDB.getInstance().gameData.size());
         assertEquals(0, MemoryDB.getInstance().userData.size());
     }
-
 
 }
