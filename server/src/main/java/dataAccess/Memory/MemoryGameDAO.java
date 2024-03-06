@@ -56,7 +56,7 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
 
         }
 
-        return oldGame;
+        return null;
     }
 
     public int getGameId() {

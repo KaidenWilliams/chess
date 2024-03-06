@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import service.ChessService;
 import server.JsonRequestObjects.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,27 +94,75 @@ public class ChessServiceTest {
 
         assertThrows(DataAccessException.class, () -> service.logoutUser(inputLoginObject));
     }
-
+    
     @Test
     void ListGamesSuccess() throws DataAccessException {
 
         new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
-        LogoutRequest inputLoginObject = new LogoutRequest("testAuthToken");
-        AuthModel criteriaRegisterObject0 = new MemoryAuthDAO().getRowByAuthtoken(inputLoginObject.authToken());
-        assertNotNull(criteriaRegisterObject0);
+        new MemoryGameDAO().create(new GameModel(1, "test1", "test1", "testGame1", null));
+        new MemoryGameDAO().create(new GameModel(2, "test1", "test1", "testGame2", null));
+        new MemoryGameDAO().create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
 
-        service.logoutUser(inputLoginObject);
-
-        AuthModel criteriaRegisterObject1 = new MemoryAuthDAO().getRowByAuthtoken(inputLoginObject.authToken());
-        assertNull(criteriaRegisterObject1);
+        ListGamesRequest inputLoginObject = new ListGamesRequest("testAuthToken");
+        List<GameModel> criteriaRegisterObject = service.listGames(inputLoginObject);
+        assertEquals(3, criteriaRegisterObject.size());
     }
     @Test
     void ListGamesFailure() {
         new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
+        new MemoryGameDAO().create(new GameModel(1, "test1", "test1", "testGame1", null));
+        new MemoryGameDAO().create(new GameModel(2, "test1", "test1", "testGame2", null));
+        new MemoryGameDAO().create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
 
-        LogoutRequest inputLoginObject = new LogoutRequest("wrongAuthToken");
+        ListGamesRequest inputLoginObject = new ListGamesRequest("failAuthToken");
+        assertThrows(DataAccessException.class, () -> service.listGames(inputLoginObject));
+    }
 
-        assertThrows(DataAccessException.class, () -> service.logoutUser(inputLoginObject));
+    @Test
+    void CreateGameSuccess() throws DataAccessException {
+
+        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
+        CreateGameRequest inputLoginObject = new CreateGameRequest("testAuthToken", new CreateGameRequest.RequestBody("testGameName"));
+        service.createGame(inputLoginObject);
+
+        List<GameModel> criteriaGame = new MemoryGameDAO().findAll(model -> (model.gameName()).equals("testGameName"));
+
+        assertEquals(1, criteriaGame.size());
+    }
+    @Test
+    void CreateGameFailure()  {
+        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
+        CreateGameRequest inputLoginObject = new CreateGameRequest("failAuthToken", new CreateGameRequest.RequestBody("testGameName"));
+
+        assertThrows(DataAccessException.class, () -> service.createGame(inputLoginObject));
+    }
+
+    @Test
+    void JoinGameSuccess() throws DataAccessException {
+
+        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
+        new MemoryGameDAO().create(new GameModel(1, "boing", null, "testGame1", null));
+        new MemoryGameDAO().create(new GameModel(2, null, null, "testGame2", null));
+        new MemoryGameDAO().create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
+
+        JoinGameRequest inputLoginObject = new JoinGameRequest("testAuthToken", new JoinGameRequest.RequestBody("White", 2));
+
+        service.joinGame(inputLoginObject);
+
+        List<GameModel> criteriaGame = new MemoryGameDAO().findAll(model -> (model.whiteUsername()).equals("testUserName"));
+
+        assertEquals(1, criteriaGame.size());
+    }
+    @Test
+    void JoinGameFailure() {
+        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
+        new MemoryGameDAO().create(new GameModel(1, "boing", null, "testGame1", null));
+        new MemoryGameDAO().create(new GameModel(2, null, null, "testGame2", null));
+        new MemoryGameDAO().create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
+
+        JoinGameRequest inputLoginObject = new JoinGameRequest("testAuthToken", new JoinGameRequest.RequestBody("Purple", 2));
+
+        assertThrows(DataAccessException.class, () -> service.joinGame(inputLoginObject));
     }
 
 
