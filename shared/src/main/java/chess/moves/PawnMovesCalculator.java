@@ -1,12 +1,14 @@
-package chess;
+package chess.moves;
 
-import java.util.HashSet;
+import chess.*;
+
 import java.util.Collection;
+import java.util.HashSet;
 
 //5. En passant (probably will be in game state like castling). If enemy pawn on either side {same, 1}
 //   or {same, -1} last pieceMove was {2, 0}, can move to {enemy, enemy-1 (behind enemy)
 
-public class PawnMovesCalculator implements PieceMovesCalculator{
+public class PawnMovesCalculator implements PieceMovesCalculator {
     ChessPiece.PieceType[] promotionPieces = {ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.QUEEN};
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor) {

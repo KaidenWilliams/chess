@@ -1,11 +1,14 @@
-package chess;
+package chess.moves;
 
-import java.util.HashSet;
+import chess.*;
+
 import java.util.Collection;
+import java.util.HashSet;
 
-public class KnightMovesCalculator implements PieceMovesCalculator{
-    int[][] knightMoves = {{2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}, {1, -2}, {2, -1}};
+// I don't know when I will do Castling, kinda worried about it
 
+public class RookMovesCalculator implements PieceMovesCalculator {
+    int[][] rookMoves = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor) {
 
@@ -14,16 +17,20 @@ public class KnightMovesCalculator implements PieceMovesCalculator{
         int currRow = oldPosition.getRow();
         int currCol = oldPosition.getColumn();
 
-        for (int[] move: knightMoves) {
+        for (int[] move: rookMoves) {
 
             int moveRow = currRow + move[0];
             int moveCol = currCol + move[1];
 
             ChessPosition newPosition = new ChessPosition(moveRow, moveCol);
 
-            if (isValidNoCheck(board, oldPosition, newPosition, pieceColor, possibleMoves)) {
+            while (isValidNoCheck(board, oldPosition, newPosition, pieceColor, possibleMoves)) {
                 ChessMove currMove = new ChessMove(oldPosition, newPosition, null);
                 possibleMoves.add(currMove);
+
+                moveRow = moveRow + move[0];
+                moveCol = moveCol + move[1];
+                newPosition = new ChessPosition(moveRow, moveCol);
             }
         }
 

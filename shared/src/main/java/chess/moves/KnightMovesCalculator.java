@@ -1,10 +1,13 @@
-package chess;
+package chess.moves;
 
-import java.util.HashSet;
+import chess.*;
+
 import java.util.Collection;
+import java.util.HashSet;
 
-public class QueenMovesCalculator implements PieceMovesCalculator{
-    int[][] queenMoves = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
+public class KnightMovesCalculator implements PieceMovesCalculator {
+    int[][] knightMoves = {{2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}, {1, -2}, {2, -1}};
+
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor) {
 
@@ -13,20 +16,16 @@ public class QueenMovesCalculator implements PieceMovesCalculator{
         int currRow = oldPosition.getRow();
         int currCol = oldPosition.getColumn();
 
-        for (int[] move: queenMoves) {
+        for (int[] move: knightMoves) {
 
             int moveRow = currRow + move[0];
             int moveCol = currCol + move[1];
 
             ChessPosition newPosition = new ChessPosition(moveRow, moveCol);
 
-            while (isValidNoCheck(board, oldPosition, newPosition, pieceColor, possibleMoves)) {
+            if (isValidNoCheck(board, oldPosition, newPosition, pieceColor, possibleMoves)) {
                 ChessMove currMove = new ChessMove(oldPosition, newPosition, null);
                 possibleMoves.add(currMove);
-
-                moveRow = moveRow + move[0];
-                moveCol = moveCol + move[1];
-                newPosition = new ChessPosition(moveRow, moveCol);
             }
         }
 

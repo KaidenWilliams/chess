@@ -1,10 +1,12 @@
-package chess;
+package chess.moves;
 
-import java.util.HashSet;
+import chess.*;
+
 import java.util.Collection;
+import java.util.HashSet;
 
-public class BishopMovesCalculator implements PieceMovesCalculator{
-    int[][] bishopMoves = {{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
+public class QueenMovesCalculator implements PieceMovesCalculator {
+    int[][] queenMoves = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition oldPosition, ChessGame.TeamColor pieceColor) {
 
@@ -13,12 +15,10 @@ public class BishopMovesCalculator implements PieceMovesCalculator{
         int currRow = oldPosition.getRow();
         int currCol = oldPosition.getColumn();
 
-        for (int[] move: bishopMoves) {
+        for (int[] move: queenMoves) {
 
             int moveRow = currRow + move[0];
             int moveCol = currCol + move[1];
-
-
 
             ChessPosition newPosition = new ChessPosition(moveRow, moveCol);
 

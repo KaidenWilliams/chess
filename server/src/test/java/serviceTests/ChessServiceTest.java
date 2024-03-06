@@ -94,7 +94,7 @@ public class ChessServiceTest {
 
         assertThrows(DataAccessException.class, () -> service.logoutUser(inputLoginObject));
     }
-    
+
     @Test
     void ListGamesSuccess() throws DataAccessException {
 
