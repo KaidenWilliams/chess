@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.UUID;
 
 
-public class ChessService {
+public class Service {
 
     private final IAuthDAO authDAO;
     private final IGameDAO gameDAO;
     private final IUserDAO userDAO;
 
-    public ChessService(IDataAccess dataAccess){
+    public Service(IDataAccess dataAccess){
         this.authDAO = dataAccess.getAuthDAO();
         this.gameDAO = dataAccess.getGameDAO();
         this.userDAO= dataAccess.getUserDAO();

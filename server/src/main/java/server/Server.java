@@ -9,20 +9,20 @@ import server.JsonRequestObjects.*;
 import server.JsonRequestValidation.*;
 import server.JsonResponseObjects.*;
 import spark.*;
-import service.ChessService;
+import service.Service;
 import model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ChessServer {
+public class Server {
 
-    private final ChessService service;
+    private final Service service;
 
 
-    public ChessServer(){
-        this.service = new ChessService(new MemoryDataAccess());
+    public Server(){
+        this.service = new Service(new MemoryDataAccess());
     }
 
     public int run(int desiredPort) {

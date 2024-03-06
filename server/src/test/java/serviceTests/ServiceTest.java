@@ -5,16 +5,16 @@ import model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.ChessService;
+import service.Service;
 import server.JsonRequestObjects.*;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ChessServiceTest {
+public class ServiceTest {
 
-    static final ChessService service = new ChessService(new MemoryDataAccess());
+    static final Service service = new Service(new MemoryDataAccess());
 
     @BeforeEach
     void clearBefore() {
