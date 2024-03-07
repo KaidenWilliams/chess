@@ -1,6 +1,7 @@
 package service;
 import dataAccess.*;
 import model.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import server.JsonRequestObjects.*;
 
 import java.util.List;
@@ -28,16 +29,23 @@ public class Service {
             throw new DataAccessException("Error: already taken", 403);
         }
         else {
-            userDAO.create(new UserModel(user.username(), user.password(), user.email()));
+
+            String encryptedPassword = new BCryptPasswordEncoder().encode(user.password());
+
+            userDAO.create(new UserModel(user.username(), encryptedPassword, user.email()));
             return authDAO.create(new AuthModel(UUID.randomUUID().toString(), user.username()));
         }
     }
 
     //2. Login User
     public AuthModel loginUser(LoginRequest user) throws DataAccessException {
-        UserModel userExisting = userDAO.getRowByUsernameAndPassword(user.username(), user.password());
 
-        if (userExisting == null) {
+        UserModel userExisting = userDAO.getRowByUsername(user.username());
+        String hashedPassword = userExisting.password();
+
+        boolean authenticated = new BCryptPasswordEncoder().matches(user.password(), hashedPassword);
+
+        if (!authenticated) {
             throw new DataAccessException("Error: unauthorized", 401);
         }
         else {

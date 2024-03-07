@@ -4,15 +4,14 @@ import dataAccess.IAuthDAO;
 import dataAccess.Memory.MemoryDB;
 import model.AuthModel;
 
-public class SQLAuthDAO extends GeneralSQLDAO<AuthModel> implements IAuthDAO {
+public class SQLAuthDAO implements IAuthDAO {
 
 
     public SQLAuthDAO() {
-        super();
-        this.data = MemoryDB.getInstance().getAuthData();
     }
 
-    //1. Insert row - already implemented
+    //1. Insert row
+
 
     //2. Delete row where authtoken equals
     public AuthModel deleteRowByAuthtoken(String providedAuthToken) {

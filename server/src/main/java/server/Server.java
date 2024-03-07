@@ -24,6 +24,7 @@ public class Server {
 
     public Server() {
         this.service = createService();
+        System.out.println("Successfully Initialized Server");
     }
 
     // Best I could think of, TODO
@@ -32,7 +33,7 @@ public class Server {
             return new Service(SQLDataAccess.getInstance());
         }
         catch (DataAccessException e) {
-            System.out.println("Error initializing server. Try Again: " + e.getMessage());
+            System.out.println("Error initializing server. Try Again: \n" + e.getMessage());
             return null;
         }
     }

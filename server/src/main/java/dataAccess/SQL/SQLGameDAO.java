@@ -4,20 +4,17 @@ import dataAccess.IGameDAO;
 import dataAccess.Memory.MemoryDB;
 import model.GameModel;
 
-public class SQLGameDAO extends GeneralSQLDAO<GameModel> implements IGameDAO {
-
-    private int currId;
+public class SQLGameDAO implements IGameDAO {
 
     public SQLGameDAO() {
-        super();
-        this.data = MemoryDB.getInstance().getGameData();
-        this.currId = 1;
     }
 
 
-    //1. Get all games - already implemented
+    //1. Get all games
 
-    //2. Insert row - already implemented
+
+    //2. Insert row
+
 
     //3. Get game from gameID
     public GameModel getRowByGameID(int gameID) {
@@ -58,14 +55,9 @@ public class SQLGameDAO extends GeneralSQLDAO<GameModel> implements IGameDAO {
         return null;
     }
 
-    public int getGameId() {
-        int oldId = currId;
-        currId++;
-        return oldId;
-    }
+    //5. Delete all
 
 
-    //5. Delete all - already implemented
 
     //6. Add Spectator - don't have to yet
 

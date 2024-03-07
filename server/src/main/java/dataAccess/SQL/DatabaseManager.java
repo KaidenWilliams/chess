@@ -56,8 +56,8 @@ public class DatabaseManager {
             CREATE TABLE IF NOT EXISTS  auth (
               `id` int NOT NULL AUTO_INCREMENT,
               `token` varchar(256) NOT NULL,
-              `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`id`),
+              `username` varchar(256) NOT NULL UNIQUE,
+              PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
 
@@ -69,7 +69,7 @@ public class DatabaseManager {
               `blackusername` varchar(256) NOT NULL,
               `gamename` varchar(256) NOT NULL,
               `game` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
+              PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
 
@@ -79,7 +79,7 @@ public class DatabaseManager {
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
-              PRIMARY KEY (`id`),
+              PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
