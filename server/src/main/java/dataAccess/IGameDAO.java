@@ -3,24 +3,25 @@ package dataAccess;
 
 import model.GameModel;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface IGameDAO {
 
     //1. Get all games - already implemented
-    List<GameModel> listAll();
+    Collection<GameModel> listAll() throws DataAccessException;
 
     //2. Insert row - already implemented
-    GameModel create(GameModel providedGameModel);
+    GameModel create(GameModel providedGameModel) throws DataAccessException;
 
     //3. Get game from gameID
-    GameModel getRowByGameID(int gameID);
+    GameModel getRowByGameID(int gameID) throws DataAccessException;
 
     //4. Update username for correct color with id TODO needs work
-    GameModel updateUsername(GameModel oldGame, String usernameNew, String color);
+    GameModel updateUsername(GameModel oldGame, String usernameNew, String color) throws DataAccessException;
 
     //5. Delete all - already implemented
-    void deleteAll();
+    void deleteAll() throws DataAccessException;
 
     //6. Add Spectator - don't have to yet
 

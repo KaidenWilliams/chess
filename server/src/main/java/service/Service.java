@@ -4,6 +4,7 @@ import model.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import server.JsonRequestObjects.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,7 +65,7 @@ public class Service {
     }
 
     //4. ListGames
-    public List<GameModel> listGames(ListGamesRequest listGames) throws DataAccessException {
+    public Collection<GameModel> listGames(ListGamesRequest listGames) throws DataAccessException {
         AuthModel userExisting = authDAO.getRowByAuthtoken(listGames.authToken());
 
         if (userExisting == null) {
@@ -108,7 +109,7 @@ public class Service {
     }
 
     //7. Clear all DB
-    public void deleteAll() {
+    public void deleteAll() throws DataAccessException {
         authDAO.deleteAll();
         gameDAO.deleteAll();
         userDAO.deleteAll();

@@ -1,8 +1,12 @@
 package dataAccess.SQL;
 
+import dataAccess.DataAccessException;
 import dataAccess.IGameDAO;
 import dataAccess.Memory.MemoryDB;
 import model.GameModel;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class SQLGameDAO implements IGameDAO {
 
@@ -11,9 +15,26 @@ public class SQLGameDAO implements IGameDAO {
 
 
     //1. Get all games
+    public Collection<GameModel> listAll() throws DataAccessException {
+        var result = new ArrayList<GameModel>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, json FROM game";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(readPet(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()), 500);
+        }
+        return result;
+    }
 
 
     //2. Insert row
+    GameModel create(GameModel providedGameModel) throws DataAccessException;
 
 
     //3. Get game from gameID
@@ -56,6 +77,9 @@ public class SQLGameDAO implements IGameDAO {
     }
 
     //5. Delete all
+
+    void deleteAll() throws DataAccessException;
+
 
 
 

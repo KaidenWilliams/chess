@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import service.Service;
 import server.JsonRequestObjects.*;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,11 +18,11 @@ public class ServiceTest {
     static final Service service = new Service(new MemoryDataAccess());
 
     @BeforeEach
-    void clearBefore() {
+    void clearBefore() throws DataAccessException {
         service.deleteAll();
     }
     @AfterEach
-    void clearAfter() {
+    void clearAfter() throws DataAccessException {
         service.deleteAll();
     }
 
@@ -104,7 +105,7 @@ public class ServiceTest {
         new MemoryGameDAO().create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
 
         ListGamesRequest inputLoginObject = new ListGamesRequest("testAuthToken");
-        List<GameModel> criteriaRegisterObject = service.listGames(inputLoginObject);
+        Collection<GameModel> criteriaRegisterObject = service.listGames(inputLoginObject);
         assertEquals(3, criteriaRegisterObject.size());
     }
     @Test
@@ -167,7 +168,7 @@ public class ServiceTest {
 
 
     @Test
-    void deleteAllSuccess() {
+    void deleteAllSuccess() throws DataAccessException {
 
         new MemoryAuthDAO().create(new AuthModel("testToken0", "testUsername0"));
         new MemoryAuthDAO().create(new AuthModel("testToken1", "testUsername1"));

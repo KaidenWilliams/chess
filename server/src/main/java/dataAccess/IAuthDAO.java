@@ -5,15 +5,15 @@ import model.AuthModel;
 public interface IAuthDAO {
 
     //1. Insert row - already implemented
-    public AuthModel create(AuthModel providedAuthModel);
+    public AuthModel create(AuthModel providedAuthModel) throws DataAccessException;
 
     //2. Delete row where authtoken equals
-    public AuthModel deleteRowByAuthtoken(String providedAuthToken);
+    public AuthModel deleteRowByAuthtoken(String providedAuthToken) throws DataAccessException;
 
     //3. Get row (username) from authtoken
-    public AuthModel getRowByAuthtoken(String providedAuthToken);
+    public AuthModel getRowByAuthtoken(String providedAuthToken) throws DataAccessException;
 
     //4. Delete all - already implemented
-    public void deleteAll();
+    public void deleteAll() throws DataAccessException;
 
 }

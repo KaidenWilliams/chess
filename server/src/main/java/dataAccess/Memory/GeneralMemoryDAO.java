@@ -1,6 +1,7 @@
 package dataAccess.Memory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -30,7 +31,7 @@ public abstract class GeneralMemoryDAO<T> {
     }
 
     // Just make sure not to change the data, technically exposing db to frontend
-    public List<T> listAll()  {
+    public Collection<T> listAll()  {
         return data.isEmpty() ? null : data;
     }
 

@@ -14,6 +14,7 @@ import service.Service;
 import model.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -121,7 +122,7 @@ public class Server {
         ListGamesRequest user = new ListGamesRequest(req.headers("Authorization"));
         ListGamesValidation.validate(user);
 
-        List<GameModel> listGameModel = service.listGames(user);
+        Collection<GameModel> listGameModel = service.listGames(user);
 
 
         if (listGameModel != null ) {
@@ -182,7 +183,7 @@ public class Server {
 
 
     //7. Clear all DB
-    private Object clearAll(Request req, Response res) {
+    private Object clearAll(Request req, Response res) throws DataAccessException {
         service.deleteAll();
         res.status(200);
         res.type("application/json");

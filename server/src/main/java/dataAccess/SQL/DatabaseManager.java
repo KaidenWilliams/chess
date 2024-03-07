@@ -54,10 +54,9 @@ public class DatabaseManager {
     static final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  auth (
-              `id` int NOT NULL AUTO_INCREMENT,
               `token` varchar(256) NOT NULL,
-              `username` varchar(256) NOT NULL UNIQUE,
-              PRIMARY KEY (`id`)
+              `username` varchar(256) NOT NULL,
+              PRIMARY KEY (`token`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
 
@@ -75,11 +74,10 @@ public class DatabaseManager {
 
             """
             CREATE TABLE IF NOT EXISTS  user (
-              `id` int NOT NULL AUTO_INCREMENT,
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
-              PRIMARY KEY (`id`)
+              PRIMARY KEY (`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
