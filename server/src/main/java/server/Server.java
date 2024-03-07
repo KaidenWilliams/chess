@@ -3,7 +3,8 @@ package server;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataAccess.DataAccessException;
-import dataAccess.Memory.MemoryDataAccess;
+import dataAccess.IDataAccess;
+import dataAccess.SQL.SQLDataAccess;
 import model.AuthModel;
 import server.JsonRequestObjects.*;
 import server.JsonRequestValidation.*;
@@ -21,8 +22,19 @@ public class Server {
     private final Service service;
 
 
-    public Server(){
-        this.service = new Service(new MemoryDataAccess());
+    public Server() {
+        this.service = createService();
+    }
+
+    // Best I could think of, TODO
+    public Service createService() {
+        try {
+            return new Service(SQLDataAccess.getInstance());
+        }
+        catch (DataAccessException e) {
+            System.out.println("Error initializing server. Try Again: " + e.getMessage());
+            return null;
+        }
     }
 
     public int run(int desiredPort) {

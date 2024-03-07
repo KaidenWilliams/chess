@@ -1,11 +1,10 @@
-package dataAccess.Memory;
+package dataAccess.SQL;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-
-public abstract class GeneralMemoryDAO<T> {
+public abstract class GeneralSQLDAO<T> {
 
     protected ArrayList<T> data = new ArrayList<>();
 
@@ -47,6 +46,25 @@ public abstract class GeneralMemoryDAO<T> {
     public void deleteAll() {
         data.clear();
     }
+
+
+
+//    public Pet getPet(int id) throws ResponseException {
+//        try (var conn = DatabaseManager.getConnection()) {
+//            var statement = "SELECT id, json FROM pet WHERE id=?";
+//            try (var ps = conn.prepareStatement(statement)) {
+//                ps.setInt(1, id);
+//                try (var rs = ps.executeQuery()) {
+//                    if (rs.next()) {
+//                        return readPet(rs);
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
+//        }
+//        return null;
+//    }
 
 
 }
