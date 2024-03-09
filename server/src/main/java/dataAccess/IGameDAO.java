@@ -26,7 +26,4 @@ public interface IGameDAO {
     //6. Add Spectator - don't have to yet
 
     //7. Get game Id when creating new row
-    int getGameId();
-
-
 }

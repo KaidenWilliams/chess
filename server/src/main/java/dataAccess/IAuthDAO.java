@@ -8,7 +8,7 @@ public interface IAuthDAO {
     public AuthModel create(AuthModel providedAuthModel) throws DataAccessException;
 
     //2. Delete row where authtoken equals
-    public AuthModel deleteRowByAuthtoken(String providedAuthToken) throws DataAccessException;
+    public Object deleteRowByAuthtoken(String providedAuthToken) throws DataAccessException;
 
     //3. Get row (username) from authtoken
     public AuthModel getRowByAuthtoken(String providedAuthToken) throws DataAccessException;

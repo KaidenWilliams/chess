@@ -18,7 +18,10 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
 
     //1. Get all games - already implemented
 
-    //2. Insert row - already implemented
+    //2. Insert row
+    public GameModel create(GameModel createGame) {
+        return super.create(new GameModel(getGameId(), null, null, createGame.gameName(), null));
+    }
 
     //3. Get game from gameID
     public GameModel getRowByGameID(int gameID) {
@@ -59,7 +62,7 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
         return null;
     }
 
-    public int getGameId() {
+    private int getGameId() {
         int oldId = currId;
         currId++;
         return oldId;

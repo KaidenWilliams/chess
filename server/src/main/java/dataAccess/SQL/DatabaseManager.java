@@ -63,7 +63,6 @@ public class DatabaseManager {
             """
             CREATE TABLE IF NOT EXISTS  game (
               `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
               `whiteusername` varchar(256) NOT NULL,
               `blackusername` varchar(256) NOT NULL,
               `gamename` varchar(256) NOT NULL,
@@ -96,8 +95,7 @@ public class DatabaseManager {
      * </code>
      */
     static Connection getConnection() throws DataAccessException {
-        try {
-            var conn = DriverManager.getConnection(connectionUrl, user, password);
+        try (var conn = DriverManager.getConnection(connectionUrl, user, password)) {
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException e) {

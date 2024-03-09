@@ -18,9 +18,22 @@ public class ChessGame {
     private TeamColor teamTurn;
 
 
+    /**
+     * Enum identifying the 2 possible teams in a chess game
+     */
+    public enum TeamColor {
+        WHITE,
+        BLACK
+    }
+
     public ChessGame() {
         teamTurn = TeamColor.WHITE;
     }
+
+
+    public ChessBoard getChessBoard() {return myBoard;}
+
+    public void setChessBoard(ChessBoard newBoard) {myBoard = newBoard;}
 
     /**
      * @return Which team's turn it is
@@ -47,14 +60,6 @@ public class ChessGame {
         } else {
             teamTurn = TeamColor.WHITE;
         }
-    }
-
-    /**
-     * Enum identifying the 2 possible teams in a chess game
-     */
-    public enum TeamColor {
-        WHITE,
-        BLACK
     }
 
     /**
@@ -140,8 +145,12 @@ public class ChessGame {
 
             myBoard.removePiece(startPosition);
             if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                ChessTeamTracker tracker = (color == TeamColor.WHITE ? myBoard.getWhiteTeamTracker() : myBoard.getBlackTeamTracker());
-                tracker.setKingPosition(endPosition);
+                if (color == TeamColor.WHITE) {
+                    myBoard.whiteKingPosition = new ChessPosition(endPosition.getRow(), endPosition.getColumn());
+                }
+                else {
+                    myBoard.blackKingPosition = new ChessPosition(endPosition.getRow(), endPosition.getColumn());
+                }
             }
             if (piece.getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null) {
                 myBoard.addPiece(endPosition, new ChessPiece(color, move.getPromotionPiece()));
@@ -247,8 +256,7 @@ public class ChessGame {
     }
 
     public ChessPosition getKingPosition(ChessGame.TeamColor teamColor, ChessBoard board) {
-        ChessTeamTracker tracker = (teamColor == TeamColor.WHITE ? board.getWhiteTeamTracker() : board.getBlackTeamTracker());
-        ChessPosition kingPosition = tracker.getKingPosition();
+        ChessPosition kingPosition = (teamColor == TeamColor.WHITE ? board.whiteKingPosition : board.blackKingPosition);
         ChessPiece kingPiece = board.getPiece(kingPosition);
         if (kingPiece != null && kingPiece.getPieceType() == ChessPiece.PieceType.KING && kingPiece.getTeamColor() == teamColor) {
             return kingPosition;

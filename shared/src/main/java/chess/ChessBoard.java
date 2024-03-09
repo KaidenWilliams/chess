@@ -12,18 +12,18 @@ public class ChessBoard {
 
     private ChessPiece[][] squares;
 
-    private ChessTeamTracker whiteTeamTracker;
-    private ChessTeamTracker blackTeamTracker;
+    public ChessPosition whiteKingPosition;
+    public ChessPosition blackKingPosition;
     public ChessBoard() {
         squares = new ChessPiece[8][8];
-        whiteTeamTracker = new ChessTeamTracker(ChessGame.TeamColor.WHITE);
-        blackTeamTracker = new ChessTeamTracker(ChessGame.TeamColor.BLACK);
+        whiteKingPosition = new ChessPosition(1,5);
+        blackKingPosition = new ChessPosition(8,5);
     }
 
     // I don't want to use clone
     public ChessBoard(ChessBoard copyBoard) {
-        this.whiteTeamTracker = new ChessTeamTracker(ChessGame.TeamColor.WHITE, copyBoard.whiteTeamTracker.getKingPosition());
-        this.blackTeamTracker = new ChessTeamTracker(ChessGame.TeamColor.BLACK, copyBoard.blackTeamTracker.getKingPosition());
+        this.whiteKingPosition = new ChessPosition(copyBoard.whiteKingPosition.getRow(), copyBoard.whiteKingPosition.getColumn());
+        this.blackKingPosition = new ChessPosition(copyBoard.blackKingPosition.getRow(), copyBoard.blackKingPosition.getColumn());
         this.squares = new ChessPiece[8][8];
         for (int i = 0; i < copyBoard.squares.length; i++) {
             for (int j = 0; j < copyBoard.squares[i].length; j++) {
@@ -34,13 +34,6 @@ public class ChessBoard {
         }
     }
 
-    public ChessTeamTracker getWhiteTeamTracker() {
-        return whiteTeamTracker;
-    }
-
-    public ChessTeamTracker getBlackTeamTracker() {
-        return blackTeamTracker;
-    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -53,6 +46,10 @@ public class ChessBoard {
     }
     public void removePiece(ChessPosition position) {
         squares[position.getArrayRow()][position.getArrayColumn()] = null;
+    }
+
+    public void addPieceIndexes(int row, int column, ChessPiece piece) {
+        squares[row][column] = piece;
     }
 
     /**
@@ -69,6 +66,10 @@ public class ChessBoard {
     public ChessPiece[][] getSquares() {
         return squares;
     }
+
+
+    public void setSquares(ChessPiece[][] inputSquares) {squares = inputSquares;}
+
 
     //Difference between array (0 indexing) and board (1 indexing)
     public boolean inBounds(ChessPosition position) {

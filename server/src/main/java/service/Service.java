@@ -57,7 +57,7 @@ public class Service {
     //3. Logout User
     public void logoutUser(LogoutRequest user) throws DataAccessException {
 
-       AuthModel userExisting = authDAO.deleteRowByAuthtoken(user.authToken());
+       Object userExisting = authDAO.deleteRowByAuthtoken(user.authToken());
 
         if (userExisting == null) {
             throw new DataAccessException("Error: unauthorized", 401);
@@ -86,7 +86,7 @@ public class Service {
              throw new DataAccessException("Error: unauthorized", 401);
          }
         else {
-             return gameDAO.create(new GameModel(gameDAO.getGameId(), null, null, createGame.body().gameName(), null));
+             return gameDAO.create(new GameModel(0, null, null, createGame.body().gameName(), null));
         }
     }
 
@@ -98,11 +98,16 @@ public class Service {
         }
 
         GameModel oldGame = gameDAO.getRowByGameID(joinGame.body().gameID());
-        if (oldGame == null) {
+        if (oldGame == null ) {
             throw new DataAccessException("Error: bad request", 400);
         }
 
-        GameModel updatedGame = gameDAO.updateUsername(oldGame, userExisting.username(), joinGame.body().playerColor());
+        String color = joinGame.body().playerColor();
+        if (color == null || (!color.equalsIgnoreCase("BLACK") && !color.equalsIgnoreCase("WHITE"))) {
+            throw new DataAccessException("Error: bad request", 400);
+        }
+
+        GameModel updatedGame = gameDAO.updateUsername(oldGame, userExisting.username(), color);
         if (updatedGame == null) {
             throw new DataAccessException("Error: already taken", 403);
         }

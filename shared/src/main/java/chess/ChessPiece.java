@@ -13,9 +13,11 @@ import chess.moves.*;
 public class ChessPiece {
 
 
-    private final ChessGame.TeamColor pieceColor;
-    private final PieceType type;
+    public final ChessGame.TeamColor pieceColor;
+    public final PieceType type;
     private final PieceMovesCalculator movesCalculator;
+
+
 
 
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {

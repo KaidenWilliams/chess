@@ -4,6 +4,9 @@ import chess.ChessGame;
 import dataAccess.DataAccessException;
 
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -11,75 +14,55 @@ import static java.sql.Types.NULL;
 
 public class GeneralSQLDAO {
 
+    public Connection getConnectionInDAO() throws DataAccessException {
+        return DatabaseManager.getConnection();
+    }
 
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    // Uses 0 based indexing
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof ChessGame p) ps.setString(i + 1, p.toString());
-                    else if (param == null) ps.setNull(i + 1, NULL);
-                }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
-            }
+    public int executeUpdateWithNumberRows(Connection conn, String statement, Object... params) throws DataAccessException {
+        try (var ps = createPreparedStatement(conn, statement, params)) {
+            return ps.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()), 500);
+            throw new DataAccessException(String.format("unable to update database, WithNumberRows: %s, %s", statement, e.getMessage()), 500);
         }
     }
+
+    public int executeUpdateWithKeys(Connection conn, String statement, Object... params) throws DataAccessException {
+        try (var ps = createPreparedStatement(conn, statement, RETURN_GENERATED_KEYS, params)) {
+            ps.executeUpdate();
+            var rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to update database, WithKeys: %s, %s", statement, e.getMessage()), 500);
+        }
+    }
+
+    public ResultSet executeQuery(Connection conn, String statement, Object... params) throws DataAccessException {
+        try {
+            PreparedStatement ps = createPreparedStatement(conn, statement, params);
+            return ps.executeQuery();
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to execute query: %s, %s", statement, e.getMessage()), 500);
+        }
+    }
+
+
+    public PreparedStatement createPreparedStatement(Connection conn, String statement, Object... params) throws DataAccessException {
+        try {
+            var ps = conn.prepareStatement(statement);
+            for (int i = 0; i < params.length; i++) {
+                Object param = params[i];
+                // Uses 0 based indexing
+                if (param instanceof String) ps.setString(i + 1, (String) param);
+                else if (param instanceof Integer) ps.setInt(i + 1, (int) param);
+                else if (param == null) ps.setNull(i + 1, NULL);
+            }
+            return ps;
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to create prepared statement: %s, %s", statement, e.getMessage()), 500);
+        }
+    }
+
 }
-
-
-
-
-//    protected ArrayList<T> data = new ArrayList<>();
-//
-//    // Create
-//    public T create(T entity, String) {
-//        return data.add(entity) ? entity : null;
-//    }
-//
-//    // Read
-//    public List<T> findAll(Predicate<T> predicate) {
-//        List<T> result = data.stream()
-//                .filter(predicate)
-//                .toList();
-//        return result.isEmpty() ? null : result;
-//    }
-//
-//    public T findOne(Predicate<T> predicate) {
-//        return data.stream()
-//                .filter(predicate)
-//                .findFirst()
-//                .orElse(null);
-//    }
-//
-//    // Just make sure not to change the data, technically exposing db to frontend
-//    public List<T> listAll()  {
-//        return data.isEmpty() ? null : data;
-//    }
-//
-//
-//    // Destroy
-//    public T deleteBy(Predicate<T> predicate) {
-//        T entityToDelete = findOne(predicate);
-//        if (entityToDelete == null) {
-//            return null;
-//        }
-//        return data.remove(entityToDelete) ? entityToDelete : null;
-//    }
-//
-//    public void deleteAll() {
-//        data.clear();
-//    }
-
-//}
