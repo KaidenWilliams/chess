@@ -12,24 +12,12 @@ import java.util.Collection;
 
 public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
 
-//    """
-//            CREATE TABLE IF NOT EXISTS  game (
-//              `id` int NOT NULL AUTO_INCREMENT,
-//              `whiteusername` varchar(256) NOT NULL,
-//              `blackusername` varchar(256) NOT NULL,
-//              `gamename` varchar(256) NOT NULL,
-//              `game` TEXT DEFAULT NULL,
-//              PRIMARY KEY (`id`)
-//            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-//            """,
-
 
     //1. Get all games
     public Collection<GameModel> listAll() throws DataAccessException {
-        var result = new ArrayList<GameModel>();
-        var conn = getConnectionInDAO();
-        var statement = "SELECT * FROM game";
-        try  {
+        try (var conn = DatabaseManager.getConnection()) {
+            var result = new ArrayList<GameModel>();
+            var statement = "SELECT * FROM game";
             ResultSet rs = executeQuery(conn, statement);
             if (rs != null) {
                 while (rs.next()) {
@@ -47,16 +35,18 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
 
     //2. Insert row
     public GameModel create(GameModel providedGameModel) throws DataAccessException {
-        var conn = getConnectionInDAO();
-        var statement = "INSERT INTO game (whiteusername, blackusername, gamename, game) VALUES (?, ?, ?, ?)";
-        String chessGame = JsonRegistrar.getChessGameGson().toJson(providedGameModel.chessGame());
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "INSERT INTO game (whiteusername, blackusername, gamename, game) VALUES (?, ?, ?, ?)";
+            String chessGame = JsonRegistrar.getChessGameGson().toJson(providedGameModel.chessGame());
 
-        var id = executeUpdateWithKeys(conn, statement, providedGameModel.whiteUsername(), providedGameModel.blackUsername(), providedGameModel.blackUsername(), chessGame);
-        if (id != 0) {
-            return new GameModel(id, providedGameModel.whiteUsername(), providedGameModel.blackUsername(), providedGameModel.blackUsername(), providedGameModel.chessGame());
-        }
-        else {
-            throw new DataAccessException("Insert into game failed", 500);
+            var id = executeUpdateWithKeys(conn, statement, providedGameModel.whiteUsername(), providedGameModel.blackUsername(), providedGameModel.blackUsername(), chessGame);
+            if (id != 0) {
+                return new GameModel(id, providedGameModel.whiteUsername(), providedGameModel.blackUsername(), providedGameModel.blackUsername(), providedGameModel.chessGame());
+            } else {
+                throw new DataAccessException("Insert into game failed", 500);
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to insert row into Game", 500);
         }
     }
 
@@ -78,15 +68,14 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
 
     //3. Get game from gameID
     public GameModel getRowByGameID(int gameID) throws DataAccessException {
-        var conn = getConnectionInDAO();
+        try (var conn = DatabaseManager.getConnection()) {
         var statement = "SELECT FROM game WHERE id = ?";
-        try {
-            ResultSet rs = executeQuery(conn, statement, gameID);
-            if (rs != null) {
-                return makeGame(rs);
-            } else {
-                return null;
-            }
+        ResultSet rs = executeQuery(conn, statement, gameID);
+        if (rs != null) {
+            return makeGame(rs);
+        } else {
+            return null;
+        }
         } catch (SQLException e) {
             throw new DataAccessException("Error while retrieving row by authToken", 500);
         }
@@ -119,12 +108,15 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
             }
         }
 
-        var conn = getConnectionInDAO();
-        var statement = "UPDATE game WHERE ? = ?";
-        int rows = executeUpdateWithNumberRows(conn, statement, usernameToUpdate, usernameNew);
-        if (rows >= 1) {
-            return new GameModel(oldGame.gameID(), oldGame.whiteUsername(), usernameNew, oldGame.gameName(), oldGame.chessGame());
-        } else {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "UPDATE game WHERE ? = ?";
+            int rows = executeUpdateWithNumberRows(conn, statement, usernameToUpdate, usernameNew);
+            if (rows >= 1) {
+                return new GameModel(oldGame.gameID(), oldGame.whiteUsername(), usernameNew, oldGame.gameName(), oldGame.chessGame());
+            } else {
+                throw new DataAccessException("Error while updating game with new username", 500);
+            }
+        } catch (SQLException e) {
             throw new DataAccessException("Error while updating game with new username", 500);
         }
 
@@ -133,9 +125,12 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
     //5. Delete all
 
     public void deleteAll() throws DataAccessException {
-        var conn = getConnectionInDAO();
-        var statement = "TRUNCATE game";
-        executeUpdateWithNumberRows(conn, statement);
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "TRUNCATE game";
+            executeUpdateWithNumberRows(conn, statement);
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to delete all from Game", 500);
+        }
     }
 
 

@@ -30,8 +30,8 @@ public class SQLDataAccess implements IDataAccess {
 
 
     private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
+            DatabaseManager.createDatabase(conn);
             for (var statement : DatabaseManager.createStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();

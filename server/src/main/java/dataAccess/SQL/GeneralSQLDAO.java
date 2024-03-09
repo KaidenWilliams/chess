@@ -14,10 +14,6 @@ import static java.sql.Types.NULL;
 
 public class GeneralSQLDAO {
 
-    public Connection getConnectionInDAO() throws DataAccessException {
-        return DatabaseManager.getConnection();
-    }
-
     public int executeUpdateWithNumberRows(Connection conn, String statement, Object... params) throws DataAccessException {
         try (var ps = createPreparedStatement(conn, statement, params)) {
             return ps.executeUpdate();
