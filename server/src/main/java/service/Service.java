@@ -42,10 +42,12 @@ public class Service {
     public AuthModel loginUser(LoginRequest user) throws DataAccessException {
 
         UserModel userExisting = userDAO.getRowByUsername(user.username());
+        if (userExisting == null) {
+            throw new DataAccessException("Error: unauthorized", 401);
+        }
+
         String hashedPassword = userExisting.password();
-
         boolean authenticated = new BCryptPasswordEncoder().matches(user.password(), hashedPassword);
-
         if (!authenticated) {
             throw new DataAccessException("Error: unauthorized", 401);
         }
@@ -103,7 +105,11 @@ public class Service {
         }
 
         String color = joinGame.body().playerColor();
-        if (color == null || (!color.equalsIgnoreCase("BLACK") && !color.equalsIgnoreCase("WHITE"))) {
+        if (color == null){
+            return;
+        }
+
+        if (!color.equalsIgnoreCase("BLACK") && !color.equalsIgnoreCase("WHITE")) {
             throw new DataAccessException("Error: bad request", 400);
         }
 

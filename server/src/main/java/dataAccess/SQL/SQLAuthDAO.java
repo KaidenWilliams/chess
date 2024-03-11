@@ -11,6 +11,7 @@ import java.sql.SQLException;
 
 public class SQLAuthDAO extends GeneralSQLDAO implements IAuthDAO {
 
+    //4 - delete all doesn't count really
 
     //1. Insert row
     public AuthModel create(AuthModel providedAuthModel) throws DataAccessException {
@@ -38,7 +39,7 @@ public class SQLAuthDAO extends GeneralSQLDAO implements IAuthDAO {
             if (rows >= 1) {
                 return providedAuthToken;
             } else {
-                throw new DataAccessException("Delete from auth failed", 500);
+                return null;
             }
         } catch (SQLException e) {
             throw new DataAccessException("Failed to delete row by AuthToken", 500);
@@ -49,9 +50,9 @@ public class SQLAuthDAO extends GeneralSQLDAO implements IAuthDAO {
     public AuthModel getRowByAuthtoken(String providedAuthToken) throws DataAccessException {
 
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT FROM auth WHERE token = ?";
+            var statement = "SELECT * FROM auth WHERE token = ?";
             ResultSet rs = executeQuery(conn, statement, providedAuthToken);
-            if (rs != null) {
+            if (rs.next()) {
                 String token = rs.getString("token");
                 String username = rs.getString("username");
                 return new AuthModel(token, username);

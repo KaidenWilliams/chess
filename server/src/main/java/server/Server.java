@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataAccess.DataAccessException;
 import dataAccess.IDataAccess;
+import dataAccess.Memory.MemoryDataAccess;
 import dataAccess.SQL.SQLDataAccess;
 import model.AuthModel;
 import server.JsonRequestObjects.*;
@@ -32,8 +33,8 @@ public class Server {
     public Service createService() {
         try {
             return new Service(SQLDataAccess.getInstance());
-        }
-        catch (DataAccessException e) {
+
+        }catch (DataAccessException e) {
             System.out.println("Error initializing server. Try Again: \n" + e.getMessage());
             return null;
         }

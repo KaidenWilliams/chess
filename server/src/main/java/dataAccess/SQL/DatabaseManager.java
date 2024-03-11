@@ -52,7 +52,7 @@ public class DatabaseManager {
     static final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  auth (
-              `token` varchar(256) NOT NULL,
+              `token` varchar(256) NOT NULL UNIQUE,
               `username` varchar(256) NOT NULL,
               PRIMARY KEY (`token`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
@@ -61,8 +61,8 @@ public class DatabaseManager {
             """
             CREATE TABLE IF NOT EXISTS  game (
               `id` int NOT NULL AUTO_INCREMENT,
-              `whiteusername` varchar(256) NOT NULL,
-              `blackusername` varchar(256) NOT NULL,
+              `whiteusername` varchar(256),
+              `blackusername` varchar(256),
               `gamename` varchar(256) NOT NULL,
               `game` TEXT DEFAULT NULL,
               PRIMARY KEY (`id`)
@@ -92,7 +92,7 @@ public class DatabaseManager {
      * }
      * </code>
      */
-    static Connection getConnection() throws DataAccessException {
+    public static Connection getConnection() throws DataAccessException {
         try {
             var conn = DriverManager.getConnection(connectionUrl, user, password);
             conn.setCatalog(databaseName);

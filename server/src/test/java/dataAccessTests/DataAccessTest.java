@@ -1,5 +1,6 @@
 package dataAccessTests;
 
+import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.Memory.*;
 import model.AuthModel;
@@ -8,189 +9,250 @@ import model.UserModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.JsonRequestObjects.*;
 import service.Service;
+import dataAccess.SQL.*;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataAccessTest {
 
-    static final Service service = new Service(new MemoryDataAccess());
-
     @BeforeEach
     void clearBefore() throws DataAccessException {
-        service.deleteAll();
+        new SQLAuthDAO().deleteAll();
+        new SQLGameDAO().deleteAll();
+        new SQLUserDAO().deleteAll();
     }
     @AfterEach
     void clearAfter() throws DataAccessException {
-        service.deleteAll();
-    }
-
-    @Test
-    void registerUserSuccess() throws DataAccessException {
-        String inputUsername = "Hey I'm Bob";
-        RegisterRequest inputRegisterObject = new RegisterRequest(inputUsername, "abc123", "a@b.com");
-
-        AuthModel outputRegisterObject = service.registerUser(inputRegisterObject);
-        AuthModel criteriaRegisterObject = new MemoryAuthDAO().getRowByAuthtoken(outputRegisterObject.authToken());
-
-        String criteriaUsername = criteriaRegisterObject.username();
-        assertEquals(inputUsername, criteriaUsername);
-
-        List<UserModel> userModelList = new MemoryUserDAO().findAll(model -> model.username().equals(inputUsername));
-        assertEquals(1, userModelList.size());
-    }
-    @Test
-    void registerUserFailure() throws DataAccessException {
-        String inputUsername = "Hey I'm Bob";
-        RegisterRequest inputRegisterObject = new RegisterRequest(inputUsername, "abc123", "a@b.com");
-        service.registerUser(inputRegisterObject);
-
-        assertThrows(DataAccessException.class, () -> service.registerUser(inputRegisterObject));
+        new SQLAuthDAO().deleteAll();
+        new SQLGameDAO().deleteAll();
+        new SQLUserDAO().deleteAll();
     }
 
 
     @Test
-    void loginUserSuccess() throws DataAccessException {
+    void createAuthSuccess() throws DataAccessException {
 
-        new MemoryUserDAO().create(new UserModel("testUsername4", "testPassword0", "testEmail0"));
+        AuthModel testModel = new SQLAuthDAO().create(new AuthModel("testToken0", "testUsername0"));
+        assertNotNull(testModel);
 
-        LoginRequest inputLoginObject = new LoginRequest("testUsername4", "testPassword0");
-
-
-        AuthModel outputLoginObject = service.loginUser(inputLoginObject);
-        AuthModel criteriaRegisterObject = new MemoryAuthDAO().getRowByAuthtoken(outputLoginObject.authToken());
-
-        String criteriaUsername = criteriaRegisterObject.username();
-        assertEquals("testUsername4", criteriaUsername);
     }
     @Test
-    void loginUserFailure() {
-        new MemoryUserDAO().create(new UserModel("testUsername4", "testPassword0", "testEmail0"));
-
-        LoginRequest inputLoginObject = new LoginRequest("testUsername4", "wrongPassword");
-
-        assertThrows(DataAccessException.class, () -> service.loginUser(inputLoginObject));
-    }
-
-
-    @Test
-    void logoutUserSuccess() throws DataAccessException {
-
-        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
-        LogoutRequest inputLoginObject = new LogoutRequest("testAuthToken");
-        AuthModel criteriaRegisterObject0 = new MemoryAuthDAO().getRowByAuthtoken(inputLoginObject.authToken());
-        assertNotNull(criteriaRegisterObject0);
-
-        service.logoutUser(inputLoginObject);
-
-        AuthModel criteriaRegisterObject1 = new MemoryAuthDAO().getRowByAuthtoken(inputLoginObject.authToken());
-        assertNull(criteriaRegisterObject1);
-    }
-    @Test
-    void logoutUserFailure() {
-        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
-
-        LogoutRequest inputLoginObject = new LogoutRequest("wrongAuthToken");
-
-        assertThrows(DataAccessException.class, () -> service.logoutUser(inputLoginObject));
-    }
-
-    @Test
-    void listGamesSuccess() throws DataAccessException {
-
-        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
-        new MemoryGameDAO().create(new GameModel(1, "test1", "test1", "testGame1", null));
-        new MemoryGameDAO().create(new GameModel(2, "test1", "test1", "testGame2", null));
-        new MemoryGameDAO().create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
-
-        ListGamesRequest inputLoginObject = new ListGamesRequest("testAuthToken");
-        Collection<GameModel> criteriaRegisterObject = service.listGames(inputLoginObject);
-        assertEquals(3, criteriaRegisterObject.size());
-    }
-    @Test
-    void listGamesFailure() {
-        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
-        new MemoryGameDAO().create(new GameModel(1, "test1", "test1", "testGame1", null));
-        new MemoryGameDAO().create(new GameModel(2, "test1", "test1", "testGame2", null));
-        new MemoryGameDAO().create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
-
-        ListGamesRequest inputLoginObject = new ListGamesRequest("failAuthToken");
-        assertThrows(DataAccessException.class, () -> service.listGames(inputLoginObject));
+    void createAuthFailure() throws DataAccessException {
+        new SQLAuthDAO().create(new AuthModel("testToken0", "testUsername0"));
+        assertThrows(DataAccessException.class, () -> new SQLAuthDAO().create(new AuthModel("testToken0", "testUsername0")));
     }
 
     @Test
     void createGameSuccess() throws DataAccessException {
 
-        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
-        CreateGameRequest inputLoginObject = new CreateGameRequest("testAuthToken", new CreateGameRequest.RequestBody("testGameName"));
-        service.createGame(inputLoginObject);
+        GameModel testModel = new SQLGameDAO().create(new GameModel(0, "testUsername2", "testUsername3", "testGameName0", null));
+        assertNotNull(testModel);
 
-        List<GameModel> criteriaGame = new MemoryGameDAO().findAll(model -> (model.gameName()).equals("testGameName"));
-
-        assertEquals(1, criteriaGame.size());
     }
     @Test
-    void createGameFailure()  {
-        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
-        CreateGameRequest inputLoginObject = new CreateGameRequest("failAuthToken", new CreateGameRequest.RequestBody("testGameName"));
-
-        assertThrows(DataAccessException.class, () -> service.createGame(inputLoginObject));
+    void createGameFailure() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> new SQLGameDAO().create(new GameModel(0, "testUsername2", "testUsername3", null, null)));
     }
 
     @Test
-    void joinGameSuccess() throws DataAccessException {
+    void createUserSuccess() throws DataAccessException {
 
-        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
-        new MemoryGameDAO().create(new GameModel(1, "boing", null, "testGame1", null));
-        new MemoryGameDAO().create(new GameModel(2, null, null, "testGame2", null));
-        new MemoryGameDAO().create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
+        UserModel testModel =   new SQLUserDAO().create(new UserModel("testUsername4", "testPassword0", "testEmail0"));
+        assertNotNull(testModel);
 
-        JoinGameRequest inputLoginObject = new JoinGameRequest("testAuthToken", new JoinGameRequest.RequestBody("White", 2));
-
-        service.joinGame(inputLoginObject);
-
-        List<GameModel> criteriaGame = new MemoryGameDAO().findAll(model -> (model.whiteUsername()).equals("testUserName"));
-
-        assertEquals(1, criteriaGame.size());
     }
     @Test
-    void joinGameFailure() {
-        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
-        new MemoryGameDAO().create(new GameModel(1, "boing", null, "testGame1", null));
-        new MemoryGameDAO().create(new GameModel(2, null, null, "testGame2", null));
-        new MemoryGameDAO().create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
-
-        JoinGameRequest inputLoginObject = new JoinGameRequest("testAuthToken", new JoinGameRequest.RequestBody("Purple", 2));
-
-        assertThrows(DataAccessException.class, () -> service.joinGame(inputLoginObject));
+    void createUserFailure() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> new SQLUserDAO().create(new UserModel(null, "testPassword0", "testEmail0")));
     }
 
 
     @Test
-    void deleteAllSuccess() throws DataAccessException {
+    void deleteRowByAuthTokenSuccess() throws DataAccessException {
+        String token = "validToken";
+        String username = "testUser";
+        AuthModel authModel = new AuthModel(token, username);
+        new SQLAuthDAO().create(authModel);
 
-        new MemoryAuthDAO().create(new AuthModel("testToken0", "testUsername0"));
-        new MemoryAuthDAO().create(new AuthModel("testToken1", "testUsername1"));
+        Object deletedToken = new SQLAuthDAO().deleteRowByAuthtoken(token);
 
-        new MemoryGameDAO().create(new GameModel(0, "testUsername2", "testUsername3", "testGameName0", null));
-        new MemoryGameDAO().create(new GameModel(1, null, null, null, null));
+        assertNotNull(deletedToken);
+        assertEquals(token, deletedToken);
+    }
+    @Test
+    void deleteRowByAuthTokenFailure() throws DataAccessException {
+        String invalidToken = "invalidToken";
 
-        new MemoryUserDAO().create(new UserModel("testUsername4", "testPassword0", "testEmail0"));
-        new MemoryUserDAO().create(new UserModel("testUsername5", "testPassword1", "testEmail1"));
+        Object deletedToken = new SQLAuthDAO().deleteRowByAuthtoken(invalidToken);
 
-        assertEquals(2, MemoryDB.getInstance().authData.size());
-        assertEquals(2, MemoryDB.getInstance().gameData.size());
-        assertEquals(2, MemoryDB.getInstance().userData.size());
+        assertNull(deletedToken);
+    }
 
-        service.deleteAll();
+    @Test
+    void getRowByAuthTokenSuccess() throws DataAccessException {
 
-        assertEquals(0, MemoryDB.getInstance().authData.size());
-        assertEquals(0, MemoryDB.getInstance().gameData.size());
-        assertEquals(0, MemoryDB.getInstance().userData.size());
+        String token = "validToken";
+        String username = "testUser";
+        AuthModel authModel = new AuthModel(token, username);
+        new SQLAuthDAO().create(authModel);
+
+        AuthModel retrievedAuthModel = new SQLAuthDAO().getRowByAuthtoken(token);
+
+        assertNotNull(retrievedAuthModel);
+        assertEquals(token, retrievedAuthModel.authToken());
+        assertEquals(username, retrievedAuthModel.username());
+    }
+    @Test
+    void getRowByAuthTokenFailure() throws DataAccessException {
+        String invalidToken = "invalidToken";
+
+        AuthModel retrievedAuthModel = new SQLAuthDAO().getRowByAuthtoken(invalidToken);
+
+        assertNull(retrievedAuthModel);
+    }
+
+
+
+    @Test
+    void listAllSuccess() throws DataAccessException {
+        GameModel game1 = new GameModel(0, null, "game1", "gamename5", new ChessGame());
+        GameModel game2 = new GameModel(0, null, "game1", "gamename4", new ChessGame());
+        new SQLGameDAO().create(game1);
+        new SQLGameDAO().create(game2);
+
+        Collection<GameModel> games = new SQLGameDAO().listAll();
+
+        assertNotNull(games);
+        assertEquals(2, games.size());
+    }
+
+    @Test
+    void listAllFailure() throws DataAccessException {
+        Collection<GameModel> games = new SQLGameDAO().listAll();
+
+        assertNull(games);
+    }
+
+    @Test
+    void getRowByGameIdSuccess() throws DataAccessException {
+        GameModel game = new GameModel(0, null, "game1", "gamename3", new ChessGame());
+        GameModel createdGame = new SQLGameDAO().create(game);
+
+        GameModel retrievedGame = new SQLGameDAO().getRowByGameID(createdGame.gameID());
+
+        assertNotNull(retrievedGame);
+        assertEquals(createdGame.gameID(), retrievedGame.gameID());
+        assertEquals(createdGame.whiteUsername(), retrievedGame.whiteUsername());
+        assertEquals(createdGame.blackUsername(), retrievedGame.blackUsername());
+    }
+
+    @Test
+    void getRowByGameIdFailure() throws DataAccessException {
+        GameModel retrievedGame = new SQLGameDAO().getRowByGameID(1);
+
+        assertNull(retrievedGame);
+    }
+
+    @Test
+    void updateUsernameSuccess() throws DataAccessException {
+        GameModel game = new GameModel(0, null, "game1", "gamename1", new ChessGame());
+        GameModel createdGame = new SQLGameDAO().create(game);
+        String newUsername = "newPlayer";
+
+        GameModel updatedGame = new SQLGameDAO().updateUsername(createdGame, newUsername, "WHITE");
+
+        assertNotNull(updatedGame);
+        assertEquals(createdGame.gameID(), updatedGame.gameID());
+    }
+
+    @Test
+    void updateUsernameFailure() throws DataAccessException {
+        GameModel game = new GameModel(0, null, "game1", "gamename2", new ChessGame());
+        GameModel testGame = new GameModel(0, "beans", "game7", "gamename23", new ChessGame());
+        String newUsername = "newPlayer";
+
+        assertNull(new SQLGameDAO().updateUsername(testGame, newUsername, "WHITE"));
+    }
+
+
+    @Test
+    void getRowByUsernameSuccess() throws DataAccessException {
+
+        String username = "testUser";
+        String password = "password123";
+        String email = "test@example.com";
+        UserModel userModel = new UserModel(username, password, email);
+        new SQLUserDAO().create(userModel);
+
+        UserModel retrievedUser = new SQLUserDAO().getRowByUsername(username);
+
+        assertNotNull(retrievedUser);
+        assertEquals(username, retrievedUser.username());
+        assertEquals(password, retrievedUser.password());
+        assertEquals(email, retrievedUser.email());
+    }
+
+    @Test
+    void testGetRowByUsernameNegative() throws DataAccessException {
+        String invalidUsername = "invalidUser";
+
+        UserModel retrievedUser = new SQLUserDAO().getRowByUsername(invalidUsername);
+
+        assertNull(retrievedUser);
+    }
+
+
+
+    @Test
+    void deleteAuthSuccess() throws DataAccessException, SQLException {
+
+        new SQLAuthDAO().create(new AuthModel("testToken0", "testUsername0"));
+        new SQLAuthDAO().create(new AuthModel("testToken1", "testUsername1"));
+
+        new SQLAuthDAO().deleteAll();
+
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM auth";
+            ResultSet rs = new SQLAuthDAO().executeQuery(conn, statement);
+
+            assertFalse(rs.next());
+        }
+    }
+
+    @Test
+    void deleteGameSuccess() throws DataAccessException, SQLException {
+
+        new SQLGameDAO().create(new GameModel(0, "testUsername2", "testUsername3", "testGameName0", null));
+
+        new SQLGameDAO().deleteAll();
+
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM game";
+            ResultSet rs = new SQLGameDAO().executeQuery(conn, statement);
+
+            assertFalse(rs.next());
+        }
+    }
+
+    @Test
+    void deleteUserSuccess() throws DataAccessException, SQLException {
+
+        new SQLUserDAO().create(new UserModel("testUsername4", "testPassword0", "testEmail0"));
+        new SQLUserDAO().create(new UserModel("testUsername5", "testPassword1", "testEmail1"));
+
+        new SQLUserDAO().deleteAll();
+
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM user";
+            ResultSet rs = new SQLUserDAO().executeQuery(conn, statement);
+
+            assertFalse(rs.next());
+        }
     }
 }

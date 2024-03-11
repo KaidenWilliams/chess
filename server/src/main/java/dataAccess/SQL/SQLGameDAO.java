@@ -12,6 +12,7 @@ import java.util.Collection;
 
 public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
 
+    //5 - Delete All doesn't count really
 
     //1. Get all games
     public Collection<GameModel> listAll() throws DataAccessException {
@@ -19,9 +20,14 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
             var result = new ArrayList<GameModel>();
             var statement = "SELECT * FROM game";
             ResultSet rs = executeQuery(conn, statement);
-            if (rs != null) {
-                while (rs.next()) {
+            if (rs.next()) {
+                boolean moreRows = true;
+                while (moreRows) {
                     result.add(makeGame(rs));
+
+                    if (!rs.next()){
+                        moreRows = false;
+                    }
                 }
                 return result;
             } else {
@@ -39,7 +45,7 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
             var statement = "INSERT INTO game (whiteusername, blackusername, gamename, game) VALUES (?, ?, ?, ?)";
             String chessGame = JsonRegistrar.getChessGameGson().toJson(providedGameModel.chessGame());
 
-            var id = executeUpdateWithKeys(conn, statement, providedGameModel.whiteUsername(), providedGameModel.blackUsername(), providedGameModel.blackUsername(), chessGame);
+            var id = executeUpdateWithKeys(conn, statement, providedGameModel.whiteUsername(), providedGameModel.blackUsername(), providedGameModel.gameName(), chessGame);
             if (id != 0) {
                 return new GameModel(id, providedGameModel.whiteUsername(), providedGameModel.blackUsername(), providedGameModel.blackUsername(), providedGameModel.chessGame());
             } else {
@@ -69,9 +75,9 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
     //3. Get game from gameID
     public GameModel getRowByGameID(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-        var statement = "SELECT FROM game WHERE id = ?";
+        var statement = "SELECT * FROM game WHERE id = ?";
         ResultSet rs = executeQuery(conn, statement, gameID);
-        if (rs != null) {
+        if (rs.next()) {
             return makeGame(rs);
         } else {
             return null;
@@ -109,8 +115,9 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
         }
 
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "UPDATE game WHERE ? = ?";
-            int rows = executeUpdateWithNumberRows(conn, statement, usernameToUpdate, usernameNew);
+            var statement = String.format("UPDATE game SET %s = ? WHERE id = ?", usernameToUpdate);
+
+            int rows = executeUpdateWithNumberRows(conn, statement, usernameNew, oldGame.gameID());
             if (rows >= 1) {
                 return new GameModel(oldGame.gameID(), oldGame.whiteUsername(), usernameNew, oldGame.gameName(), oldGame.chessGame());
             } else {
@@ -135,9 +142,5 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
 
 
     //6. Add Spectator - don't have to yet
-
-
-
-
 
 }
