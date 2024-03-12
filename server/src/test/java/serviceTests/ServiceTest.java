@@ -53,11 +53,11 @@ public class ServiceTest {
     @Test
     void loginUserSuccess() throws DataAccessException {
 
-        new MemoryUserDAO().create(new UserModel("testUsername4", "testPassword0", "testEmail0"));
+
+        RegisterRequest inputRegisterObject = new RegisterRequest("testUsername4", "testPassword0", "a@b.com");
+        service.registerUser(inputRegisterObject);
 
         LoginRequest inputLoginObject = new LoginRequest("testUsername4", "testPassword0");
-
-
         AuthModel outputLoginObject = service.loginUser(inputLoginObject);
         AuthModel criteriaRegisterObject = new MemoryAuthDAO().getRowByAuthtoken(outputLoginObject.authToken());
 
@@ -141,16 +141,18 @@ public class ServiceTest {
     @Test
     void joinGameSuccess() throws DataAccessException {
 
-        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
-        new MemoryGameDAO().create(new GameModel(1, "boing", null, "testGame1", null));
-        new MemoryGameDAO().create(new GameModel(2, null, null, "testGame2", null));
-        new MemoryGameDAO().create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
+        MemoryGameDAO memoryGame = new MemoryGameDAO();
 
-        JoinGameRequest inputLoginObject = new JoinGameRequest("testAuthToken", new JoinGameRequest.RequestBody("White", 2));
+        new MemoryAuthDAO().create(new AuthModel("testAuthToken", "testUserName"));
+        memoryGame.create(new GameModel(1, "boing", null, "testGame1", null));
+        memoryGame.create(new GameModel(2, "testUserName", null, "testGame2", null));
+        memoryGame.create(new GameModel(3, "yadaYa", "yadaYa", "testGame3", null));
+
+        JoinGameRequest inputLoginObject = new JoinGameRequest("testAuthToken", new JoinGameRequest.RequestBody("WHITE", 2));
 
         service.joinGame(inputLoginObject);
 
-        List<GameModel> criteriaGame = new MemoryGameDAO().findAll(model -> (model.whiteUsername()).equals("testUserName"));
+        List<GameModel> criteriaGame = memoryGame.findAll(model -> (String.valueOf(model.whiteUsername())).equals("testUserName"));
 
         assertEquals(1, criteriaGame.size());
     }

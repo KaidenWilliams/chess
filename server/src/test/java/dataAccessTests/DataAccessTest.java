@@ -9,6 +9,7 @@ import model.UserModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.Server;
 import service.Service;
 import dataAccess.SQL.*;
 
@@ -23,15 +24,20 @@ public class DataAccessTest {
 
     @BeforeEach
     void clearBefore() throws DataAccessException {
-        new SQLAuthDAO().deleteAll();
-        new SQLGameDAO().deleteAll();
-        new SQLUserDAO().deleteAll();
+
+       new SQLDataAccess();
     }
     @AfterEach
     void clearAfter() throws DataAccessException {
         new SQLAuthDAO().deleteAll();
         new SQLGameDAO().deleteAll();
         new SQLUserDAO().deleteAll();
+
+        try (var conn = DatabaseManager.getConnection()) {
+            DatabaseManager.deleteDatabase(conn);
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()), 500);
+        }
     }
 
 

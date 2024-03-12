@@ -49,9 +49,23 @@ public class DatabaseManager {
         }
     }
 
+
+
+    public static void deleteDatabase(Connection conn) throws DataAccessException {
+        try {
+            var statement = "DROP DATABASE IF EXISTS " + databaseName;
+            var preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage(), 500);
+        }
+    }
+
+
+
     static final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  auth (
+            CREATE TABLE IF NOT EXISTS auth (
               `token` varchar(256) NOT NULL UNIQUE,
               `username` varchar(256) NOT NULL,
               PRIMARY KEY (`token`)
@@ -59,7 +73,7 @@ public class DatabaseManager {
             """,
 
             """
-            CREATE TABLE IF NOT EXISTS  game (
+            CREATE TABLE IF NOT EXISTS game (
               `id` int NOT NULL AUTO_INCREMENT,
               `whiteusername` varchar(256),
               `blackusername` varchar(256),
@@ -70,7 +84,7 @@ public class DatabaseManager {
             """,
 
             """
-            CREATE TABLE IF NOT EXISTS  user (
+            CREATE TABLE IF NOT EXISTS user (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
@@ -95,6 +109,7 @@ public class DatabaseManager {
     public static Connection getConnection() throws DataAccessException {
         try {
             var conn = DriverManager.getConnection(connectionUrl, user, password);
+            createDatabase(conn);
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException e) {
