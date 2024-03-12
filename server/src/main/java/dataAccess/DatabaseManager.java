@@ -1,4 +1,4 @@
-package dataAccess.SQL;
+package dataAccess;
 
 import dataAccess.DataAccessException;
 
@@ -39,7 +39,7 @@ public class DatabaseManager {
     /**
      * Creates the database if it does not already exist.
      */
-    static void createDatabase(Connection conn) throws DataAccessException {
+    public static void createDatabase(Connection conn) throws DataAccessException {
         try {
             var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
             var preparedStatement = conn.prepareStatement(statement);
@@ -63,7 +63,7 @@ public class DatabaseManager {
 
 
 
-    static final String[] createStatements = {
+    public static final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS auth (
               `token` varchar(256) NOT NULL UNIQUE,

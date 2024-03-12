@@ -1,6 +1,7 @@
 package dataAccess.SQL;
 
 import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import dataAccess.IDataAccess;
 
 import java.sql.SQLException;

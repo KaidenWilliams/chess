@@ -1,9 +1,8 @@
 package dataAccess.SQL;
 
-import com.google.gson.Gson;
 import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import dataAccess.IAuthDAO;
-import dataAccess.Memory.MemoryDB;
 import model.AuthModel;
 
 import java.sql.ResultSet;
