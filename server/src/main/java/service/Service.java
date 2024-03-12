@@ -2,7 +2,7 @@ package service;
 import dataAccess.*;
 import model.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import server.JsonRequestObjects.*;
+import model.JsonRequestObjects.*;
 
 import java.util.Collection;
 import java.util.List;

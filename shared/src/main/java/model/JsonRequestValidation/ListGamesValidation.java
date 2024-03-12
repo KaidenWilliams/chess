@@ -1,7 +1,7 @@
-package server.JsonRequestValidation;
+package model.JsonRequestValidation;
 
 
-import server.JsonRequestObjects.ListGamesRequest;
+import model.JsonRequestObjects.ListGamesRequest;
 
 public class ListGamesValidation {
 

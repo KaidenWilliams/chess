@@ -1,6 +1,6 @@
-package server.JsonRequestValidation;
+package model.JsonRequestValidation;
 
-import server.JsonRequestObjects.JoinGameRequest;
+import model.JsonRequestObjects.JoinGameRequest;
 
 public class JoinGameValidation {
 

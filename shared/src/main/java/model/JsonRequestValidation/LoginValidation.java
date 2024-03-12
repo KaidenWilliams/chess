@@ -1,6 +1,6 @@
-package server.JsonRequestValidation;
+package model.JsonRequestValidation;
 
-import server.JsonRequestObjects.LoginRequest;
+import model.JsonRequestObjects.LoginRequest;
 
 public class LoginValidation {
 

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.Service;
-import server.JsonRequestObjects.*;
+import model.JsonRequestObjects.*;
 
 import java.util.Collection;
 import java.util.List;

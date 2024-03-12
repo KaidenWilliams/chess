@@ -1,4 +1,4 @@
-package server.JsonResponseObjects;
+package model.JsonResponseObjects;
 
 public record CreateGameResponse(int gameID) {
 }

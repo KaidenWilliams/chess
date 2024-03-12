@@ -1,4 +1,4 @@
-package server.JsonRequestObjects;
+package model.JsonRequestObjects;
 
 public record RegisterRequest(String username, String password, String email) {
 }

@@ -1,4 +1,4 @@
-package server.JsonResponseObjects;
+package model.JsonResponseObjects;
 import java.util.List;
 
 public record ListGamesResponse(List<Game> games) {

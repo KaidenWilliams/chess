@@ -1,6 +1,6 @@
-package server.JsonRequestValidation;
+package model.JsonRequestValidation;
 
-import server.JsonRequestObjects.RegisterRequest;
+import model.JsonRequestObjects.RegisterRequest;
 
 public class RegisterValidation {
     public static void validate(RegisterRequest registerRecord){

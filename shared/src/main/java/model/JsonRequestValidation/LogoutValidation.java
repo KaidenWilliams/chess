@@ -1,6 +1,6 @@
-package server.JsonRequestValidation;
+package model.JsonRequestValidation;
 
-import server.JsonRequestObjects.LogoutRequest;
+import model.JsonRequestObjects.LogoutRequest;
 
 public class LogoutValidation {
 
