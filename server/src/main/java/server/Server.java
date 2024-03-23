@@ -2,15 +2,16 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import dataAccess.DataAccessException;
+import model.DataAccessException;
 import dataAccess.SQL.SQLDataAccess;
-import model.AuthModel;
+import model.models.AuthModel;
 import model.JsonRequestValidation.*;
 import model.JsonRequestObjects.*;
 import model.JsonResponseObjects.*;
+import model.models.GameModel;
 import spark.*;
 import service.Service;
-import model.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

@@ -1,11 +1,11 @@
 package dataAccessTests;
 
 import chess.ChessGame;
-import dataAccess.DataAccessException;
+import model.DataAccessException;
 import dataAccess.DatabaseManager;
-import model.AuthModel;
-import model.GameModel;
-import model.UserModel;
+import model.models.AuthModel;
+import model.models.GameModel;
+import model.models.UserModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,10 +1,10 @@
 package dataAccess.SQL;
 
 import chess.ChessGame;
-import dataAccess.DataAccessException;
+import model.DataAccessException;
 import dataAccess.DatabaseManager;
 import dataAccess.IGameDAO;
-import model.GameModel;
+import model.models.GameModel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

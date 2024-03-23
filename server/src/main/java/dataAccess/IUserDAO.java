@@ -1,6 +1,7 @@
 package dataAccess;
 
-import model.UserModel;
+import model.DataAccessException;
+import model.models.UserModel;
 
 public interface IUserDAO {
 

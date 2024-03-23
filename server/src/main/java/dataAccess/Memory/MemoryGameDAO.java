@@ -1,7 +1,7 @@
 package dataAccess.Memory;
 
 import dataAccess.IGameDAO;
-import model.GameModel;
+import model.models.GameModel;
 
 // TODO error throwing
 

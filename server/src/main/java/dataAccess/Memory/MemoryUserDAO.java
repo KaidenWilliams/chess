@@ -1,11 +1,7 @@
 package dataAccess.Memory;
 
-import dataAccess.IAuthDAO;
 import dataAccess.IUserDAO;
-import model.AuthModel;
-import model.UserModel;
-
-import java.util.ArrayList;
+import model.models.UserModel;
 
 // TODO error throwing
 

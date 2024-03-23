@@ -1,13 +1,9 @@
 package dataAccess.SQL;
 
-import chess.ChessGame;
-import dataAccess.DataAccessException;
+import model.DataAccessException;
 
 
 import java.sql.*;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class GeneralSQLDAO {
 

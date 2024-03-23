@@ -1,9 +1,9 @@
 package dataAccess.SQL;
 
-import dataAccess.DataAccessException;
+import model.DataAccessException;
 import dataAccess.DatabaseManager;
 import dataAccess.IUserDAO;
-import model.UserModel;
+import model.models.UserModel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

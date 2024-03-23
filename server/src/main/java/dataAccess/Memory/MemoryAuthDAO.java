@@ -1,7 +1,7 @@
 package dataAccess.Memory;
 
 import dataAccess.IAuthDAO;
-import model.AuthModel;
+import model.models.AuthModel;
 
 // TODO error throwing
 

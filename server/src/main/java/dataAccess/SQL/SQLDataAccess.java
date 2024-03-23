@@ -1,6 +1,6 @@
 package dataAccess.SQL;
 
-import dataAccess.DataAccessException;
+import model.DataAccessException;
 import dataAccess.DatabaseManager;
 import dataAccess.IDataAccess;
 

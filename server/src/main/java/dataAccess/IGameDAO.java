@@ -1,10 +1,10 @@
 package dataAccess;
 
 
-import model.GameModel;
+import model.DataAccessException;
+import model.models.GameModel;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface IGameDAO {
 

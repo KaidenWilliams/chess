@@ -1,11 +1,13 @@
 package service;
 import dataAccess.*;
 import model.*;
+import model.models.AuthModel;
+import model.models.GameModel;
+import model.models.UserModel;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import model.JsonRequestObjects.*;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 

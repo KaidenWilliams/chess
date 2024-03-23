@@ -1,8 +1,6 @@
 package ClientLogic;
 
-import com.google.gson.Gson;
-
-import java.util.Arrays;
+import State.State;
 
 public class ChessClient {
 
@@ -12,6 +10,31 @@ public class ChessClient {
 
     // Handles all logic with inputs and outputs
     // Once handled, passes string to appropriate server facade method
+
+    //calls server facade
+
+    private State state;
+    private String authToken;
+    private final String serverUrl;
+    private ServerFacade serverFacade;
+
+
+    public ChessClient(String url) {
+        serverUrl = url;
+    }
+
+    public String takeInput(String input) {
+
+        try
+
+
+    }
+
+
+
+
+
+
 
 
 //

@@ -1,11 +1,10 @@
 package dataAccess.Memory;
 
-import model.AuthModel;
-import model.GameModel;
-import model.UserModel;
+import model.models.AuthModel;
+import model.models.GameModel;
+import model.models.UserModel;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 // My in-memory DB
 public class MemoryDB {

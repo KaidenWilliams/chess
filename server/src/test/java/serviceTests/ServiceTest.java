@@ -1,7 +1,9 @@
 package serviceTests;
-import dataAccess.DataAccessException;
+import model.DataAccessException;
 import dataAccess.Memory.*;
-import model.*;
+import model.models.AuthModel;
+import model.models.GameModel;
+import model.models.UserModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

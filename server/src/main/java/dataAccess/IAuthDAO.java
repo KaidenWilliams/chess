@@ -1,6 +1,7 @@
 package dataAccess;
 
-import model.AuthModel;
+import model.models.AuthModel;
+import model.DataAccessException;
 
 public interface IAuthDAO {
 

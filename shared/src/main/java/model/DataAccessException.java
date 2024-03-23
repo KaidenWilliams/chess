@@ -1,4 +1,4 @@
-package dataAccess;
+package model;
 
 /**
  * Indicates there was an error connecting to the database
@@ -13,6 +13,11 @@ public class DataAccessException extends Exception{
 
     public int getStatusCode() {
         return statusCode;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Error: %d. %s", statusCode, getMessage());
     }
 
 }
