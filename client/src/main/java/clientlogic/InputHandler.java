@@ -1,7 +1,7 @@
-package ClientLogic;
+package clientlogic;
+import exceptionclient.ClientException;
 
 import java.util.Scanner;
-import model.DataAccessException;
 
 public class InputHandler {
 
@@ -14,10 +14,10 @@ public class InputHandler {
 //
 //
 
-    private final ChessClient client;
+    private final ClientController client;
 
     public InputHandler(String serverUrl) {
-        client = new ChessClient(serverUrl);
+        client = new ClientController(serverUrl);
     }
 
     public void ReadInput() {
@@ -29,13 +29,14 @@ public class InputHandler {
             String line = scanner.nextLine();
 
             try {
-                output = client.takeInput(line);
+                output = client.routeInput(line);
                 System.out.println(output);
-            } catch (DataAccessException e) {
+            } catch (ClientException e) {
                 var msg = e.toString();
                 System.out.println(msg);
             }
         }
+    }
 
 
 

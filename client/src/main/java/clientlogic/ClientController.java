@@ -1,8 +1,13 @@
-package ClientLogic;
+package clientlogic;
 
-import State.State;
+import exceptionclient.ClientException;
+import state.AState;
+import state.LoggedOutState;
 
-public class ChessClient {
+import java.util.Arrays;
+
+
+public class ClientController {
 
     // evaluates strings passed in by InputHandler
     // Simple case switch statement to decide what to do based on input Param
@@ -13,21 +18,28 @@ public class ChessClient {
 
     //calls server facade
 
-    private State state;
+    private AState state;
     private String authToken;
     private final String serverUrl;
     private ServerFacade serverFacade;
 
 
-    public ChessClient(String url) {
+    public ClientController(String url) {
         serverUrl = url;
+        serverFacade = new ServerFacade(serverUrl);
+        state = new LoggedOutState(serverFacade);
     }
 
-    public String takeInput(String input) {
+    public String routeInput(String input) throws ClientException {
 
-        try
+        String[] tokens = input.toLowerCase().split(" ");
+        String commandName = (tokens.length > 0) ? tokens[0] : "help";
+        // Make commands not case-sensitive just because
+        String commandNameLower = commandName.toLowerCase();
+        String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
 
-
+        String result = state.eval(commandNameLower, params);
+        return result;
     }
 
 

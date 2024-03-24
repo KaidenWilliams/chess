@@ -15,9 +15,4 @@ public class DataAccessException extends Exception{
         return statusCode;
     }
 
-    @Override
-    public String toString() {
-        return String.format("Error: %d. %s", statusCode, getMessage());
-    }
-
 }

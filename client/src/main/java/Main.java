@@ -1,4 +1,4 @@
-import ClientLogic.InputHandler;
+import clientlogic.InputHandler;
 
 public class Main {
     public static void main(String[] args) {
