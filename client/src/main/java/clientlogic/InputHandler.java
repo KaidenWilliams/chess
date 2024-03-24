@@ -22,20 +22,33 @@ public class InputHandler {
 
     public void ReadInput() {
 
+        printIntro();
+
         Scanner scanner = new Scanner(System.in);
         var output = "";
 
-        while (!output.equals("quit")) {
+        while (true) {
             String line = scanner.nextLine();
 
-            try {
-                output = client.routeInput(line);
-                System.out.println(output);
-            } catch (ClientException e) {
-                var msg = e.toString();
-                System.out.println(msg);
+            output = client.routeInput(line);
+            if (output.equals("quit\n")) {
+                break;
             }
+
+            System.out.println(output);
         }
+
+        printOutro();
+    }
+
+    private void printIntro() {
+        System.out.println("Welcome to chess. Login or register to play the game. For a list of potential commands, type \"help\"");
+        System.out.println();
+    }
+
+    private void printOutro() {
+        System.out.println();
+        System.out.println("Thank you for playing. Come again soon ;)");
     }
 
 

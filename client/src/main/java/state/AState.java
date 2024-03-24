@@ -3,22 +3,24 @@ package state;
 import clientlogic.ServerFacade;
 import exceptionclient.ClientException;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 public abstract class AState {
 
-    protected String _authToken;
-    protected ServerFacade _serverFacade;
+    // TODO will see how authtoken works, if everyone shares it
+    protected static String _authToken;
+    protected static ServerFacade _serverFacade;
+    protected static StateNotifier _observer;
 
 
-    public AState(ServerFacade serverFacade){
+    public AState(ServerFacade serverFacade, StateNotifier observer){
         _serverFacade = serverFacade;
+        _observer = observer;
     }
 
-    public String eval(String commandName, String[] params) throws ClientException {
-        ThrowingFunctionDumb<String[], String> commandMethod = getCommandMethods().get(commandName);
+    public String eval(String commandName, String[] params)  {
+        Function<String[], String> commandMethod = getCommandMethods().get(commandName);
         if (commandMethod != null) {
             return commandMethod.apply(params);
         } else {
@@ -26,7 +28,7 @@ public abstract class AState {
         }
     }
 
-    abstract Map<String, ThrowingFunctionDumb<String[], String>> getCommandMethods();
+    abstract Map<String, Function<String[], String>> getCommandMethods();
 
     abstract String DefaultCommand(String[] params);
 

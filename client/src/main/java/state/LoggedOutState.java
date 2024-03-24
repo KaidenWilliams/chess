@@ -5,6 +5,7 @@ import model.JsonRequestObjects.*;
 import model.JsonResponseObjects.*;
 import ui.LoggedOutBuilder;
 import clientlogic.ServerFacade;
+import ui.SharedBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,45 +23,48 @@ import java.util.function.Function;
 
 public class LoggedOutState extends AState {
 
-    protected Map<String, ThrowingFunctionDumb<String[], String>> _commandMethods = new HashMap<>();
+    protected static Map<String, Function<String[], String>> _commandMethods = new HashMap<>();
 
-    public LoggedOutState(ServerFacade serverFacade) {
-        super(serverFacade);
+    public LoggedOutState(ServerFacade serverFacade, StateNotifier observer) {
+        super(serverFacade, observer);
         _commandMethods.put("register", this::Register);
         _commandMethods.put("login", this::Login);
         _commandMethods.put("quit", this::Quit);
         _commandMethods.put("help", this::Help);
     }
 
-    private String Register(String[] params) throws ClientException {
+    private String Register(String[] params) {
 
         if (params == null || params.length != 3) {
-            return LoggedOutBuilder.errorString;
+            return SharedBuilder.getErrorStringSyntax("Register");
         }
 
-        var req = new RegisterRequest(params[0], params[1], params[2]);
-        RegisterResponse res = _serverFacade.registerUser(req);
-        _authToken = res.authToken();
+        try {
+            var req = new RegisterRequest(params[0], params[1], params[2]);
+            RegisterResponse res = _serverFacade.registerUser(req);
+            _authToken = res.authToken();
+            return LoggedOutBuilder.getLoginString(params[0]);
+        } catch (ClientException e) {
+            return SharedBuilder.getErrorStringRequest(e.toString(), "Login");
+        }
 
-        //TODO probs return something, too lazy though
-//        return string.format()
-
-        return null;
     }
 
-    private String Login(String[] params) throws ClientException {
+    private String Login(String[] params)  {
 
-        if (params == null || params.length != 3) {
-            return LoggedOutBuilder.errorString;
+        if (params == null || params.length != 2) {
+            return SharedBuilder.getErrorStringSyntax("Login");
         }
-
-        var req = new LoginRequest(params[0], params[1]);
-        LoginResponse res = _serverFacade.loginUser(req);
-        _authToken = res.authToken();
-
-        //TODO probs return something, too lazy though
-//        return string.format()
-        return null;
+        try {
+            var req = new LoginRequest(params[0], params[1]);
+            LoginResponse res = _serverFacade.loginUser(req);
+            _authToken = res.authToken();
+            _observer.ChangeStateLoggedIn();
+            return LoggedOutBuilder.getLoginString(params[0]);
+        }
+        catch (ClientException e) {
+            return SharedBuilder.getErrorStringRequest(e.toString(), "Login");
+        }
     }
 
     private String Quit(String[] params) {
@@ -72,14 +76,13 @@ public class LoggedOutState extends AState {
     }
 
     @Override
-    public Map<String, ThrowingFunctionDumb<String[], String>> getCommandMethods() {
+    public Map<String, Function<String[], String>> getCommandMethods() {
         return _commandMethods;
     }
 
-
     @Override
     String DefaultCommand(String[] params) {
-        return null;
+        return Help(params);
     }
 
 }

@@ -12,4 +12,8 @@ public class ClientException extends Exception {
         return statusCode;
     }
 
+    @Override
+    public String toString() {
+        return statusCode + ": " + getMessage() + ". ";
+    }
 }

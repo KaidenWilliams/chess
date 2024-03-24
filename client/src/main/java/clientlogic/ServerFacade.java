@@ -3,9 +3,9 @@ package clientlogic;
 
 import com.google.gson.Gson;
 import exceptionclient.ClientException;
-import model.*;
 import model.JsonRequestObjects.LoginRequest;
 import model.JsonRequestObjects.RegisterRequest;
+import model.JsonResponseObjects.ExceptionResponse;
 import model.JsonResponseObjects.LoginResponse;
 import model.JsonResponseObjects.RegisterResponse;
 
@@ -72,48 +72,83 @@ public class ServerFacade {
 
             writeBody(request, http);
             http.connect();
-            throwIfNotSuccessful(http);
+//            throwIfNotSuccessful(http);
+            // readBody should be able to throw exceptions if needed,
+            // - throwIfNotSuccessful intercepted my ExceptionResponses
             return readBody(http, responseClass);
-        } catch (Exception ex) {
+        } catch (ClientException e) {
+            throw e;
+        }
+        catch (Exception ex) {
             throw new ClientException(ex.getMessage(), 500);
         }
     }
 
 
-    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
+    private static void writeBody(Object request, HttpURLConnection http) throws ClientException {
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
             String reqData = new Gson().toJson(request);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
+            catch (IOException e) {
+                throw new ClientException(e.getMessage(), 500);
+            }
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ClientException {
-        var status = http.getResponseCode();
-        if (!isSuccessful(status)) {
-            throw new ClientException("failure: " + status, status);
-        }
-    }
+//    private static void throwIfNotSuccessful(HttpURLConnection http) throws ClientException {
+//        try {
+//            var status = http.getResponseCode();
+//            if (!isSuccessful(status)) {
+//                throw new ClientException("Error: Response not valid", status);
+//            }
+//        } catch (IOException e) {
+//            throw new ClientException(e.getMessage(), 500);
+//        }
+//    }
 
-    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
+    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws ClientException {
         T response = null;
         if (http.getContentLength() < 0) {
+            // Fails here to get proper message because it sees error message, not happy.
+
+            // Make sure to dispose of resources properly, make two methods maybe
+            // For error one use IsSuccesful, or use finally throw exception, you can't let errors like 404 sneak by
+
+            InputStream stream;
+            int responseCode = http.getResponseCode();
+            if (responseCode >= 200 && responseCode < 300) {
+                stream = http.getInputStream();
+            } else {
+                stream = http.getErrorStream();
+            }
+
+
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
                     response = new Gson().fromJson(reader, responseClass);
+
+                    // IntelliJ sorcery how does this even work
+                    if (response instanceof ExceptionResponse exceptionResponse) {
+                        throw new ClientException(exceptionResponse.message(), http.getResponseCode());
+                    }
+
                 }
+            }
+            catch (IOException e) {
+                throw new ClientException(e.getMessage(), 500);
             }
         }
         return response;
     }
 
 
-    private boolean isSuccessful(int status) {
-        return status / 100 == 2;
-    }
+//    private static boolean isSuccessful(int status) {
+//        return status / 100 == 2;
+//    }
 
 }
 

@@ -29,7 +29,7 @@ public class Service {
         UserModel userExisting = userDAO.getRowByUsername(user.username());
 
         if (userExisting != null) {
-            throw new DataAccessException("Error: already taken", 403);
+            throw new DataAccessException("Error: User already taken", 403);
         }
         else {
 
@@ -45,13 +45,13 @@ public class Service {
 
         UserModel userExisting = userDAO.getRowByUsername(user.username());
         if (userExisting == null) {
-            throw new DataAccessException("Error: unauthorized", 401);
+            throw new DataAccessException("Error: incorrect login", 401);
         }
 
         String hashedPassword = userExisting.password();
         boolean authenticated = new BCryptPasswordEncoder().matches(user.password(), hashedPassword);
         if (!authenticated) {
-            throw new DataAccessException("Error: unauthorized", 401);
+            throw new DataAccessException("Error: incorrect login", 401);
         }
         else {
             return authDAO.create(new AuthModel(UUID.randomUUID().toString(), user.username()));
@@ -117,7 +117,7 @@ public class Service {
 
         GameModel updatedGame = gameDAO.updateUsername(oldGame, userExisting.username(), color);
         if (updatedGame == null) {
-            throw new DataAccessException("Error: already taken", 403);
+            throw new DataAccessException("Error: User already taken", 403);
         }
     }
 

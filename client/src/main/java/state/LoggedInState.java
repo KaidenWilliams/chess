@@ -2,6 +2,7 @@ package state;
 
 import clientlogic.ServerFacade;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -27,8 +28,10 @@ public class LoggedInState extends AState {
 // - API to verify that the specified game exists.
 
 
-    public LoggedInState(ServerFacade serverFacade) {
-        super(serverFacade);
+    protected static Map<String, Function<String[], String>> _commandMethods = new HashMap<>();
+
+    public LoggedInState(ServerFacade serverFacade, StateNotifier observer) {
+        super(serverFacade, observer);
 //        _commandMethods.put("logout", this::Help);
 //        _commandMethods.put("help", this::Logout);
 //        _commandMethods.put("logout", this::CreateGame);
@@ -38,7 +41,7 @@ public class LoggedInState extends AState {
     }
 
     @Override
-    Map<String, ThrowingFunctionDumb<String[], String>> getCommandMethods() {
+    Map<String, Function<String[], String>> getCommandMethods() {
         return null;
     }
 
