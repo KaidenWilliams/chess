@@ -18,7 +18,7 @@ public abstract class AState {
     }
 
     public String eval(String commandName, String[] params) throws ClientException {
-        Function<String[], String> commandMethod = getCommandMethods().get(commandName);
+        ThrowingFunctionDumb<String[], String> commandMethod = getCommandMethods().get(commandName);
         if (commandMethod != null) {
             return commandMethod.apply(params);
         } else {
@@ -26,7 +26,7 @@ public abstract class AState {
         }
     }
 
-    abstract Map<String, Function<String[], String>> getCommandMethods();
+    abstract Map<String, ThrowingFunctionDumb<String[], String>> getCommandMethods();
 
     abstract String DefaultCommand(String[] params);
 

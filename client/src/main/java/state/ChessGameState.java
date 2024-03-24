@@ -12,7 +12,7 @@ public class ChessGameState extends AState {
     }
 
     @Override
-    Map<String, Function<String[], String>> getCommandMethods() {
+    Map<String, ThrowingFunctionDumb<String[], String>> getCommandMethods() {
         return null;
     }
 

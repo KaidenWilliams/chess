@@ -72,7 +72,7 @@ public class LoggedOutState extends AState {
     }
 
     @Override
-    public Map<String, Function<String[], String>> getCommandMethods() {
+    public Map<String, ThrowingFunctionDumb<String[], String>> getCommandMethods() {
         return _commandMethods;
     }
 
