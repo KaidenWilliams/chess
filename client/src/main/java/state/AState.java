@@ -10,6 +10,7 @@ public abstract class AState {
 
     // TODO will see how authtoken works, if everyone shares it
     protected static String _authToken;
+    protected static String _username;
     protected static ServerFacade _serverFacade;
     protected static StateNotifier _observer;
 

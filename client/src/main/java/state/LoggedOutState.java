@@ -43,9 +43,12 @@ public class LoggedOutState extends AState {
             var req = new RegisterRequest(params[0], params[1], params[2]);
             RegisterResponse res = _serverFacade.registerUser(req);
             _authToken = res.authToken();
-            return LoggedOutBuilder.getLoginString(params[0]);
+            _username = params[0];
+            _observer.ChangeStateLoggedIn();
+            return LoggedOutBuilder.getRegisterString(_username);
+
         } catch (ClientException e) {
-            return SharedBuilder.getErrorStringRequest(e.toString(), "Login");
+            return SharedBuilder.getErrorStringRequest(e.toString(), "Register");
         }
 
     }
@@ -58,9 +61,11 @@ public class LoggedOutState extends AState {
         try {
             var req = new LoginRequest(params[0], params[1]);
             LoginResponse res = _serverFacade.loginUser(req);
+
             _authToken = res.authToken();
+            _username = params[0];
             _observer.ChangeStateLoggedIn();
-            return LoggedOutBuilder.getLoginString(params[0]);
+            return LoggedOutBuilder.getLoginString(_username);
         }
         catch (ClientException e) {
             return SharedBuilder.getErrorStringRequest(e.toString(), "Login");

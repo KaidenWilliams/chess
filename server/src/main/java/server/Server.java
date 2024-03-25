@@ -165,8 +165,6 @@ public class Server {
     }
 
 
-
-
     //6. joinGame
     private Object joinGame(Request req, Response res) throws DataAccessException {
 

@@ -1,6 +1,11 @@
 package state;
 
 import clientlogic.ServerFacade;
+import exceptionclient.ClientException;
+import model.JsonRequestObjects.*;
+import model.JsonResponseObjects.*;
+import ui.LoggedInBuilder;
+import ui.SharedBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,28 +37,70 @@ public class LoggedInState extends AState {
 
     public LoggedInState(ServerFacade serverFacade, StateNotifier observer) {
         super(serverFacade, observer);
-//        _commandMethods.put("logout", this::Help);
-//        _commandMethods.put("help", this::Logout);
-//        _commandMethods.put("logout", this::CreateGame);
-//        _commandMethods.put("help", this::ListGames);
-//        _commandMethods.put("logout", this::JoinGame);
-//        _commandMethods.put("help", this::JoinObserver);
+
+        _commandMethods.put("logout", this::Logout);
+        _commandMethods.put("list", this::List);
+//        _commandMethods.put("create", this::Create); - gamename
+//        _commandMethods.put("join ", this::Join);
+//        _commandMethods.put("spectate", this::Spectate);
+        _commandMethods.put("help", this::Help);
     }
+
+
+    private String Logout(String[] params)  {
+
+        try {
+            var req = new LogoutRequest(_authToken);
+            _serverFacade.logoutUser(req);
+            String tempUsername = _username;
+
+            _username = null;
+            _authToken = null;
+            _observer.ChangeStateLoggedOut();
+            return LoggedInBuilder.getLogoutString(tempUsername);
+        }
+        catch (ClientException e) {
+            return SharedBuilder.getErrorStringRequest(e.toString(), "Logout");
+        }
+    }
+
+
+    private String List(String[] params)  {
+
+        try {
+            var req = new ListGamesRequest(_authToken);
+            ListGamesResponse res = _serverFacade.listGames(req);
+
+            StringBuilder sb = new StringBuilder();
+            int i = 1;
+            for (ListGamesResponse.Game game : res.games()) {
+                sb.append(LoggedInBuilder.getlistGamesString(i, game.gameName(), game.whiteUsername(), game.blackUsername()));
+                LoggedInBuilder.gameNumberMap.put(i, game.gameID());
+                i++;
+            }
+
+            return sb.toString();
+        }
+        catch (ClientException e) {
+            return SharedBuilder.getErrorStringRequest(e.toString(), "Logout");
+        }
+    }
+
+    private String Help(String[] params) {
+        return LoggedInBuilder.helpString;
+    }
+
 
     @Override
     Map<String, Function<String[], String>> getCommandMethods() {
-        return null;
+        return _commandMethods;
     }
 
     @Override
     String DefaultCommand(String[] params) {
-        return null;
+        return Help(params);
     }
 
-
-//   private String Help() {
-//
-//    }
 
 
 

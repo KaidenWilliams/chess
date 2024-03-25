@@ -5,7 +5,8 @@ public class LoggedOutBuilder {
 
     public static String registerString =
             """
-            Successfully registered your account, "%s"
+            Successfully registered and logged in to your account, "%s"
+            Currently Logged in. To view possible commands, type "help"
             """;
 
     public static String loginString =
