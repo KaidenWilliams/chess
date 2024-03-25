@@ -30,6 +30,16 @@ public class LoggedOutBuilder {
             < help -- to get a list of possible commands
             """;
 
+    public static String defaultString =
+            """
+            Your input was invalid. The following valid commands are shown below
+            
+            Commands:
+            < register <USERNAME> <PASSWORD> <EMAIL> -- to create an account
+            < login <USERNAME> <PASSWORD> -- to get on the chess server
+            < quit -- to exit the application
+            < help -- to get a list of possible commands
+            """;
 
     public static String getRegisterString(String username) {
         return String.format(registerString, username);

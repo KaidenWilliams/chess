@@ -36,7 +36,7 @@ public class LoggedOutState extends AState {
     private String Register(String[] params) {
 
         if (params == null || params.length != 3) {
-            return SharedBuilder.getErrorStringSyntax("Register");
+            return SharedBuilder.getErrorStringSyntax("register");
         }
 
         try {
@@ -48,7 +48,7 @@ public class LoggedOutState extends AState {
             return LoggedOutBuilder.getRegisterString(_username);
 
         } catch (ClientException e) {
-            return SharedBuilder.getErrorStringRequest(e.toString(), "Register");
+            return SharedBuilder.getErrorStringRequest(e.toString(), "register");
         }
 
     }
@@ -56,7 +56,7 @@ public class LoggedOutState extends AState {
     private String Login(String[] params)  {
 
         if (params == null || params.length != 2) {
-            return SharedBuilder.getErrorStringSyntax("Login");
+            return SharedBuilder.getErrorStringSyntax("login");
         }
         try {
             var req = new LoginRequest(params[0], params[1]);
@@ -68,7 +68,7 @@ public class LoggedOutState extends AState {
             return LoggedOutBuilder.getLoginString(_username);
         }
         catch (ClientException e) {
-            return SharedBuilder.getErrorStringRequest(e.toString(), "Login");
+            return SharedBuilder.getErrorStringRequest(e.toString(), "login");
         }
     }
 
@@ -87,7 +87,7 @@ public class LoggedOutState extends AState {
 
     @Override
     String DefaultCommand(String[] params) {
-        return Help(params);
+        return LoggedOutBuilder.defaultString;
     }
 
 }

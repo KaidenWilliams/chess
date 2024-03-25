@@ -92,6 +92,11 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
     //4. Update username for correct color with id TODO needs work
     public GameModel updateUsername(GameModel oldGame, String usernameNew, String color) throws DataAccessException {
 
+        if (color == null) {
+            //Add Spectator here
+            return oldGame;
+        }
+
         String usernameToUpdate = "";
         if (color.equalsIgnoreCase("WHITE") ) {
             if (oldGame.whiteUsername() == null) {

@@ -1,6 +1,7 @@
 package state;
 
 import clientlogic.ServerFacade;
+import ui.ChessGameBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,20 +13,28 @@ public class ChessGameState extends AState {
 
     public ChessGameState(ServerFacade serverFacade, StateNotifier observer) {
         super(serverFacade, observer);
-//        _commandMethods.put("help", this::Logout);
-//        _commandMethods.put("logout", this::CreateGame);
-//        _commandMethods.put("help", this::ListGames);
-//        _commandMethods.put("logout", this::JoinGame);
-//        _commandMethods.put("help", this::JoinObserver);
+        _commandMethods.put("exit", this::Exit);
+        _commandMethods.put("help", this::Help);
     }
+
+
+    private String Exit(String[] params) {
+        _observer.ChangeStateLoggedIn();
+        return ChessGameBuilder.exitString;
+    }
+
+    private String Help(String[] params) {
+        return ChessGameBuilder.helpString;
+    }
+
 
     @Override
     Map<String, Function<String[], String>> getCommandMethods() {
-        return null;
+        return _commandMethods;
     }
 
     @Override
     String DefaultCommand(String[] params) {
-        return null;
+        return ChessGameBuilder.getBothBoards();
     }
 }

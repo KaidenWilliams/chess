@@ -16,7 +16,7 @@ public class StateNotifier {
         controller.SetStateLoggedOut();
     }
 
-    public void ChangeStateGamePlay() {
+    public void ChangeStateChessGame() {
         controller.SetStateChessGame();
     }
 }

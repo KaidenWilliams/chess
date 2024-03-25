@@ -40,9 +40,9 @@ public class LoggedInState extends AState {
 
         _commandMethods.put("logout", this::Logout);
         _commandMethods.put("list", this::List);
-//        _commandMethods.put("create", this::Create); - gamename
-//        _commandMethods.put("join ", this::Join);
-//        _commandMethods.put("spectate", this::Spectate);
+        _commandMethods.put("create", this::Create);
+        _commandMethods.put("join ", this::Join);
+        _commandMethods.put("spectate", this::Spectate);
         _commandMethods.put("help", this::Help);
     }
 
@@ -50,8 +50,7 @@ public class LoggedInState extends AState {
     private String Logout(String[] params)  {
 
         try {
-            var req = new LogoutRequest(_authToken);
-            _serverFacade.logoutUser(req);
+            _serverFacade.logoutUser(_authToken);
             String tempUsername = _username;
 
             _username = null;
@@ -60,7 +59,7 @@ public class LoggedInState extends AState {
             return LoggedInBuilder.getLogoutString(tempUsername);
         }
         catch (ClientException e) {
-            return SharedBuilder.getErrorStringRequest(e.toString(), "Logout");
+            return SharedBuilder.getErrorStringRequest(e.toString(), "logout");
         }
     }
 
@@ -68,23 +67,93 @@ public class LoggedInState extends AState {
     private String List(String[] params)  {
 
         try {
-            var req = new ListGamesRequest(_authToken);
-            ListGamesResponse res = _serverFacade.listGames(req);
+            ListGamesResponse res = _serverFacade.listGames(_authToken);
 
             StringBuilder sb = new StringBuilder();
             int i = 1;
+            LoggedInBuilder.gameNumberMap.clear();
+
             for (ListGamesResponse.Game game : res.games()) {
-                sb.append(LoggedInBuilder.getlistGamesString(i, game.gameName(), game.whiteUsername(), game.blackUsername()));
+                sb.append(LoggedInBuilder.getListGamesString(i, game.gameName(), game.whiteUsername(), game.blackUsername()));
                 LoggedInBuilder.gameNumberMap.put(i, game.gameID());
                 i++;
             }
-
             return sb.toString();
         }
         catch (ClientException e) {
-            return SharedBuilder.getErrorStringRequest(e.toString(), "Logout");
+            return SharedBuilder.getErrorStringRequest(e.toString(), "list");
         }
     }
+
+    private String Create(String[] params)  {
+
+        if (params == null || params.length != 1) {
+            return SharedBuilder.getErrorStringSyntax("create");
+        }
+        try {
+            var req = new CreateGameRequest.RequestBody(params[0]);
+            CreateGameResponse res = _serverFacade.createGame(req, _authToken);
+
+            return LoggedInBuilder.getCreateGameString(params[0]);
+        }
+        catch (ClientException e) {
+            return SharedBuilder.getErrorStringRequest(e.toString(), "list");
+        }
+    }
+
+    private String Join(String[] params)  {
+
+        if (params == null || params.length != 2) {
+            return SharedBuilder.getErrorStringSyntax("join");
+        }
+        try {
+            String color = params[1].toLowerCase();
+            Integer gameNumber = LoggedInBuilder.gameNumberMap.get(Integer.parseInt(params[0]));
+
+            if (gameNumber == null) {
+                return LoggedInBuilder.getJoinGameErrorString(params[0]);
+            }
+
+            var req = new JoinGameRequest.RequestBody(color, gameNumber);
+            _serverFacade.joinGame(req, _authToken);
+            _observer.ChangeStateChessGame();
+
+            return LoggedInBuilder.getJoinGameString(gameNumber, color);
+        }
+        catch (NumberFormatException e) {
+            return LoggedInBuilder.getJoinGameErrorString(params[0]);
+        }
+        catch (ClientException e) {
+            return SharedBuilder.getErrorStringRequest(e.toString(), "join");
+        }
+    }
+
+    private String Spectate(String[] params) {
+        if (params == null || params.length != 1) {
+            return SharedBuilder.getErrorStringSyntax("spectate");
+        }
+        try {
+            Integer gameNumber = LoggedInBuilder.gameNumberMap.get(Integer.parseInt(params[0]));
+
+            if (gameNumber == null) {
+                return LoggedInBuilder.getJoinGameErrorString(params[0]);
+            }
+
+            var req = new JoinGameRequest.RequestBody(null, gameNumber);
+            _serverFacade.joinGame(req, _authToken);
+            _observer.ChangeStateChessGame();
+
+            return LoggedInBuilder.getSpecateGameString(gameNumber);
+        }
+        catch (NumberFormatException e) {
+            return LoggedInBuilder.getJoinGameErrorString(params[0]);
+        }
+        catch (ClientException e) {
+            return SharedBuilder.getErrorStringRequest(e.toString(), "spectate");
+        }
+    }
+
+
 
     private String Help(String[] params) {
         return LoggedInBuilder.helpString;
@@ -98,7 +167,7 @@ public class LoggedInState extends AState {
 
     @Override
     String DefaultCommand(String[] params) {
-        return Help(params);
+        return LoggedInBuilder.defaultString;
     }
 
 

@@ -33,42 +33,54 @@ public class ServerFacade {
 
     public RegisterResponse registerUser(RegisterRequest req) throws ClientException {
         var path = "/user";
-        return this.makeRequest("POST", path, req, RegisterResponse.class);
+        return this.makeRequest("POST", path, req, null, RegisterResponse.class);
     }
 
     public LoginResponse loginUser(LoginRequest req) throws ClientException {
         var path = "/session";
-        return this.makeRequest("POST", path, req, LoginResponse.class);
+        return this.makeRequest("POST", path, req, null, LoginResponse.class);
     }
 
-    public void logoutUser(LogoutRequest req) throws ClientException {
+    public void logoutUser(String authorization) throws ClientException {
         var path = "/session";
-        this.makeRequest("DELETE", path, req, null);
+        this.makeRequest("DELETE", path, null, authorization, null);
     }
 
-    public ListGamesResponse listGames(ListGamesRequest req) throws ClientException {
+    public ListGamesResponse listGames(String authorization) throws ClientException {
         var path = "/game";
-        return this.makeRequest("GET", path, req, ListGamesResponse.class);
+        return this.makeRequest("GET", path, null, authorization, ListGamesResponse.class);
+    }
+
+    public CreateGameResponse createGame(CreateGameRequest.RequestBody req, String authorization) throws ClientException {
+        var path = "/game";
+        return this.makeRequest("POST", path, req, authorization, CreateGameResponse.class);
+    }
+
+    public void joinGame(JoinGameRequest.RequestBody req, String authorization) throws ClientException {
+        var path = "/game";
+        this.makeRequest("PUT", path, req, authorization, null);
     }
 
 
 
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ClientException {
+    private <T> T makeRequest(String method, String path, Object request, String authorization, Class<T> responseClass) throws ClientException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-            writeBody(request, http);
+            writeBody(request, authorization, http);
             http.connect();
+
              if (isSuccessful(http)){
                  return readBodySuccess(http, responseClass);
              }
              else {
                 readBodyError(http);
             }
+
         } catch (ClientException e) {
             throw e;
         }
@@ -84,10 +96,16 @@ public class ServerFacade {
     }
 
 
-    private static void writeBody(Object request, HttpURLConnection http) throws ClientException {
+    private static void writeBody(Object request, String authorization, HttpURLConnection http) throws ClientException {
+
+        if (authorization != null) {
+            http.setRequestProperty("Authorization", authorization);
+        }
+
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
             String reqData = new Gson().toJson(request);
+
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
@@ -102,9 +120,9 @@ public class ServerFacade {
         if (http.getContentLength() < 0) {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
+
                 if (responseClass != null) {
                     response = new Gson().fromJson(reader, responseClass);
-                    // IntelliJ sorcery how does this even work
                 }
             }
             catch (IOException e) {
