@@ -44,7 +44,6 @@ public class LoggedOutState extends AState {
         } catch (ClientException e) {
             return SharedBuilder.setStringColor(_color, LoggedOutBuilder.getErrorStringRequest(e.toString(), "register"));
         }
-
     }
 
     private String Login(String[] params)  {

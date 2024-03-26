@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 
 public class Server {
 
-    private final Service service;
+    // Public for testing sake, don't know way around it
+    public final Service service;
 
 
     public Server() {

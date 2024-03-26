@@ -20,17 +20,6 @@ public class ServerFacade {
     }
 
 
-
-//     Spark.post("/user", this::registerUser);
-//        Spark.post("/session", this::loginUser);
-//        Spark.delete("/session", this::logoutUser);
-//        Spark.get("/game", this::listGames);
-//        Spark.post("/game", this::createGame);
-//        Spark.put("/game", this::joinGame);
-//        Spark.delete("/db", this::clearAll);
-//        Spark.exception(Exception.class, this::exceptionHandler);
-
-
     public RegisterResponse registerUser(RegisterRequest req) throws ClientException {
         var path = "/user";
         return this.makeRequest("POST", path, req, null, RegisterResponse.class);

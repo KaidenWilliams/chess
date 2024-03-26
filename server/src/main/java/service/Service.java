@@ -82,7 +82,6 @@ public class Service {
 
 
     //5. createGame
-
     public GameModel createGame(CreateGameRequest createGame) throws DataAccessException {
          AuthModel userExisting = authDAO.getRowByAuthtoken(createGame.authToken());
 
