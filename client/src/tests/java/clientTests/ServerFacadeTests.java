@@ -10,7 +10,6 @@ import model.JsonResponseObjects.*;
 import service.Service;
 
 
-
 public class ServerFacadeTests {
 
     private static Server server;
