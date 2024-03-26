@@ -6,10 +6,14 @@ import ui.ChessGameBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import ui.SharedBuilder;
+import ui.EscapeSequences;
 
 public class ChessGameState extends AState {
 
     protected static Map<String, Function<String[], String>> _commandMethods = new HashMap<>();
+
+    private final String _color = EscapeSequences.SET_TEXT_COLOR_BLUE;
 
     public ChessGameState(ServerFacade serverFacade, StateNotifier observer) {
         super(serverFacade, observer);
@@ -20,11 +24,11 @@ public class ChessGameState extends AState {
 
     private String Exit(String[] params) {
         _observer.ChangeStateLoggedIn();
-        return ChessGameBuilder.exitString;
+        return SharedBuilder.setStringColor(_color, ChessGameBuilder.exitString);
     }
 
     private String Help(String[] params) {
-        return ChessGameBuilder.helpString;
+        return SharedBuilder.setStringColor(_color, ChessGameBuilder.helpString);
     }
 
 
@@ -35,6 +39,7 @@ public class ChessGameState extends AState {
 
     @Override
     String DefaultCommand(String[] params) {
-        return ChessGameBuilder.getBothBoards();
+        String bothBoards = ChessGameBuilder.printBoard("white") + "\n\n" + ChessGameBuilder.printBoard("black");
+        return bothBoards;
     }
 }

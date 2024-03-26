@@ -5,8 +5,20 @@ package ui;
  */
 public class EscapeSequences {
 
-    private static final String UNICODE_ESCAPE = "\u001b";
-    private static final String ANSI_ESCAPE = "\033";
+
+
+//    Chess.com color attempt
+//    \u001b[48;2;118;150;86m
+//    \u001b[48;2;202;202;166m
+
+    public static final String LIGHT_SQUARE_COLOR = "\u001b[48;5;107m";
+    public static final String DARK_SQUARE_COLOR = "\u001b[48;5;240m";
+    public static final String RESET_COLOR = "\u001b[0m";
+
+    public static final String EMPTY = " \u2001\u2005\u200A ";
+
+    public static final String UNICODE_ESCAPE = "\u001b";
+    public static final String ANSI_ESCAPE = "\033";
 
     public static final String ERASE_SCREEN = UNICODE_ESCAPE + "[H" + UNICODE_ESCAPE + "[2J";
     public static final String ERASE_LINE = UNICODE_ESCAPE + "[2K";
@@ -21,14 +33,15 @@ public class EscapeSequences {
     public static final String SET_TEXT_BLINKING = UNICODE_ESCAPE + "[5m";
     public static final String RESET_TEXT_BLINKING = UNICODE_ESCAPE + "[25m";
 
-    private static final String SET_TEXT_COLOR = UNICODE_ESCAPE + "[38;5;";
-    private static final String SET_BG_COLOR = UNICODE_ESCAPE + "[48;5;";
+    public static final String SET_TEXT_COLOR = UNICODE_ESCAPE + "[38;5;";
+    public static final String SET_BG_COLOR = UNICODE_ESCAPE + "[48;5;";
 
     public static final String SET_TEXT_COLOR_BLACK = SET_TEXT_COLOR + "0m";
     public static final String SET_TEXT_COLOR_LIGHT_GREY = SET_TEXT_COLOR + "242m";
     public static final String SET_TEXT_COLOR_DARK_GREY = SET_TEXT_COLOR + "235m";
     public static final String SET_TEXT_COLOR_RED = SET_TEXT_COLOR + "160m";
     public static final String SET_TEXT_COLOR_GREEN = SET_TEXT_COLOR + "46m";
+    public static final String SET_TEXT_COLOR_ORANGE = SET_TEXT_COLOR + "208m";
     public static final String SET_TEXT_COLOR_YELLOW = SET_TEXT_COLOR + "226m";
     public static final String SET_TEXT_COLOR_BLUE = SET_TEXT_COLOR + "12m";
     public static final String SET_TEXT_COLOR_MAGENTA = SET_TEXT_COLOR + "5m";
@@ -47,6 +60,7 @@ public class EscapeSequences {
     public static final String SET_BG_COLOR_WHITE = SET_BG_COLOR + "15m";
     public static final String RESET_BG_COLOR = SET_BG_COLOR + "0m";
 
+
     public static final String WHITE_KING = " ♔ ";
     public static final String WHITE_QUEEN = " ♕ ";
     public static final String WHITE_BISHOP = " ♗ ";
@@ -59,7 +73,7 @@ public class EscapeSequences {
     public static final String BLACK_KNIGHT = " ♞ ";
     public static final String BLACK_ROOK = " ♜ ";
     public static final String BLACK_PAWN = " ♟ ";
-    public static final String EMPTY = " \u2003 ";
+
 
     public static String moveCursorToLocation(int x, int y) { return UNICODE_ESCAPE + "[" + y + ";" + x + "H"; }
 }

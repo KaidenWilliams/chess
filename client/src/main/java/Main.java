@@ -7,7 +7,7 @@ public class Main {
             serverUrl = args[0];
         }
 
-        //System.out.println("Hi Mom");
-        new InputHandler(serverUrl).ReadInput();
+       new InputHandler(serverUrl).ReadInput();
+
     }
 }

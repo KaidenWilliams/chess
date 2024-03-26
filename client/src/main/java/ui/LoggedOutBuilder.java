@@ -2,17 +2,16 @@ package ui;
 
 public class LoggedOutBuilder {
 
-
     public static String registerString =
             """
             Successfully registered and logged in to your account, "%s"
-            Currently Logged in. To view possible commands, type "help"
+            You are currently logged in
             """;
 
     public static String loginString =
             """
             Successfully logged in your account, "%s"
-            Currently Logged in. To view possible commands, type "help"
+            You are currently logged in
             """;
 
     public static String quitString =
@@ -40,6 +39,25 @@ public class LoggedOutBuilder {
             < quit -- to exit the application
             < help -- to get a list of possible commands
             """;
+
+    public static String errorStringSyntax =
+            """
+            Syntax Error for the following command: "%s". Try again, or type "help" for a syntax refresher
+            """;
+
+    public static String errorStringRequest =
+            """
+            Error for the following command: "%s". Error: "%s". Please try again
+            """;
+
+
+    public static String getErrorStringSyntax(String command) {
+        return String.format(errorStringSyntax, command);
+    }
+
+    public static String getErrorStringRequest(String errorMessage, String command) {
+        return String.format(errorStringRequest, command, errorMessage);
+    }
 
     public static String getRegisterString(String username) {
         return String.format(registerString, username);

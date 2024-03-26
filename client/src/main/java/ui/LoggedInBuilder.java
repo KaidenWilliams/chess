@@ -7,7 +7,7 @@ public class LoggedInBuilder {
     public static String logoutString =
             """
             Successfully logged out of your account, "%s"
-            Currently logged out. To view possible commands, type "help"
+            You are currently logged out
             """;
 
 
@@ -16,7 +16,7 @@ public class LoggedInBuilder {
             %d. Game Name: %s. Player White: %s. Player Black: %s
             """;
 
-    public static HashMap<Integer, Integer> gameNumberMap;
+    public static HashMap<Integer, Integer> gameNumberMap = new HashMap<>();
 
     public static String createGameString =
             """
@@ -31,7 +31,7 @@ public class LoggedInBuilder {
 
     public static String joinGameErrorString =
             """
-            Error, no game found corresponding to number: "%s". Please try again, or enter "list" to see what games exist.
+            Error, no game found corresponding to number: "%s". Please try again, or enter "list" to see what games exist
             """;
 
     public static String spectateGameString =
@@ -63,6 +63,25 @@ public class LoggedInBuilder {
             < logout -- to log out of your account
             < help -- to get a list of possible commands
             """;
+
+    public static String errorStringSyntax =
+            """
+            Syntax Error for the following command: "%s". Try again, or type "help" for a syntax refresher.
+            """;
+
+    public static String errorStringRequest =
+            """
+            Error for the following command: "%s". Error: "%s". Please try again.
+            """;
+
+
+    public static String getErrorStringSyntax(String command) {
+        return String.format(errorStringSyntax, command);
+    }
+
+    public static String getErrorStringRequest(String errorMessage, String command) {
+        return String.format(errorStringRequest, command, errorMessage);
+    }
 
 
     public static String getLogoutString(String username) {

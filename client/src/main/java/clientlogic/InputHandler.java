@@ -1,18 +1,9 @@
 package clientlogic;
-import exceptionclient.ClientException;
+import ui.EscapeSequences;
 
 import java.util.Scanner;
 
 public class InputHandler {
-
-    // Has scanner, handles input
-    // Constantly taking input, passes it to client
-    // Initialized Client
-    // Kills/stops looping upon recieving Quit message
-
-    // Calls client
-//
-//
 
     private final ClientController client;
 
@@ -31,7 +22,9 @@ public class InputHandler {
             String line = scanner.nextLine();
 
             output = client.routeInput(line);
-            if (output.equals("quit\n")) {
+
+            String[] words = output.trim().split("\\s+");
+            if (words.length == 1 && words[0].contains("quit")) {
                 break;
             }
 
@@ -43,11 +36,10 @@ public class InputHandler {
 
     private void printIntro() {
         System.out.println("Welcome to chess. Login or register to play the game. For a list of potential commands, type \"help\"");
-        System.out.println();
     }
 
     private void printOutro() {
-        System.out.println();
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_WHITE);
         System.out.println("Thank you for playing. Come again soon ;)");
     }
 
