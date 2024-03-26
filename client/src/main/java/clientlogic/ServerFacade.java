@@ -51,8 +51,6 @@ public class ServerFacade {
     }
 
 
-
-
     private <T> T makeRequest(String method, String path, Object request, String authorization, Class<T> responseClass) throws ClientException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
