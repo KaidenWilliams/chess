@@ -165,7 +165,5 @@ public class ServerFacadeTests {
         Assertions.assertThrows( ClientException.class, () -> serverFacade.joinGame(joinGameRequestBody, validAuthToken));
 
     }
-    
-    
-    
+
 }
