@@ -3,7 +3,6 @@ import server.Server;
 public class Main {
     public static void main(String[] args) {
 
-        // Todo start up server here
         try {
             var port = 8080;
             if (args.length >= 1) {
