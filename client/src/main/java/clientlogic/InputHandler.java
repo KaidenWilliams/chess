@@ -36,6 +36,7 @@ public class InputHandler {
 
     private void printIntro() {
         System.out.println("Welcome to chess. Login or register to play the game. For a list of potential commands, type \"help\"");
+        System.out.println(EscapeSequences.RESET_TEXT_COLOR);
     }
 
     private void printOutro() {

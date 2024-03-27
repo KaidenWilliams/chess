@@ -5,37 +5,18 @@ public class ChessGameBuilder {
 //     This will make string representation of board
 //     class that encapsulates logic for how chess board look
 
+    private static final String[] columns = {"a", "b", "c", "d", "e", "f", "g", "h"};
+    private static final String[] rows = {"1", "2", "3", "4", "5", "6", "7", "8"};
     private static final String[][] board = new String[8][8];
 
     public static String printBoard(String color) {
 
         boolean isWhiteView = color.equalsIgnoreCase("white");
 
-        StringBuilder boardString = new StringBuilder(EscapeSequences.ERASE_SCREEN);
-
-        // Initialize the board with empty squares
         initializeBoard();
-
-        // Place the pieces on the board
         placePieces(isWhiteView);
 
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                String squareColor;
-                if (isWhiteView) {
-                    squareColor = ((row + col) % 2 == 0) ? EscapeSequences.LIGHT_SQUARE_COLOR : EscapeSequences.DARK_SQUARE_COLOR;
-                }
-                else {
-                    squareColor = ((row + col) % 2 == 0) ? EscapeSequences.DARK_SQUARE_COLOR : EscapeSequences.LIGHT_SQUARE_COLOR;
-                }
-                boardString.append(squareColor)
-                        .append(board[row][col])
-                        .append(EscapeSequences.RESET_COLOR);
-            }
-            boardString.append("\n"); // Add a newline character after each row
-        }
-
-        return boardString.toString();
+        return printBoardString(isWhiteView);
     }
 
     private static void initializeBoard() {
@@ -105,6 +86,56 @@ public class ChessGameBuilder {
     }
 
 
+    private static String printBoardString(boolean isWhiteView) {
+
+        StringBuilder boardString = new StringBuilder(EscapeSequences.ERASE_SCREEN);
+        // Print column labels
+        boardString.append(EscapeSequences.RESET_BG_COLOR).append("\n").append(" ");;
+        if (isWhiteView) {
+            for (String column : columns) {
+                boardString.append(EscapeSequences.SET_TEXT_COLOR_WHITE).append(" ").append(column).append("  ");
+            }
+        } else {
+            for (int i = columns.length - 1; i >= 0; i--) {
+                boardString.append(EscapeSequences.SET_TEXT_COLOR_WHITE).append(" ").append(columns[i]).append("  ");
+            }
+        }
+        boardString.append(EscapeSequences.RESET_BG_COLOR).append("\n");
+
+        for (int row = 0; row < 8; row++) {
+            // Print row label
+            int rowNumber = isWhiteView ? 8 - row : row + 1;
+            boardString.append(EscapeSequences.SET_TEXT_COLOR_WHITE).append(rowNumber).append(" "); // add row label
+
+            for (int col = 0; col < 8; col++) {
+                String squareColor;
+                if (isWhiteView) {
+                    squareColor = ((row + col) % 2 == 0) ? EscapeSequences.LIGHT_SQUARE_COLOR : EscapeSequences.DARK_SQUARE_COLOR;
+                } else {
+                    squareColor = ((row + col) % 2 == 0) ? EscapeSequences.DARK_SQUARE_COLOR : EscapeSequences.LIGHT_SQUARE_COLOR;
+                }
+                boardString.append(squareColor)
+                        .append(board[row][col])
+                        .append(EscapeSequences.RESET_COLOR);
+            }
+            boardString.append(" ").append(rowNumber).append("\n"); // add row label and newline
+        }
+
+        boardString.append(" ");
+        // Print column labels again
+        if (isWhiteView) {
+            for (String column : columns) {
+                boardString.append(EscapeSequences.SET_TEXT_COLOR_WHITE).append(" ").append(column).append("  ");
+            }
+        } else {
+            for (int i = columns.length - 1; i >= 0; i--) {
+                boardString.append(EscapeSequences.SET_TEXT_COLOR_WHITE).append(" ").append(columns[i]).append("  ");
+            }
+        }
+        boardString.append("\n").append(EscapeSequences.RESET_BG_COLOR).append(EscapeSequences.RESET_TEXT_COLOR);
+
+        return boardString.toString();
+    }
 
 
 
