@@ -7,13 +7,16 @@ public class EscapeSequences {
 
 
 
-//    Chess.com color attempt
-//    \u001b[48;2;118;150;86m
-//    \u001b[48;2;202;202;166m
+
 
     public static final String LIGHT_SQUARE_COLOR = "\u001b[48;5;107m";
     public static final String DARK_SQUARE_COLOR = "\u001b[48;5;240m";
     public static final String RESET_COLOR = "\u001b[0m";
+
+    public static final String ROWLABELSPACING = "\u2003\u2004\u2006\u200a";
+    public static final String ROWLABELPADDING = "\u2004\u200a";
+
+
 
     public static final String EMPTY = " \u2001\u2005\u200A ";
 

@@ -5,9 +5,6 @@ public class ChessGameBuilder {
     private static final String[] ROWS = {"8", "7", "6", "5", "4", "3", "2", "1"};
     private static final String[][] BOARD = new String[8][8];
 
-    public static final String EMPTY = " \u2001\u2005\u200A ";
-
-    public static final String ROWLABELSPACING = "\u2003\u2004\u2006\u200a";
 
     public static String printBoard(String color) {
         boolean isWhiteView = color.equalsIgnoreCase("white");
@@ -19,7 +16,7 @@ public class ChessGameBuilder {
     private static void initializeBoard() {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                BOARD[row][col] = EMPTY;
+                BOARD[row][col] = EscapeSequences.EMPTY;
             }
         }
     }
@@ -85,11 +82,11 @@ public class ChessGameBuilder {
     }
 
     private static void swapKingAndQueen() {
-        String temp = BOARD[0][4]; // Swap the king and queen positions for the white pieces
+        String temp = BOARD[0][4];
         BOARD[0][4] = BOARD[0][3];
         BOARD[0][3] = temp;
 
-        temp = BOARD[7][4]; // Swap the king and queen positions for the black pieces
+        temp = BOARD[7][4];
         BOARD[7][4] = BOARD[7][3];
         BOARD[7][3] = temp;
     }
@@ -121,30 +118,16 @@ public class ChessGameBuilder {
         return boardString.toString();
     }
 
-
-//    private static void printColumnLabels(StringBuilder boardString, boolean isWhiteView) {
-//        boardString.append(" ");
-//        for (int i = 0; i < COLUMNS.length; i++) {
-//            int columnIndex = isWhiteView ? i : COLUMNS.length - 1 - i;
-//            boardString.append(EscapeSequences.SET_TEXT_COLOR_WHITE)
-//                    .append(" ")
-//                    .append(COLUMNS[columnIndex])
-//                    .append(" ");
-//        }
-//        boardString.append(EscapeSequences.RESET_TEXT_COLOR);
-//    }
-//
-
     private static void printColumnLabels(StringBuilder boardString, boolean isWhiteView) {
-        boardString.append(ROWLABELSPACING).append("\u2004\u200a"); // Add an empty space at the start
+        boardString.append(EscapeSequences.ROWLABELPADDING).append(EscapeSequences.ROWLABELSPACING);
         for (int i = 0; i < COLUMNS.length; i++) {
             int columnIndex = isWhiteView ? i : COLUMNS.length - 1 - i;
             boardString.append(EscapeSequences.SET_TEXT_COLOR_WHITE)
                     .append(COLUMNS[columnIndex])
-                    .append(ROWLABELSPACING) // Add an empty space after each column label
+                    .append(EscapeSequences.ROWLABELSPACING)
                     .append(EscapeSequences.RESET_TEXT_COLOR);
         }
-        boardString.append(ROWLABELSPACING); // Add an empty space at the end
+        boardString.append(EscapeSequences.ROWLABELSPACING);
     }
 
 
