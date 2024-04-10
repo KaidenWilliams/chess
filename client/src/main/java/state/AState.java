@@ -8,7 +8,15 @@ import java.util.function.Function;
 
 public abstract class AState {
 
-    // TODO will see how authtoken works, if everyone shares it
+    // Every state will need websocket messages fuctionality, just way I built it
+    // Pass webSocketFacade into each of them as well, call facade methods
+
+    // Will need to probably initialize WebSocketFacade upon entering chess game, only time it
+    // - is used (I think)
+
+    // also in chess game need to implement move, lots of other endpoints, might have to split
+    // - it into multiple classes or something
+
     protected static String _authToken;
     protected static String _username;
     protected static ServerFacade _serverFacade;
