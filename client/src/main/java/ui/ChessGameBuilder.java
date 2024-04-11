@@ -150,6 +150,9 @@ public class ChessGameBuilder {
                 : EscapeSequences.DARK_SQUARE_COLOR;
     }
 
+
+
+
     public static final String exitString =
         """
         Leaving the Chess Game.

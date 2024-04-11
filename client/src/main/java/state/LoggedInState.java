@@ -1,12 +1,13 @@
 package state;
 
+import chess.ChessGame;
 import clientlogic.ServerFacade;
 import exceptionclient.ClientException;
 import model.JsonRequestObjects.*;
 import model.JsonResponseObjects.*;
 import ui.LoggedInBuilder;
-import ui.SharedBuilder;
 import ui.EscapeSequences;
+import static ui.SharedBuilder.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,10 +41,10 @@ public class LoggedInState extends AState {
             _username = null;
             _authToken = null;
             _observer.ChangeStateLoggedOut();
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getLogoutString(tempUsername));
+            return setStringColor(_color, LoggedInBuilder.getLogoutString(tempUsername));
         }
         catch (ClientException e) {
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getErrorStringRequest(e.toString(), "logout"));
+            return setStringColor(_color, LoggedInBuilder.getErrorStringRequest(e.toString(), "logout"));
         }
     }
 
@@ -62,85 +63,86 @@ public class LoggedInState extends AState {
                 LoggedInBuilder.gameNumberMap.put(i, game.gameID());
                 i++;
             }
-            return SharedBuilder.setStringColor(_color, sb.toString());
+            return setStringColor(_color, sb.toString());
         }
         catch (ClientException e) {
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getErrorStringRequest(e.toString(), "list"));
+            return setStringColor(_color, LoggedInBuilder.getErrorStringRequest(e.toString(), "list"));
         }
     }
 
     private String Create(String[] params)  {
 
         if (params == null || params.length != 1) {
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getErrorStringSyntax("create"));
+            return setStringColor(_color, LoggedInBuilder.getErrorStringSyntax("create"));
         }
         try {
             var req = new CreateGameRequest.RequestBody(params[0]);
             CreateGameResponse res = _serverFacade.createGame(req, _authToken);
 
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getCreateGameString(params[0]));
+            return setStringColor(_color, LoggedInBuilder.getCreateGameString(params[0]));
         }
         catch (ClientException e) {
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getErrorStringRequest(e.toString(), "list"));
+            return setStringColor(_color, LoggedInBuilder.getErrorStringRequest(e.toString(), "list"));
         }
     }
 
     private String Join(String[] params)  {
 
         if (params == null || params.length != 2) {
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getErrorStringSyntax("join"));
+            return setStringColor(_color, LoggedInBuilder.getErrorStringSyntax("join"));
         }
         try {
             String color = params[1].toLowerCase();
             Integer gameNumber = LoggedInBuilder.gameNumberMap.get(Integer.parseInt(params[0]));
 
             if (gameNumber == null) {
-                return SharedBuilder.setStringColor(_color, LoggedInBuilder.getJoinGameErrorString(params[0]));
+                return setStringColor(_color, LoggedInBuilder.getJoinGameErrorString(params[0]));
             }
 
             var req = new JoinGameRequest.RequestBody(color, gameNumber);
             _serverFacade.joinGame(req, _authToken);
             _observer.ChangeStateChessGame();
 
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getJoinGameString(gameNumber, color));
+            _gameColor = (color.equals("black") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE);
+            return setStringColor(_color, LoggedInBuilder.getJoinGameString(gameNumber, color));
         }
         catch (NumberFormatException e) {
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getJoinGameErrorString(params[0]));
+            return setStringColor(_color, LoggedInBuilder.getJoinGameErrorString(params[0]));
         }
         catch (ClientException e) {
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getErrorStringRequest(e.toString(), "join"));
+            return setStringColor(_color, LoggedInBuilder.getErrorStringRequest(e.toString(), "join"));
         }
     }
 
     private String Spectate(String[] params) {
         if (params == null || params.length != 1) {
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getErrorStringSyntax("spectate"));
+            return setStringColor(_color, LoggedInBuilder.getErrorStringSyntax("spectate"));
         }
         try {
             Integer gameNumber = LoggedInBuilder.gameNumberMap.get(Integer.parseInt(params[0]));
 
             if (gameNumber == null) {
-                return SharedBuilder.setStringColor(_color, LoggedInBuilder.getJoinGameErrorString(params[0]));
+                return setStringColor(_color, LoggedInBuilder.getJoinGameErrorString(params[0]));
             }
 
             var req = new JoinGameRequest.RequestBody(null, gameNumber);
             _serverFacade.joinGame(req, _authToken);
             _observer.ChangeStateChessGame();
 
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getSpecateGameString(gameNumber));
+            return setStringColor(_color, LoggedInBuilder.getSpecateGameString(gameNumber));
         }
         catch (NumberFormatException e) {
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getJoinGameErrorString(params[0]));
+            return setStringColor(_color, LoggedInBuilder.getJoinGameErrorString(params[0]));
         }
         catch (ClientException e) {
-            return SharedBuilder.setStringColor(_color, LoggedInBuilder.getErrorStringRequest(e.toString(), "spectate"));
+            return setStringColor(_color, LoggedInBuilder.getErrorStringRequest(e.toString(), "spectate"));
         }
     }
 
 
 
     private String Help(String[] params) {
-        return SharedBuilder.setStringColor(_color, LoggedInBuilder.helpString);
+        return setStringColor(_color, LoggedInBuilder.helpString);
     }
 
 
@@ -151,7 +153,7 @@ public class LoggedInState extends AState {
 
     @Override
     String DefaultCommand(String[] params) {
-        return SharedBuilder.setStringColor(_color, LoggedInBuilder.defaultString);
+        return setStringColor(_color, LoggedInBuilder.defaultString);
     }
 
 

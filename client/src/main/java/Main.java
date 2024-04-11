@@ -7,7 +7,12 @@ public class Main {
             serverUrl = args[0];
         }
 
-       new InputHandler(serverUrl).ReadInput();
+        try {
+            new InputHandler(serverUrl).ReadInput();
+        }
+        catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
 
     }
 }

@@ -5,7 +5,7 @@ import model.JsonRequestObjects.*;
 import model.JsonResponseObjects.*;
 import ui.LoggedOutBuilder;
 import clientlogic.ServerFacade;
-import ui.SharedBuilder;
+import static ui.SharedBuilder.*;
 import ui.EscapeSequences;
 
 import java.util.HashMap;
@@ -30,7 +30,7 @@ public class LoggedOutState extends AState {
     private String Register(String[] params) {
 
         if (params == null || params.length != 3) {
-            return SharedBuilder.setStringColor(_color, LoggedOutBuilder.getErrorStringSyntax("register"));
+            return setStringColor(_color, LoggedOutBuilder.getErrorStringSyntax("register"));
         }
 
         try {
@@ -39,17 +39,17 @@ public class LoggedOutState extends AState {
             _authToken = res.authToken();
             _username = params[0];
             _observer.ChangeStateLoggedIn();
-            return SharedBuilder.setStringColor(_color, LoggedOutBuilder.getRegisterString(_username));
+            return setStringColor(_color, LoggedOutBuilder.getRegisterString(_username));
 
         } catch (ClientException e) {
-            return SharedBuilder.setStringColor(_color, LoggedOutBuilder.getErrorStringRequest(e.toString(), "register"));
+            return setStringColor(_color, LoggedOutBuilder.getErrorStringRequest(e.toString(), "register"));
         }
     }
 
     private String Login(String[] params)  {
 
         if (params == null || params.length != 2) {
-            return SharedBuilder.setStringColor(_color, LoggedOutBuilder.getErrorStringSyntax("login"));
+            return setStringColor(_color, LoggedOutBuilder.getErrorStringSyntax("login"));
         }
         try {
             var req = new LoginRequest(params[0], params[1]);
@@ -58,19 +58,19 @@ public class LoggedOutState extends AState {
             _authToken = res.authToken();
             _username = params[0];
             _observer.ChangeStateLoggedIn();
-            return SharedBuilder.setStringColor(_color, LoggedOutBuilder.getLoginString(_username));
+            return setStringColor(_color, LoggedOutBuilder.getLoginString(_username));
         }
         catch (ClientException e) {
-            return SharedBuilder.setStringColor(_color, LoggedOutBuilder.getErrorStringRequest(e.toString(), "login"));
+            return setStringColor(_color, LoggedOutBuilder.getErrorStringRequest(e.toString(), "login"));
         }
     }
 
     private String Quit(String[] params) {
-        return SharedBuilder.setStringColor(_color, LoggedOutBuilder.quitString);
+        return setStringColor(_color, LoggedOutBuilder.quitString);
     }
 
     private String Help(String[] params) {
-        return SharedBuilder.setStringColor(_color, LoggedOutBuilder.helpString);
+        return setStringColor(_color, LoggedOutBuilder.helpString);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class LoggedOutState extends AState {
 
     @Override
     String DefaultCommand(String[] params) {
-        return SharedBuilder.setStringColor(_color, LoggedOutBuilder.defaultString);
+        return setStringColor(_color, LoggedOutBuilder.defaultString);
     }
 
 }

@@ -1,5 +1,6 @@
 package state;
 
+import chess.ChessGame;
 import clientlogic.ServerFacade;
 import exceptionclient.ClientException;
 
@@ -19,6 +20,8 @@ public abstract class AState {
 
     protected static String _authToken;
     protected static String _username;
+
+    protected static ChessGame.TeamColor _gameColor;
     protected static ServerFacade _serverFacade;
     protected static StateNotifier _observer;
 

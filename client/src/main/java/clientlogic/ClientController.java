@@ -1,7 +1,9 @@
 package clientlogic;
 
+import clientlogic.websocket.WebSocketFacade;
 import exceptionclient.ClientException;
 import state.*;
+import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Arrays;
 
@@ -20,13 +22,14 @@ public class ClientController {
     private AState state;
 
     private StateNotifier observer;
-    private String authToken;
     private final String serverUrl;
     private ServerFacade serverFacade;
+    private WebSocketFacade webSocketFacade;
 
-    public ClientController(String url) {
+    public ClientController(String url) throws ClientException {
         serverUrl = url;
         serverFacade = new ServerFacade(serverUrl);
+        webSocketFacade = new WebSocketFacade(serverUrl, this);
         observer = new StateNotifier(this);
         state = new LoggedOutState(serverFacade, observer);
     }
@@ -40,6 +43,11 @@ public class ClientController {
         String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
 
         return state.eval(commandNameLower, params);
+    }
+
+    // Could make it another color for brownie points, probably will not tbh
+    public void printWS(String input) {
+        System.out.println(input);
     }
 
     public void SetStateLoggedIn() {

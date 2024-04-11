@@ -1,4 +1,5 @@
 package clientlogic;
+import exceptionclient.ClientException;
 import ui.EscapeSequences;
 
 import java.util.Scanner;
@@ -7,7 +8,7 @@ public class InputHandler {
 
     private final ClientController client;
 
-    public InputHandler(String serverUrl) {
+    public InputHandler(String serverUrl) throws ClientException {
         client = new ClientController(serverUrl);
     }
 
