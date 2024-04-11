@@ -21,7 +21,7 @@ public abstract class AState {
     protected static String _authToken;
     protected static String _username;
 
-    protected static ChessGame.TeamColor _gameColor;
+    protected static String _gameColor;
     protected static ServerFacade _serverFacade;
     protected static StateNotifier _observer;
 

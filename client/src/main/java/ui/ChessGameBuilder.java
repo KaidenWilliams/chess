@@ -1,108 +1,36 @@
 package ui;
 
+import chess.ChessGame;
+import chess.ChessPiece;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static chess.ChessPiece.PieceType.*;
+
 public class ChessGameBuilder {
     private static final String[] COLUMNS = {"a", "b", "c", "d", "e", "f", "g", "h"};
-    private static final String[] ROWS = {"8", "7", "6", "5", "4", "3", "2", "1"};
-    private static final String[][] BOARD = new String[8][8];
+    private static final String[] ROWS = {"1", "2", "3", "4", "5", "6", "7", "8"};
 
 
-    public static String printBoard(String color) {
-        boolean isWhiteView = color.equalsIgnoreCase("white");
-        initializeBoard();
-        placePieces(isWhiteView);
-        return printBoardString(isWhiteView);
+    public static String printBoard(ChessPiece[][] squares, String color) {
+        boolean isWhiteView = color == null || color.equalsIgnoreCase("white");
+        return printBoardString(squares, isWhiteView);
     }
 
-    private static void initializeBoard() {
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                BOARD[row][col] = EscapeSequences.EMPTY;
-            }
-        }
-    }
-
-    private static void placePieces(boolean isWhiteView) {
-        placePiecesInStandardPosition();
-        if (!isWhiteView) {
-            flipPiecesForBlackView();
-        }
-    }
-
-    private static void placePiecesInStandardPosition() {
-        BOARD[0][0] = EscapeSequences.WHITE_ROOK;
-        BOARD[0][1] = EscapeSequences.WHITE_KNIGHT;
-        BOARD[0][2] = EscapeSequences.WHITE_BISHOP;
-        BOARD[0][3] = EscapeSequences.WHITE_QUEEN;
-        BOARD[0][4] = EscapeSequences.WHITE_KING;
-        BOARD[0][5] = EscapeSequences.WHITE_BISHOP;
-        BOARD[0][6] = EscapeSequences.WHITE_KNIGHT;
-        BOARD[0][7] = EscapeSequences.WHITE_ROOK;
-
-        BOARD[7][0] = EscapeSequences.BLACK_ROOK;
-        BOARD[7][1] = EscapeSequences.BLACK_KNIGHT;
-        BOARD[7][2] = EscapeSequences.BLACK_BISHOP;
-        BOARD[7][3] = EscapeSequences.BLACK_QUEEN;
-        BOARD[7][4] = EscapeSequences.BLACK_KING;
-        BOARD[7][5] = EscapeSequences.BLACK_BISHOP;
-        BOARD[7][6] = EscapeSequences.BLACK_KNIGHT;
-        BOARD[7][7] = EscapeSequences.BLACK_ROOK;
-
-        for (int col = 0; col < 8; col++) {
-            BOARD[1][col] = EscapeSequences.WHITE_PAWN;
-            BOARD[6][col] = EscapeSequences.BLACK_PAWN;
-        }
-    }
-
-    private static void flipPiecesForBlackView() {
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 8; col++) {
-                BOARD[row][col] = getBlackPieceEquivalent(BOARD[7 - row][col]);
-            }
-        }
-
-        swapKingAndQueen();
-    }
-
-    private static String getBlackPieceEquivalent(String piece) {
-        return switch (piece) {
-            case EscapeSequences.WHITE_ROOK -> EscapeSequences.BLACK_ROOK;
-            case EscapeSequences.WHITE_KNIGHT -> EscapeSequences.BLACK_KNIGHT;
-            case EscapeSequences.WHITE_BISHOP -> EscapeSequences.BLACK_BISHOP;
-            case EscapeSequences.WHITE_QUEEN -> EscapeSequences.BLACK_QUEEN;
-            case EscapeSequences.WHITE_KING -> EscapeSequences.BLACK_KING;
-            case EscapeSequences.WHITE_PAWN -> EscapeSequences.BLACK_PAWN;
-            case EscapeSequences.BLACK_ROOK -> EscapeSequences.WHITE_ROOK;
-            case EscapeSequences.BLACK_KNIGHT -> EscapeSequences.WHITE_KNIGHT;
-            case EscapeSequences.BLACK_BISHOP -> EscapeSequences.WHITE_BISHOP;
-            case EscapeSequences.BLACK_QUEEN -> EscapeSequences.WHITE_QUEEN;
-            case EscapeSequences.BLACK_KING -> EscapeSequences.WHITE_KING;
-            case EscapeSequences.BLACK_PAWN -> EscapeSequences.WHITE_PAWN;
-            default -> piece;
-        };
-    }
-
-    private static void swapKingAndQueen() {
-        String temp = BOARD[0][4];
-        BOARD[0][4] = BOARD[0][3];
-        BOARD[0][3] = temp;
-
-        temp = BOARD[7][4];
-        BOARD[7][4] = BOARD[7][3];
-        BOARD[7][3] = temp;
-    }
-
-    private static String printBoardString(boolean isWhiteView) {
+    private static String printBoardString(ChessPiece[][] squares, boolean isWhiteView) {
         StringBuilder boardString = new StringBuilder(EscapeSequences.ERASE_SCREEN);
         printColumnLabels(boardString, isWhiteView);
         boardString.append("\n");
 
         for (int row = 0; row < 8; row++) {
-            int rowIndex = isWhiteView ? row : 7- row;
+            int rowIndex = isWhiteView ? 7 - row : row;
             printRowLabelRight(boardString, ROWS[rowIndex]);
 
             for (int col = 0; col < 8; col++) {
-                String squareColor = getSquareColor(row, col);
-                String piece = BOARD[rowIndex][col];
+                int columnIndex = isWhiteView ? col : 7 - col;
+                String squareColor = getSquareColor(row, columnIndex);
+                String piece = getPieceString(squares[rowIndex][columnIndex]);
                 boardString.append(squareColor)
                         .append(piece)
                         .append(EscapeSequences.RESET_COLOR);
@@ -118,6 +46,21 @@ public class ChessGameBuilder {
         return boardString.toString();
     }
 
+    private static String getPieceString(ChessPiece piece) {
+        if (piece == null) {
+            return EscapeSequences.EMPTY;
+        }
+
+        return switch (piece.getPieceType()) {
+            case KING -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_KING : EscapeSequences.BLACK_KING;
+            case QUEEN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_QUEEN : EscapeSequences.BLACK_QUEEN;
+            case BISHOP -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_BISHOP : EscapeSequences.BLACK_BISHOP;
+            case KNIGHT -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_KNIGHT : EscapeSequences.BLACK_KNIGHT;
+            case ROOK -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_ROOK : EscapeSequences.BLACK_ROOK;
+            case PAWN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_PAWN : EscapeSequences.BLACK_PAWN;
+        };
+    }
+
     private static void printColumnLabels(StringBuilder boardString, boolean isWhiteView) {
         boardString.append(EscapeSequences.ROWLABELPADDING).append(EscapeSequences.ROWLABELSPACING);
         for (int i = 0; i < COLUMNS.length; i++) {
@@ -129,7 +72,6 @@ public class ChessGameBuilder {
         }
         boardString.append(EscapeSequences.ROWLABELSPACING);
     }
-
 
     private static void printRowLabelRight(StringBuilder boardString, String rowLabel) {
         boardString.append(EscapeSequences.SET_TEXT_COLOR_WHITE)
@@ -152,17 +94,108 @@ public class ChessGameBuilder {
 
 
 
+    public static final Map<Character, Integer> colDict = new HashMap<>() {{
+        put('a', 1);
+        put('b', 2);
+        put('c', 3);
+        put('d', 4);
+        put('e', 5);
+        put('f', 6);
+        put('g', 7);
+        put('h', 8);
+    }};
 
-    public static final String exitString =
+    public static final Map<Character, Integer> rowDict = new HashMap<>() {{
+        put('1', 1);
+        put('2', 2);
+        put('3', 3);
+        put('4', 4);
+        put('5', 5);
+        put('6', 6);
+        put('7', 7);
+        put('8', 8);
+    }};
+
+    public static final Map<Character, ChessPiece.PieceType> pieceDict = new HashMap<>() {{
+        put('q', QUEEN);
+        put('r', ROOK);
+        put('k', KNIGHT);
+        put('b', BISHOP);
+    }};
+
+
+
+    public static final String leaveString =
         """
         Leaving the Chess Game.
         You are in the main menu.
         """;
 
+
+    public static final String resignString =
+
+            """
+            Are you sure you want to resign? You will forfeit the game.
+            
+            Type "confirm" to confirm the resign, or "cancel" to cancel the resign
+            """;
+
+    public static final String cancelString =
+
+            """
+            You have successfully cancelled your resignation
+            """;
+
+
     public static final String helpString =
             """
             Commands:
-            < exit -- to leave the Chess Game
+            < move <COL_START><ROW_START>-<COL_END><ROW_END> -- to move a piece. See "syntax" for info.
+            < resign -- to forfeit the chess game. You will be asked to confirm or cancel.
+            < redraw -- to draw the board again
+            < highlight -- to highlight the board?
+            < leave -- to leave the chess game window
+            < syntax -- to get more information about the chess move syntax
+            < help -- to get a list of possible commands
+            """;
+
+    public static final String syntaxString =
+
+            """
+            Move Syntax:
+            -Provide the starting column and row, followed by a dash "-", then the destination column and row.
+            -For pawn promotion, use "=" after the move, followed by the promotion piece.
+            -Only move your pieces on your turn, and make sure it is a legal chess move
+                        
+            -Regular Move:
+                <COL_START><ROW_START>-<COL_END><ROW_END>
+                ex. "e2-e4"
+            
+            -Promotion Move:
+                <COL_START><ROW_START>-<COL_END><ROW_END>=<PROMOTION_PIECE>
+                ex. "f7-f8=q"
+                
+            -Col Options
+                "a", "b", "c", "d", "e", "f", "g", "h"
+                
+            -Row Options
+                "1", "2", "3", "4", "5", "6", "7", "8"
+            
+            -Promotion_Piece options
+                "q" (Queen), "r" (Rook), "b" (Bishop), "k" (Knight)
+            """;
+
+    public static final String defaultString =
+            """
+            Your input was invalid. The following valid commands are shown below
+            
+            Commands:
+            < move <COL_START><ROW_START>-<COL_END><ROW_END> -- to move a piece. See "syntax" for info.
+            < resign -- to forfeit the chess game. You will be asked to confirm or cancel.
+            < redraw -- to draw the board again
+            < highlight -- to highlight the board?
+            < leave -- to leave the chess game window
+            < syntax -- to get more information about the chess move syntax
             < help -- to get a list of possible commands
             """;
 }

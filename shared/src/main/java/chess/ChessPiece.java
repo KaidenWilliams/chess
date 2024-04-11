@@ -14,6 +14,7 @@ public class ChessPiece {
 
 
     public final ChessGame.TeamColor pieceColor;
+
     public final PieceType type;
     private final PieceMovesCalculator movesCalculator;
 

@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
  */
 public class ChessGame {
 
-    // TODO - Implement data structure to store moves
-
     private ChessBoard myBoard;
     private TeamColor teamTurn;
 
@@ -70,7 +68,6 @@ public class ChessGame {
      * startPosition
      */
 
-    // - for some reason blocking doesn't work, idk why
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = myBoard.getPiece(startPosition);
         Collection<ChessMove> possibleMoves = piece.pieceMoves(myBoard, startPosition);

@@ -29,7 +29,7 @@ public class ClientController {
     public ClientController(String url) throws ClientException {
         serverUrl = url;
         serverFacade = new ServerFacade(serverUrl);
-        webSocketFacade = new WebSocketFacade(serverUrl, this);
+//        webSocketFacade = new WebSocketFacade(serverUrl, this);
         observer = new StateNotifier(this);
         state = new LoggedOutState(serverFacade, observer);
     }

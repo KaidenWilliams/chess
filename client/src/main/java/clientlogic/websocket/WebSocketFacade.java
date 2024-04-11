@@ -20,6 +20,50 @@ import java.net.URISyntaxException;
 // All websocket functionality in ChessGame state will call these methods, just like normal server facade
 
 
+// Websocket will set gameId, probably keep track of it too
+
+//    Interactions
+//- Root/instigating client starts by sending UserGameCommand to server.
+//            - Server recieves and sends appropriate ServerMessages to all clients connected to game
+//- when UserGameCommand is invalid, error message sent only to Root client
+//
+//
+//1.
+//        -JOIN_PLAYER sent to server
+//-server send LOAD_GAME message back to root client
+//-server sends NOTIFICATION to all other clients, informs them what color root client is joining as
+//
+//2.
+//        -JOIN_OBSERVER sent to server
+//-server sends LOAD_GAME back to root client
+//-server sends NOTIFICATION to all other clients in game
+//----both of these need to check what they are joining is actually valid in DB, can't steal spot they aren't in, client hacking protection
+//
+//3.
+//        -MAKE_MOVE sent to server
+//-server verifies validity of move
+//-game is updated in DB to represent the move
+//-server sends a LOAD_GAME message to all clients in the game with updated game
+//-server sends NOTIFICATION to all other clients informing what move was made
+//
+//4.
+//        -LEAVE send to server
+//-game connection updated so root client is no longer in it
+//-NOTIFICATION sent to all other clients informing them client has left
+//
+//5.
+//        -RESIGN sent so server
+//-server marks the game as over (can modify ChessGame class, or set nextmove to null, think that is easiest)
+//- NOTIFICATION sent to all clients informing what client has resigned
+
+
+
+
+
+
+
+
+
 
 
 //need to extend Endpoint for websocket to work properly

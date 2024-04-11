@@ -45,7 +45,7 @@ public class LoggedInBuilder {
             Commands:
             < create <GAMENAME>  -- to create a new Chess Game
             < join <GAMENUMBER> <COLOR(white/black)> -- to join a game as a player
-            < spectate <GAMENUMBER> <COLOR(white/black)> -- to join a game as a spectator
+            < spectate <GAMENUMBER> -- to join a game as a spectator
             < list -- to list all current Chess Games
             < logout -- to log out of your account
             < help -- to get a list of possible commands
@@ -58,30 +58,11 @@ public class LoggedInBuilder {
             Commands:
             < create <GAMENAME>  -- to create a new Chess Game
             < join <GAMENUMBER> <COLOR(white/black)> -- to join a game as a player
-            < spectate <GAMENUMBER> <COLOR(white/black)> -- to join a game as a spectator
+            < spectate <GAMENUMBER> -- to join a game as a spectator
             < list -- to list all current Chess Games
             < logout -- to log out of your account
             < help -- to get a list of possible commands
             """;
-
-    public static String errorStringSyntax =
-            """
-            Syntax Error for the following command: "%s". Try again, or type "help" for a syntax refresher.
-            """;
-
-    public static String errorStringRequest =
-            """
-            Error for the following command: "%s". Error: "%s". Please try again.
-            """;
-
-
-    public static String getErrorStringSyntax(String command) {
-        return String.format(errorStringSyntax, command);
-    }
-
-    public static String getErrorStringRequest(String errorMessage, String command) {
-        return String.format(errorStringRequest, command, errorMessage);
-    }
 
 
     public static String getLogoutString(String username) {

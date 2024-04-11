@@ -1,4 +1,4 @@
-package dataAccess.SQL;
+package model.customSerializers;
 import chess.*;
 
 

@@ -25,7 +25,6 @@ public class Service {
 
     // Need to implement websocket make move methods, don't know if they even need to be here
     // Just need to call makeMove on ChessBoard, then update GameDAO, then send that new version to everyone in connection
-    
 
 
 
@@ -132,7 +131,6 @@ public class Service {
         gameDAO.deleteAll();
         userDAO.deleteAll();
     }
-//
 
 
 
