@@ -20,6 +20,8 @@ public interface IGameDAO {
     //4. Update username for correct color with id TODO needs work
     GameModel updateUsername(GameModel oldGame, String usernameNew, String color) throws DataAccessException;
 
+    boolean updateChessGame(int gameId, String chessGame) throws DataAccessException;
+
     //5. Delete all - already implemented
     void deleteAll() throws DataAccessException;
 

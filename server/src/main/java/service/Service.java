@@ -1,4 +1,5 @@
 package service;
+import chess.ChessGame;
 import dataAccess.*;
 import model.*;
 import model.models.AuthModel;
@@ -131,6 +132,56 @@ public class Service {
         gameDAO.deleteAll();
         userDAO.deleteAll();
     }
+
+
+    public String getUsername(String authToken) throws DataAccessException {
+        try {
+            AuthModel auth = authDAO.getRowByAuthtoken(authToken);
+            return auth.username();
+        } catch (Exception ex) {
+            throw new DataAccessException("Error: Could not Find User. Are you logged in?", 500);
+        }
+    }
+
+
+    public boolean verifyUsername(int gameId, String username, ChessGame.TeamColor color) throws DataAccessException {
+
+        try {
+            GameModel game = gameDAO.getRowByGameID(gameId);
+            String checkUsername = null;
+
+            switch (color) {
+                case ChessGame.TeamColor.WHITE -> checkUsername = game.whiteUsername();
+                case ChessGame.TeamColor.BLACK -> checkUsername = game.blackUsername();
+            }
+
+            return checkUsername.equals(username);
+
+        } catch (Exception ex) {
+            throw new DataAccessException("Error: Could not Find Chess Game. Does it exist?", 500);
+        }
+    }
+
+    public void updateChessGame(int gameId, String game) throws DataAccessException {
+        try {
+            gameDAO.updateChessGame(gameId, game);
+        } catch (Exception ex) {
+            throw new DataAccessException("Error: Could not Update Chess Game. Does it exist?", 500);
+        }
+    }
+
+
+
+    //2. Service method to get ChessGame by gameId from game table
+    // - a.used to make sure correct user in black/white
+    // - b. used to update Chess Game
+
+    //3. Service method to updateChessgame by gameId from game table
+
+
+
+//    When sending a Notification that refers to one of the clients,
+//    the message should use the Clients username. (E.g., Bob left the game).
 
 
 

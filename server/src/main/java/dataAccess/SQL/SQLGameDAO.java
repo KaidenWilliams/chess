@@ -68,6 +68,7 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
         return new GameModel(id, whiteUsername, blackUsername, gameName, gameDeserialized);
     }
 
+
     //TODO update ChessGame
 //    public updateChessGame();
 
@@ -84,12 +85,34 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
             return null;
         }
         } catch (SQLException e) {
-            throw new DataAccessException("Error while retrieving row by authToken", 500);
+            throw new DataAccessException("Error: Could not find row from specified id", 500);
         }
     }
 
 
-    //4. Update username for correct color with id TODO needs work
+
+    //4. Update username for correct color with id
+    public boolean updateChessGame(int gameId, String chessGame) throws DataAccessException {
+
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "UPDATE game SET game = ? WHERE id = ?";
+
+            int rows = executeUpdateWithNumberRows(conn, statement, chessGame, gameId);
+            if (rows >= 1) {
+                return true;
+            } else {
+                throw new DataAccessException("Error while updating game with new username", 500);
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error while updating game with new username", 500);
+        }
+
+    }
+
+
+
+
+    //4. Update username for correct color with id
     public GameModel updateUsername(GameModel oldGame, String usernameNew, String color) throws DataAccessException {
 
         if (color == null) {

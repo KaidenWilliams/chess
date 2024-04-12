@@ -24,12 +24,15 @@ public class InputHandler {
 
             output = client.routeInput(line);
 
-            String[] words = output.trim().split("\\s+");
-            if (words.length == 1 && words[0].contains("quit")) {
-                break;
-            }
+            if (!output.isEmpty()) {
 
-            System.out.println(output);
+                String[] words = output.trim().split("\\s+");
+                if (words.length == 1 && words[0].contains("quit")) {
+                    break;
+                }
+
+                System.out.println(output);
+            }
         }
 
         printOutro();

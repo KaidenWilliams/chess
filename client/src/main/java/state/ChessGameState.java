@@ -2,8 +2,10 @@ package state;
 
 import chess.*;
 import clientlogic.ServerFacade;
+import exceptionclient.ClientException;
 import ui.ChessGameBuilder;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -83,6 +85,8 @@ public class ChessGameState extends AState {
         try {
             String move = params[0];
 
+            ChessMove chessMove;
+
             if (move.length() == 5 || move.length() == 7) {
 
                 Integer colFrom = colDict.get(move.charAt(0));
@@ -104,14 +108,16 @@ public class ChessGameState extends AState {
                         return setStringColor(_color, getErrorStringSyntax("move"));
                     }
                 }
-                ChessMove chessMove = new ChessMove(new ChessPosition(rowFrom, colFrom), new ChessPosition(rowTo, colTo), promotionPiece);
+                chessMove = new ChessMove(new ChessPosition(rowFrom, colFrom), new ChessPosition(rowTo, colTo), promotionPiece);
             }
 
             else {
                 return setStringColor(_color, getErrorStringSyntax("move"));
             }
 
-            return DrawBoard();
+            _webSocketFacade.MakeMove(chessMove);
+            // Think we draw board after we make a move
+            return "";
 
         }
         catch (Exception ex) {
@@ -138,6 +144,8 @@ public class ChessGameState extends AState {
 //        }
 //    }
 //
+
+
     private String Resign(String[] params) {
         _resign = true;
         return setStringColor(_color, resignString);
@@ -150,25 +158,34 @@ public class ChessGameState extends AState {
         // Leave: Integer gameID
         // TODO server facade method with gameID, notifies everyone else that user left
         // - Gameid used to select connection to remove from
-
-        _observer.ChangeStateLoggedIn();
-        _gameColor = null;
-        return setStringColor(_color, ChessGameBuilder.leaveString);
+        try {
+            _webSocketFacade.Leave();
+            SharedLeave();
+            return setStringColor(_color, ChessGameBuilder.leaveString);
+        }
+        catch (Exception ex) {
+            return setStringColor(_color, getErrorStringRequest(ex.getMessage(), "leave"));
+        }
     }
 
 
-//    private String Confirm(String[] params) {
-//
-//            _gameColor = null;
-//                set team turn to null, update DB
-//        _observer.ChangeStateLoggedIn();
-//        return setStringColor(_color, ChessGameBuilder.confirmString);
-//    }
+    private String Confirm(String[] params) throws IOException {
+        try {
+            _webSocketFacade.Resign();
+            SharedLeave();
+            return setStringColor(_color, ChessGameBuilder.confirmString);
+        }
+        catch (Exception ex) {
+            return setStringColor(_color, getErrorStringRequest(ex.getMessage(), "confirm"));
+        }
+    }
 
 
-        private void SharedLeave() {
-            _observer.ChangeStateLoggedIn();
+        private void SharedLeave() throws IOException {
             _gameColor = null;
+            _webSocketFacade.session.close();
+            _webSocketFacade = null;
+            _observer.ChangeStateLoggedIn();
         }
 
 

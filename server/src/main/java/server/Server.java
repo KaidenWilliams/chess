@@ -9,6 +9,8 @@ import model.JsonRequestValidation.*;
 import model.JsonRequestObjects.*;
 import model.JsonResponseObjects.*;
 import model.models.GameModel;
+import org.eclipse.jetty.websocket.server.WebSocketHandler;
+import server.websocket.WebsocketHandler;
 import spark.*;
 import service.Service;
 
@@ -22,13 +24,15 @@ public class Server {
     // Public for testing sake, don't know way around it
     public final Service service;
 
+    private final WebsocketHandler webSocketHandler;
 
     public Server() {
         this.service = createService();
+        webSocketHandler = new WebsocketHandler();
+        webSocketHandler.setService(service);
         System.out.println("Successfully Initialized Server");
     }
 
-    // Best I could think of, TODO
     public Service createService() {
         try {
             return new Service(SQLDataAccess.getInstance());
@@ -43,6 +47,7 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+        Spark.webSocket("/connect", webSocketHandler);
 
         // Register your endpoints and handle exceptions here.
 

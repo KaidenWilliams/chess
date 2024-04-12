@@ -2,6 +2,7 @@ package clientlogic.websocket;
 
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import exceptionclient.ClientException;
 import state.AState;
@@ -38,7 +39,7 @@ import java.net.URISyntaxException;
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
 
-    Session session;
+    public Session session;
     Integer gameId;
     String authToken;
 
@@ -60,7 +61,7 @@ public class WebSocketFacade extends Endpoint {
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
 
-                     var type = serverMessage.getServerMessageType();
+                    var type = serverMessage.getServerMessageType();
                     switch (type) {
                         case LOAD_GAME:
                             LoadGameMessage gameMessage = new Gson().fromJson(message, LoadGameMessage.class);
@@ -70,8 +71,7 @@ public class WebSocketFacade extends Endpoint {
                             if (state != null) {
                                 state.setGame(chessGame);
                                 WebSocketPrinter.printGame(state.DrawBoard());
-                            }
-                            else {
+                            } else {
                                 WebSocketPrinter.printError("Error: Invalid LoadGame Message sent. User is not in ChessGame State");
                             }
                             break;
@@ -121,7 +121,8 @@ public class WebSocketFacade extends Endpoint {
             throw new ClientException(ex.getMessage(), 500);
         }
     }
-//
+
+    //
 //    //2.
 //    //        -JOIN_OBSERVER sent to server
 //    //-server sends LOAD_GAME back to root client
@@ -137,7 +138,8 @@ public class WebSocketFacade extends Endpoint {
             throw new ClientException(ex.getMessage(), 500);
         }
     }
-//
+
+    //
 //
 //    //3.
 //    //        -MAKE_MOVE sent to server
@@ -147,14 +149,14 @@ public class WebSocketFacade extends Endpoint {
 //    //-server sends NOTIFICATION to all other clients informing what move was made
 //
 //    //3. Make_Move: Integer gameID, ChessMove move
-//    public void MakeMove(String visitorName) throws ClientException {
-//        try {
-//            var action = new Action(Action.Type.ENTER, visitorName);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//        } catch (IOException ex) {
-//            throw new ClientException(ex.getMessage(), 500);
-//        }
-//    }
+    public void MakeMove(ChessMove move) throws ClientException {
+        try {
+            var action = new MakeMoveCommand(authToken, gameId, move);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new ClientException(ex.getMessage(), 500);
+        }
+    }
 //
 //
 //    //4.
@@ -163,57 +165,29 @@ public class WebSocketFacade extends Endpoint {
 //    //-NOTIFICATION sent to all other clients informing them client has left
 //
 //    //4. Leave: Integer gameID
-//    public void Leave(String visitorName) throws ClientException {
-//        try {
-//            var action = new Action(Action.Type.ENTER, visitorName);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//    this.session.close();
-//        } catch (IOException ex) {
-//            throw new ClientException(ex.getMessage(), 500);
-//        }
-//    }
-//
+    public void Leave() throws ClientException {
+        try {
+            var action = new LeaveCommand(authToken, gameId);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new ClientException(ex.getMessage(), 500);
+        }
+    }
+
+    //
 //
 //    //5.
 //    //        -RESIGN sent so server
 //    //-server marks the game as over (can modify ChessGame class, or set nextmove to null, think that is easiest)
 //    //- NOTIFICATION sent to all clients informing what client has resigned
 //    //5. Resign: Integer gameID
-//    public void Resign(String visitorName) throws ClientException {
-//        try {
-//            var action = new Action(Action.Type.ENTER, visitorName);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//                this.session.close();
-//        } catch (IOException ex) {
-//            throw new ClientException(ex.getMessage(), 500);
-//        }
-//    }
-
-
-    public void setGameID(Integer id) {
+    public void Resign() throws ClientException {
+        try {
+            var action = new ResignCommand(authToken, gameId);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new ClientException(ex.getMessage(), 500);
+        }
     }
 
-
-
-
-//    public void enterPetShop(String visitorName) throws ClientException {
-//        try {
-//            var action = new Action(Action.Type.ENTER, visitorName);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//        } catch (IOException ex) {
-//            throw new ClientException(500, ex.getMessage());
-//        }
-//    }
-//
-//    public void leavePetShop(String visitorName) throws ClientException {
-//        try {
-//            var action = new Action(Action.Type.EXIT, visitorName);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//            this.session.close();
-//        } catch (IOException ex) {
-//            throw new ClientException(500, ex.getMessage());
-//        }
-//    }
-
 }
-

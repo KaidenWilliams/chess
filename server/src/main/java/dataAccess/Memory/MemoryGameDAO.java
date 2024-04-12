@@ -1,6 +1,7 @@
 package dataAccess.Memory;
 
 import dataAccess.IGameDAO;
+import model.DataAccessException;
 import model.models.GameModel;
 
 // TODO error throwing
@@ -27,6 +28,18 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
     public GameModel getRowByGameID(int gameID) {
         return findOne(model -> Integer.valueOf(model.gameID()).equals(gameID));
     }
+
+
+    // I really don't want to actually implement this
+    // If I end up needing too, will need to rework chessGame logic, take string not game
+    public boolean updateGameDao(int gameId, String chessGame) throws DataAccessException {
+        GameModel oldGame = findOne(model -> Integer.valueOf(model.gameID()).equals(gameId));
+        GameModel newGame = new GameModel(oldGame.gameID(), oldGame.whiteUsername(), oldGame.blackUsername(), oldGame.gameName(), oldGame.chessGame());
+        data.set(data.indexOf(oldGame), newGame);
+
+        return false;
+    }
+
 
     //4. Update username for correct color with id TODO needs work
     public GameModel updateUsername(GameModel oldGame, String usernameNew, String color) {
@@ -61,6 +74,7 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
 
         return null;
     }
+
 
     private int getGameId() {
         int oldId = currId;

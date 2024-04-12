@@ -145,6 +145,12 @@ public class ChessGameBuilder {
             You have successfully cancelled your resignation
             """;
 
+    public static final String confirmString =
+            """
+            You Have Resigned from the Chess Game.
+            You are in the main menu.
+            """;
+
 
     public static final String helpString =
             """
