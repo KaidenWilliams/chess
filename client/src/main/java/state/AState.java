@@ -24,7 +24,6 @@ public abstract class AState {
 
     protected static String _gameColor;
     protected static ServerFacade _serverFacade;
-
     protected static WebSocketFacade _webSocketFacade;
     protected static String _URL;
     protected static StateNotifier _observer;

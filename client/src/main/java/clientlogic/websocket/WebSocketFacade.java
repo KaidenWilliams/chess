@@ -82,12 +82,12 @@ public class WebSocketFacade extends Endpoint {
 
     //1. Join_Player: Integer gameID, ChessGame.TeamColor playerColor
     public void JoinPlayer(String visitorName) throws ClientException {
-        try {
-            var action = new JoinPlayerCommand(Action.Type.ENTER, visitorName);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-        } catch (IOException ex) {
-            throw new ClientException(ex.getMessage(), 500);
-        }
+//        try {
+//            var action = new JoinPlayerCommand(Action.Type.ENTER, visitorName);
+//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+//        } catch (IOException ex) {
+//            throw new ClientException(ex.getMessage(), 500);
+//        }
     }
 //
 //    //2.
