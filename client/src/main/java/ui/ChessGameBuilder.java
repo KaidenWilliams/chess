@@ -136,7 +136,6 @@ public class ChessGameBuilder {
 
             """
             Are you sure you want to resign? You will forfeit the game.
-            
             Type "confirm" to confirm the resign, or "cancel" to cancel the resign
             """;
 
@@ -165,22 +164,18 @@ public class ChessGameBuilder {
             Move Syntax:
             -Provide the starting column and row, followed by a dash "-", then the destination column and row.
             -For pawn promotion, use "=" after the move, followed by the promotion piece.
-            -Only move your pieces on your turn, and make sure it is a legal chess move
+            -Only move pieces on your turn, and make sure it is a legal chess move
                         
             -Regular Move:
                 <COL_START><ROW_START>-<COL_END><ROW_END>
                 ex. "e2-e4"
-            
             -Promotion Move:
                 <COL_START><ROW_START>-<COL_END><ROW_END>=<PROMOTION_PIECE>
                 ex. "f7-f8=q"
-                
             -Col Options
                 "a", "b", "c", "d", "e", "f", "g", "h"
-                
             -Row Options
                 "1", "2", "3", "4", "5", "6", "7", "8"
-            
             -Promotion_Piece options
                 "q" (Queen), "r" (Rook), "b" (Bishop), "k" (Knight)
             """;

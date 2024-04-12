@@ -46,7 +46,7 @@ public class ChessGameState extends AState {
         super(serverFacade, observer);
         _commandMethods.put("redraw", this::Redraw);
         _commandMethods.put("leave", this::Leave);
-//        _commandMethods.put("move", this::Move);
+        _commandMethods.put("move", this::Move);
 //        _commandMethods.put("highlight", this::Highlight);
         _commandMethods.put("resign", this::Resign);
         _commandMethods.put("cancel", this::Cancel);
@@ -56,6 +56,7 @@ public class ChessGameState extends AState {
 
         var chessBoard = new ChessBoard();
         chessBoard.resetBoard();
+        board = chessBoard.getSquares();
 
     }
 
@@ -108,10 +109,10 @@ public class ChessGameState extends AState {
             if (move.length() == 5 || move.length() == 7) {
 
                 Integer colFrom = colDict.get(move.charAt(0));
-                Integer rowFrom = colDict.get(move.charAt(1));
+                Integer rowFrom = rowDict.get(move.charAt(1));
 
                 Integer colTo = colDict.get(move.charAt(3));
-                Integer rowTo = colDict.get(move.charAt(4));
+                Integer rowTo = rowDict.get(move.charAt(4));
 
                 ChessPiece.PieceType promotionPiece = null;
 

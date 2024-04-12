@@ -2,6 +2,7 @@ package state;
 
 import chess.ChessGame;
 import clientlogic.ServerFacade;
+import clientlogic.websocket.WebSocketFacade;
 import exceptionclient.ClientException;
 import model.JsonRequestObjects.*;
 import model.JsonResponseObjects.*;
@@ -101,8 +102,10 @@ public class LoggedInState extends AState {
 
             var req = new JoinGameRequest.RequestBody(color, gameNumber);
             _serverFacade.joinGame(req, _authToken);
-            _observer.ChangeStateChessGame();
+            _webSocketFacade = new WebSocketFacade(_URL);
+//            _webSocketFacade.JoinPlayer();
 
+            _observer.ChangeStateChessGame();
             _gameColor = color;
             return setStringColor(_color, getJoinGameString(gameNumber, color));
         }
@@ -127,8 +130,10 @@ public class LoggedInState extends AState {
 
             var req = new JoinGameRequest.RequestBody(null, gameNumber);
             _serverFacade.joinGame(req, _authToken);
-            _observer.ChangeStateChessGame();
+            _webSocketFacade = new WebSocketFacade(_URL);
+            //            _webSocketFacade.JoinObserver();
 
+            _observer.ChangeStateChessGame();
             _gameColor = null;
             return setStringColor(_color, getSpecateGameString(gameNumber));
         }

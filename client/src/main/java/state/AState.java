@@ -2,6 +2,7 @@ package state;
 
 import chess.ChessGame;
 import clientlogic.ServerFacade;
+import clientlogic.websocket.WebSocketFacade;
 import exceptionclient.ClientException;
 
 import java.util.Map;
@@ -23,6 +24,9 @@ public abstract class AState {
 
     protected static String _gameColor;
     protected static ServerFacade _serverFacade;
+
+    protected static WebSocketFacade _webSocketFacade;
+    protected static String _URL;
     protected static StateNotifier _observer;
 
 
