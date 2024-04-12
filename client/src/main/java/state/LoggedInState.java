@@ -87,6 +87,7 @@ public class LoggedInState extends AState {
         }
     }
 
+
     private String Join(String[] params)  {
 
         if (params == null || params.length != 2) {
@@ -102,8 +103,8 @@ public class LoggedInState extends AState {
 
             var req = new JoinGameRequest.RequestBody(color, gameNumber);
             _serverFacade.joinGame(req, _authToken);
-            _webSocketFacade = new WebSocketFacade(_URL);
-//            _webSocketFacade.JoinPlayer();
+            _webSocketFacade = new WebSocketFacade(_URL, _authToken, gameNumber, _observer);
+            _webSocketFacade.JoinPlayer(color);
 
             _observer.ChangeStateChessGame();
             _gameColor = color;
@@ -130,8 +131,8 @@ public class LoggedInState extends AState {
 
             var req = new JoinGameRequest.RequestBody(null, gameNumber);
             _serverFacade.joinGame(req, _authToken);
-            _webSocketFacade = new WebSocketFacade(_URL);
-            //            _webSocketFacade.JoinObserver();
+            _webSocketFacade = new WebSocketFacade(_URL, _authToken, gameNumber, _observer);
+            _webSocketFacade.JoinObserver();
 
             _observer.ChangeStateChessGame();
             _gameColor = null;

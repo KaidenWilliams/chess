@@ -19,7 +19,6 @@ public class ClientController {
     //calls server facade
 
     private AState state;
-
     private StateNotifier observer;
     private final String serverUrl;
     private ServerFacade serverFacade;
@@ -29,7 +28,7 @@ public class ClientController {
         serverUrl = url;
         serverFacade = new ServerFacade(serverUrl);
         observer = new StateNotifier(this);
-        state = new LoggedOutState(serverFacade, observer);
+        observer.ChangeStateDefault();
     }
 
     public String routeInput(String input)  {
@@ -43,16 +42,12 @@ public class ClientController {
         return state.eval(commandNameLower, params);
     }
 
-    public void SetStateLoggedIn() {
-        this.state = new LoggedInState(serverFacade, observer);
+    public void SetState(AState state) {
+        this.state = state;
     }
 
-    public void SetStateLoggedOut() {
-        this.state = new LoggedOutState(serverFacade, observer);
-    }
-
-    public void SetStateChessGame() {
-        this.state = new ChessGameState(serverFacade, observer);
+    public ServerFacade getServerFacade() {
+        return this.serverFacade;
     }
 
 }

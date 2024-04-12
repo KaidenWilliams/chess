@@ -5,18 +5,32 @@ import clientlogic.ClientController;
 public class StateNotifier {
 
     ClientController controller;
+    private ChessGameState chessGameState;
+
     public StateNotifier(ClientController controller) {
         this.controller = controller;
     }
-    public void ChangeStateLoggedIn() {
-        controller.SetStateLoggedIn();
-    }
-
     public void ChangeStateLoggedOut() {
-        controller.SetStateLoggedOut();
+        var state = new LoggedOutState(controller.getServerFacade(), this);
+        controller.SetState(state);
+    }
+    public void ChangeStateLoggedIn() {
+        var state = new LoggedInState(controller.getServerFacade(), this);
+        chessGameState = null;
+        controller.SetState(state);
     }
 
     public void ChangeStateChessGame() {
-        controller.SetStateChessGame();
+        chessGameState = new ChessGameState(controller.getServerFacade(), this);
+        controller.SetState(chessGameState);
     }
+
+    public void ChangeStateDefault() {
+        ChangeStateLoggedOut();
+    }
+
+    public ChessGameState getChessGameState() {
+        return chessGameState;
+    }
+
 }

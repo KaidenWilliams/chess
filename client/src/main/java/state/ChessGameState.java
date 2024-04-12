@@ -19,7 +19,7 @@ public class ChessGameState extends AState {
     protected static Map<String, Function<String[], String>> _commandMethods = new HashMap<>();
     private final String _color = EscapeSequences.SET_TEXT_COLOR_BLUE;
     private boolean _resign = false;
-    private ChessPiece[][] board;
+    public ChessGame game;
 
 
 
@@ -54,9 +54,11 @@ public class ChessGameState extends AState {
         _commandMethods.put("syntax", this::Syntax);
         _commandMethods.put("help", this::Help);
 
+
+        game = new ChessGame();
         var chessBoard = new ChessBoard();
         chessBoard.resetBoard();
-        board = chessBoard.getSquares();
+        game.setChessBoard(chessBoard);
 
     }
 
@@ -64,32 +66,7 @@ public class ChessGameState extends AState {
 
     private String Redraw(String[] params) {
 
-        return DrawBoard(board);
-    }
-
-//    private String wsJoin(String[] params) {
-//
-//        // leave: transitions back to post-login UI, no DB changes
-//        // Leave: Integer gameID
-//        // TODO server facade method with gameID, notifies everyone else that user left
-//        // - Gameid used to select connection to remove from
-//
-//        _observer.ChangeStateLoggedIn();
-//        _gameColor = null;
-//        return setStringColor(_color, ChessGameBuilder.leaveString);
-//    }
-//
-
-    private String Leave(String[] params) {
-
-        // leave: transitions back to post-login UI, no DB changes
-        // Leave: Integer gameID
-        // TODO server facade method with gameID, notifies everyone else that user left
-        // - Gameid used to select connection to remove from
-
-        _observer.ChangeStateLoggedIn();
-        _gameColor = null;
-        return setStringColor(_color, ChessGameBuilder.leaveString);
+        return DrawBoard();
     }
 
 
@@ -134,7 +111,7 @@ public class ChessGameState extends AState {
                 return setStringColor(_color, getErrorStringSyntax("move"));
             }
 
-            return DrawBoard(board);
+            return DrawBoard();
 
         }
         catch (Exception ex) {
@@ -167,6 +144,19 @@ public class ChessGameState extends AState {
     }
 
 
+    private String Leave(String[] params) {
+
+        // leave: transitions back to post-login UI, no DB changes
+        // Leave: Integer gameID
+        // TODO server facade method with gameID, notifies everyone else that user left
+        // - Gameid used to select connection to remove from
+
+        _observer.ChangeStateLoggedIn();
+        _gameColor = null;
+        return setStringColor(_color, ChessGameBuilder.leaveString);
+    }
+
+
 //    private String Confirm(String[] params) {
 //
 //            _gameColor = null;
@@ -174,7 +164,14 @@ public class ChessGameState extends AState {
 //        _observer.ChangeStateLoggedIn();
 //        return setStringColor(_color, ChessGameBuilder.confirmString);
 //    }
-//
+
+
+        private void SharedLeave() {
+            _observer.ChangeStateLoggedIn();
+            _gameColor = null;
+        }
+
+
         private String Cancel(String[] params) {
             if (!_resign) {
                 return setStringColor(_color, defaultString);
@@ -193,22 +190,16 @@ public class ChessGameState extends AState {
         return setStringColor(_color, helpString);
     }
 
+    public void setGame(ChessGame newGame) {
+        game = newGame;
 
-    private String DrawBoard(ChessPiece[][] chessBoard) {
+    }
 
 
-//        var position = new ChessPosition(3, 1);
-//        var piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-//
-//        chessBoard.addPiece(position, piece);
-//        board = chessBoard.getSquares();
+    public String DrawBoard() {
+        var board = game.getBoard().getSquares();
+        return ChessGameBuilder.printBoard(board, _gameColor);
 
-//        return DrawBoard(board);
-
-        String bothBoards = ChessGameBuilder.printBoard(chessBoard,"white") + "\n\n" + ChessGameBuilder.printBoard(chessBoard,"black");
-        return bothBoards;
-
-//        return printBoard(chessBoard, _gameColor);
     }
 
     @Override
