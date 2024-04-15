@@ -3,10 +3,13 @@ package server.websocket;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
+import model.customSerializers.JsonRegistrar;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.Service;
+import webSocketMessages.serverMessages.LoadGameMessage;
+import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
@@ -91,6 +94,16 @@ public class WebsocketHandler {
             if (valid) {
                 connectionManager.addGame(gameId);
                 connectionManager.addUser(gameId, authToken, userName, color, session);
+
+                ChessGame game = service.getChessGame(gameId);
+                LoadGameMessage loadGame = new LoadGameMessage(game);
+                String loadGameString = JsonRegistrar.getChessGameGson().toJson(loadGame);
+                connectionManager.sendMessage(gameId, authToken, color, loadGameString);
+
+                String prettyColor = (color == ChessGame.TeamColor.WHITE ? "white" : "black");
+                NotificationMessage notification = new NotificationMessage(String.format("%s has joined the game as %s", userName, prettyColor));
+                String notificationString = new Gson().toJson(notification);
+                connectionManager.broadcastMessage(gameId, authToken, color, notificationString);
 
             }
 

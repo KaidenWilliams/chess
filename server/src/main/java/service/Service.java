@@ -162,6 +162,12 @@ public class Service {
         }
     }
 
+    public ChessGame getChessGame(int gameId) throws DataAccessException {
+        GameModel game = gameDAO.getRowByGameID(gameId);
+        return game.chessGame();
+    }
+
+
     public void updateChessGame(int gameId, String game) throws DataAccessException {
         try {
             gameDAO.updateChessGame(gameId, game);
@@ -169,7 +175,6 @@ public class Service {
             throw new DataAccessException("Error: Could not Update Chess Game. Does it exist?", 500);
         }
     }
-
 
 
     //2. Service method to get ChessGame by gameId from game table

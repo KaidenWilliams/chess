@@ -4,6 +4,7 @@ import chess.ChessGame;
 import model.DataAccessException;
 import dataAccess.DatabaseManager;
 import dataAccess.IGameDAO;
+import model.customSerializers.JsonRegistrar;
 import model.models.GameModel;
 
 import java.sql.ResultSet;

@@ -8,8 +8,8 @@ public class LoadGameMessage extends ServerMessage {
     // Made ChessGame serializer, might as well use it
     ChessGame game;
 
-    public LoadGameMessage(ServerMessage.ServerMessageType type, ChessGame game) {
-        super(type);
+    public LoadGameMessage( ChessGame game) {
+        super(ServerMessageType.LOAD_GAME);
         this.game = game;
     }
 

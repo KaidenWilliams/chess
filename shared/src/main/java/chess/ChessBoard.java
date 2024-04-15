@@ -11,7 +11,6 @@ import java.util.Arrays;
 public class ChessBoard {
 
     private ChessPiece[][] squares;
-
     public ChessPosition whiteKingPosition;
     public ChessPosition blackKingPosition;
     public ChessBoard() {

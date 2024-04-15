@@ -1,7 +1,9 @@
 package dataAccess.Memory;
 
+import chess.ChessGame;
 import dataAccess.IGameDAO;
 import model.DataAccessException;
+import model.customSerializers.JsonRegistrar;
 import model.models.GameModel;
 
 // TODO error throwing
@@ -30,14 +32,17 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
     }
 
 
-    // I really don't want to actually implement this
-    // If I end up needing too, will need to rework chessGame logic, take string not game
-    public boolean updateGameDao(int gameId, String chessGame) throws DataAccessException {
+    public boolean updateChessGame(int gameId, String chessGame) throws DataAccessException {
         GameModel oldGame = findOne(model -> Integer.valueOf(model.gameID()).equals(gameId));
-        GameModel newGame = new GameModel(oldGame.gameID(), oldGame.whiteUsername(), oldGame.blackUsername(), oldGame.gameName(), oldGame.chessGame());
+        if (oldGame == null) {
+            throw new DataAccessException("Error: Game not found", 500);
+        }
+
+        ChessGame newG = JsonRegistrar.getChessGameGson().fromJson(chessGame, ChessGame.class);
+        GameModel newGame = new GameModel(oldGame.gameID(), oldGame.whiteUsername(), oldGame.blackUsername(), oldGame.gameName(), newG);
         data.set(data.indexOf(oldGame), newGame);
 
-        return false;
+        return true;
     }
 
 
@@ -81,12 +86,6 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
         currId++;
         return oldId;
     }
-
-
-    //5. Delete all - already implemented
-
-    //6. Add Spectator - don't have to yet
-
 
 
 }

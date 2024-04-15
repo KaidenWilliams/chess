@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GameConnection {
 
     public int gameId;
-
     public UserConnection whiteUser;
     public UserConnection blackUser;
     public final ConcurrentHashMap<String, UserConnection> observers = new ConcurrentHashMap<>();

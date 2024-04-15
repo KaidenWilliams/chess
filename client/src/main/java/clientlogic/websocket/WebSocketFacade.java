@@ -5,6 +5,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import exceptionclient.ClientException;
+import model.customSerializers.JsonRegistrar;
 import state.AState;
 import state.ChessGameState;
 import state.StateNotifier;
@@ -64,7 +65,7 @@ public class WebSocketFacade extends Endpoint {
                     var type = serverMessage.getServerMessageType();
                     switch (type) {
                         case LOAD_GAME:
-                            LoadGameMessage gameMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                            LoadGameMessage gameMessage = JsonRegistrar.getChessGameGson().fromJson(message, LoadGameMessage.class);
 
                             var chessGame = gameMessage.getGame();
                             ChessGameState state = observer.getChessGameState();
