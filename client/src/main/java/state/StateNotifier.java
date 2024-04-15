@@ -25,8 +25,11 @@ public class StateNotifier {
         controller.SetState(chessGameState);
     }
 
-    public void ChangeStateDefault() {
-        ChangeStateLoggedOut();
+    public void ChangeStateDefault(String url) {
+        var state = new LoggedOutState(controller.getServerFacade(), this);
+        state.setURL(url);
+        controller.SetState(state);
+
     }
 
     public ChessGameState getChessGameState() {

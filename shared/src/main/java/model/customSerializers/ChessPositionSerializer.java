@@ -11,7 +11,7 @@ public class ChessPositionSerializer implements JsonSerializer<ChessPosition>, J
     public JsonElement serialize(ChessPosition src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject result = new JsonObject();
         result.addProperty("row", src.getRow());
-        result.addProperty("col", src.getCol());
+        result.addProperty("col", src.getColumn());
         return result;
     }
 

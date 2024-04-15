@@ -1,4 +1,5 @@
 package service;
+import chess.ChessBoard;
 import chess.ChessGame;
 import dataAccess.*;
 import model.*;
@@ -95,7 +96,12 @@ public class Service {
              throw new DataAccessException("Error: unauthorized", 401);
          }
         else {
-             return gameDAO.create(new GameModel(0, null, null, createGame.body().gameName(), null));
+             ChessGame newGame = new ChessGame();
+             ChessBoard chessBoard = new ChessBoard();
+             chessBoard.resetBoard();
+             newGame.setChessBoard(chessBoard);
+
+             return gameDAO.create(new GameModel(0, null, null, createGame.body().gameName(), newGame));
         }
     }
 
@@ -134,6 +140,9 @@ public class Service {
     }
 
 
+
+
+
     public String getUsername(String authToken) throws DataAccessException {
         try {
             AuthModel auth = authDAO.getRowByAuthtoken(authToken);
@@ -162,6 +171,10 @@ public class Service {
         }
     }
 
+
+    // TODO make sure I do strings vs ChessGame right when working with ChessGame.
+    // - Also, when making new game, create a blank ChessGame
+
     public ChessGame getChessGame(int gameId) throws DataAccessException {
         GameModel game = gameDAO.getRowByGameID(gameId);
         return game.chessGame();
@@ -175,6 +188,17 @@ public class Service {
             throw new DataAccessException("Error: Could not Update Chess Game. Does it exist?", 500);
         }
     }
+
+    public void removePlayer(int gameId, ChessGame.TeamColor color) throws DataAccessException {
+        try {
+            gameDAO.deleteUsernameFromGame(gameId, color);
+        } catch (Exception ex) {
+            throw new DataAccessException("Error: Could not Update Chess Game. Does it exist?", 500);
+        }
+    }
+
+
+
 
 
     //2. Service method to get ChessGame by gameId from game table

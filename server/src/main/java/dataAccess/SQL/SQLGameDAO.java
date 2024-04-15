@@ -93,14 +93,13 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
 
 
     //4. Update username for correct color with id
-    public boolean updateChessGame(int gameId, String chessGame) throws DataAccessException {
+    public void updateChessGame(int gameId, String chessGame) throws DataAccessException {
 
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "UPDATE game SET game = ? WHERE id = ?";
 
             int rows = executeUpdateWithNumberRows(conn, statement, chessGame, gameId);
             if (rows >= 1) {
-                return true;
             } else {
                 throw new DataAccessException("Error while updating game with new username", 500);
             }
@@ -109,8 +108,6 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
         }
 
     }
-
-
 
 
     //4. Update username for correct color with id
@@ -154,6 +151,36 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
 
     }
 
+
+
+    public void deleteUsernameFromGame(int gameID, ChessGame.TeamColor color) throws DataAccessException {
+
+        if (color == null) {
+            return;
+        }
+
+        String usernameToUpdate = "";
+        if (color == ChessGame.TeamColor.WHITE ) usernameToUpdate = "whiteusername";
+        else if (color == ChessGame.TeamColor.BLACK ) usernameToUpdate = "blackusername";
+
+
+
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = String.format("UPDATE game SET %s = null WHERE id = ?", usernameToUpdate);
+
+            int rows = executeUpdateWithNumberRows(conn, statement, gameID);
+            if (rows < 1) {
+                throw new DataAccessException("Error while updating game with new username", 500);
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error while updating game with new username", 500);
+        }
+
+    }
+
+
+
+
     //5. Delete all
 
     public void deleteAll() throws DataAccessException {
@@ -164,8 +191,5 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
             throw new DataAccessException("Failed to delete all from Game", 500);
         }
     }
-
-
-    //6. Add Spectator - don't have to yet
 
 }

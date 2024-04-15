@@ -43,6 +43,10 @@ public abstract class AState {
         }
     }
 
+    public void setURL(String url) {
+        _URL = url;
+    }
+
     abstract Map<String, Function<String[], String>> getCommandMethods();
 
     abstract String DefaultCommand(String[] params);

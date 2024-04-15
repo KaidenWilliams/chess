@@ -52,15 +52,15 @@ public class ChessGameState extends AState {
 //        _commandMethods.put("highlight", this::Highlight);
         _commandMethods.put("resign", this::Resign);
         _commandMethods.put("cancel", this::Cancel);
-//        _commandMethods.put("confirm", this::Confirm);
+        _commandMethods.put("confirm", this::Confirm);
         _commandMethods.put("syntax", this::Syntax);
         _commandMethods.put("help", this::Help);
 
 
-        game = new ChessGame();
-        var chessBoard = new ChessBoard();
-        chessBoard.resetBoard();
-        game.setChessBoard(chessBoard);
+//        game = new ChessGame();
+//        var chessBoard = new ChessBoard();
+//        chessBoard.resetBoard();
+//        game.setChessBoard(chessBoard);
 
     }
 
@@ -116,7 +116,7 @@ public class ChessGameState extends AState {
             }
 
             _webSocketFacade.MakeMove(chessMove);
-            // Think we draw board after we make a move
+
             return "";
 
         }
@@ -169,7 +169,7 @@ public class ChessGameState extends AState {
     }
 
 
-    private String Confirm(String[] params) throws IOException {
+    private String Confirm(String[] params) {
         try {
             _webSocketFacade.Resign();
             SharedLeave();

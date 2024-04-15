@@ -32,7 +32,7 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
     }
 
 
-    public boolean updateChessGame(int gameId, String chessGame) throws DataAccessException {
+    public void updateChessGame(int gameId, String chessGame) throws DataAccessException {
         GameModel oldGame = findOne(model -> Integer.valueOf(model.gameID()).equals(gameId));
         if (oldGame == null) {
             throw new DataAccessException("Error: Game not found", 500);
@@ -42,7 +42,24 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
         GameModel newGame = new GameModel(oldGame.gameID(), oldGame.whiteUsername(), oldGame.blackUsername(), oldGame.gameName(), newG);
         data.set(data.indexOf(oldGame), newGame);
 
-        return true;
+    }
+
+    @Override
+    public void deleteUsernameFromGame(int gameId, ChessGame.TeamColor color) throws DataAccessException {
+        GameModel oldGame = findOne(model -> Integer.valueOf(model.gameID()).equals(gameId));
+        if (oldGame == null) {
+            throw new DataAccessException("Error: Game not found", 500);
+        }
+
+        GameModel newGame;
+        if (color == ChessGame.TeamColor.WHITE){
+            newGame = new GameModel(oldGame.gameID(), null, oldGame.blackUsername(), oldGame.gameName(), oldGame.chessGame());
+        }
+        else {
+            newGame = new GameModel(oldGame.gameID(), oldGame.whiteUsername(), null, oldGame.gameName(), oldGame.chessGame());
+        }
+
+        data.set(data.indexOf(oldGame), newGame);
     }
 
 

@@ -6,6 +6,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import webSocketMessages.userCommands.JoinObserverCommand;
 import webSocketMessages.userCommands.JoinPlayerCommand;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 // any difference in how observers and players are treated?
@@ -22,42 +23,46 @@ public class GameConnection {
     }
 
     public void addPerson(String authToken, String userName, ChessGame.TeamColor color, Session session) {
-        UserConnection user = new UserConnection(authToken, userName, session);
+        UserConnection user = new UserConnection(authToken, userName, session, color);
 
         switch (color) {
 
             case null:
                 observers.put(authToken, user);
             case ChessGame.TeamColor.WHITE:
-                whiteUser = user;
+                if (whiteUser == null) whiteUser = user;
             case ChessGame.TeamColor.BLACK:
-                blackUser = user;
+                if (blackUser == null) blackUser = user;;
         }
     }
 
-    public void removePerson(String authToken, ChessGame.TeamColor color) {
-        switch (color) {
+    public void removePerson(String authToken) {
 
-            case null:
-                observers.remove(authToken);
-            case ChessGame.TeamColor.WHITE:
-                whiteUser = null;
-            case ChessGame.TeamColor.BLACK:
-                blackUser = null;
+
+        if (Objects.equals(whiteUser.authToken, authToken)) {
+            whiteUser = null;
         }
+        else if (Objects.equals(blackUser.authToken, authToken)) {
+            blackUser = null;
+        }
+        else {
+            observers.remove(authToken);
+        }
+
     }
 
-    public UserConnection getPerson(String authToken, ChessGame.TeamColor color) {
+    public UserConnection getPerson(String authToken) {
 
-        switch (color) {
-
-            case null:
-                return observers.get(authToken);
-            case ChessGame.TeamColor.WHITE:
-                return whiteUser;
-            case ChessGame.TeamColor.BLACK:
-                return blackUser;
+        if (Objects.equals(whiteUser.authToken, authToken)) {
+            return whiteUser;
         }
+        else if (Objects.equals(blackUser.authToken, authToken)) {
+            return blackUser;
+        }
+        else {
+            return observers.get(authToken);
+        }
+        
     }
 
 

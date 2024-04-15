@@ -8,6 +8,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.Service;
+import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.userCommands.*;
@@ -51,22 +52,27 @@ public class WebsocketHandler {
             case JOIN_PLAYER:
                 JoinPlayerCommand player = new Gson().fromJson(message, JoinPlayerCommand.class);
                 JoinPlayer(player, session);
+                break;
 
             case JOIN_OBSERVER:
                 JoinObserverCommand observer = new Gson().fromJson(message, JoinObserverCommand.class);
                 JoinObserver(observer, session);
+                break;
 
-            case MAKE_MOVE:
-                MakeMoveCommand move = new Gson().fromJson(message, MakeMoveCommand.class);
-                MakeMove(move, session);
+//            case MAKE_MOVE:
+//                MakeMoveCommand move = new Gson().fromJson(message, MakeMoveCommand.class);
+//                MakeMove(move, session);
+//            break;
 
             case LEAVE:
                 LeaveCommand leave = new Gson().fromJson(message, LeaveCommand.class);
                 Leave(leave, session);
+                break;
 
             case RESIGN:
                 ResignCommand resign = new Gson().fromJson(message, ResignCommand.class);
                 Resign(resign, session);
+                break;
 
         }
     }
@@ -98,25 +104,21 @@ public class WebsocketHandler {
                 ChessGame game = service.getChessGame(gameId);
                 LoadGameMessage loadGame = new LoadGameMessage(game);
                 String loadGameString = JsonRegistrar.getChessGameGson().toJson(loadGame);
-                connectionManager.sendMessage(gameId, authToken, color, loadGameString);
+                connectionManager.sendMessage(gameId, authToken, loadGameString);
 
                 String prettyColor = (color == ChessGame.TeamColor.WHITE ? "white" : "black");
                 NotificationMessage notification = new NotificationMessage(String.format("%s has joined the game as %s", userName, prettyColor));
                 String notificationString = new Gson().toJson(notification);
-                connectionManager.broadcastMessage(gameId, authToken, color, notificationString);
+                connectionManager.broadcastMessage(gameId, authToken, notificationString);
 
             }
 
-            connectionManager.addGame(gameId);
-            connectionManager.addUser(gameId, authToken, userName, color, session);
-
         } catch (Exception ex) {
-            // send error notification
+            ErrorMessage error = new ErrorMessage(ex.getMessage());
+            String errorMessageString = new Gson().toJson(error);
+            connectionManager.sendMessageToConnection(session, errorMessageString);
         }
 
-//        var message = String.format("%s is in the shop", visitorName);
-//        var notification = new Notification(Notification.Type.ARRIVAL, message);
-//        connections.broadcast(visitorName, notification);
     }
 
 
@@ -136,18 +138,29 @@ public class WebsocketHandler {
             int gameId = observer.getGameId();
             String authToken = observer.getAuthString();
 
-            String userName = null;
+            String userName = service.getUsername(authToken);
 
             connectionManager.addGame(gameId);
             connectionManager.addUser(gameId, authToken, userName, null, session);
+
+
+            ChessGame game = service.getChessGame(gameId);
+            LoadGameMessage loadGame = new LoadGameMessage(game);
+            String loadGameString = JsonRegistrar.getChessGameGson().toJson(loadGame);
+//            connectionManager.sendMessage(gameId, authToken, loadGameString);
+            connectionManager.sendMessageToConnection(session, loadGameString);
+
+            NotificationMessage notification = new NotificationMessage(String.format("%s has joined the game as an observer", userName));
+            String notificationString = new Gson().toJson(notification);
+            connectionManager.broadcastMessage(gameId, authToken, notificationString);
+
         }
         catch (Exception ex) {
-
+            ErrorMessage error = new ErrorMessage(ex.getMessage());
+            String errorMessageString = new Gson().toJson(error);
+            connectionManager.sendMessageToConnection(session, errorMessageString);
         }
 
-//        var message = String.format("%s is in the shop", visitorName);
-//        var notification = new Notification(Notification.Type.ARRIVAL, message);
-//        connections.broadcast(visitorName, notification);
     }
 
 
@@ -173,13 +186,37 @@ public class WebsocketHandler {
 //
 //    //4. Leave: Integer gameID
 
+    private void Leave(LeaveCommand leaveCommand, Session session) throws IOException {
 
-//    private void exit(String visitorName) throws IOException {
-//        connections.remove(visitorName);
-//        var message = String.format("%s left the shop", visitorName);
-//        var notification = new Notification(Notification.Type.DEPARTURE, message);
-//        connections.broadcast(visitorName, notification);
-//    }
+        try {
+            int gameId = leaveCommand.getGameId();
+            String authToken = leaveCommand.getAuthString();
+            String userName = service.getUsername(authToken);
+
+            UserConnection user = connectionManager.getUser(gameId, authToken);
+
+            if (user.color != null) {
+                connectionManager.removeUser(gameId, authToken);
+                service.removePlayer(gameId, user.color);
+
+                String prettyColor = (user.color == ChessGame.TeamColor.WHITE ? "white" : "black");
+                NotificationMessage notification = new NotificationMessage(String.format("%s has left the game as color %s", userName, prettyColor));
+                String notificationString = new Gson().toJson(notification);
+                connectionManager.broadcastMessage(gameId, authToken, notificationString);
+
+            }
+
+        }
+        catch (Exception ex) {
+            ErrorMessage error = new ErrorMessage(ex.getMessage());
+            String errorMessageString = new Gson().toJson(error);
+            connectionManager.sendMessageToConnection(session, errorMessageString);
+        }
+
+    }
+
+
+
 
 
 //
@@ -188,6 +225,41 @@ public class WebsocketHandler {
 //    //-server marks the game as over (can modify ChessGame class, or set nextmove to null, think that is easiest)
 //    //- NOTIFICATION sent to all clients informing what client has resigned
 //    //5. Resign: Integer gameID
+
+    private void Resign(ResignCommand resignCommand, Session session) throws IOException {
+
+        try {
+            int gameId = resignCommand.getGameId();
+            String authToken = resignCommand.getAuthString();
+            String userName = service.getUsername(authToken);
+
+            UserConnection user = connectionManager.getUser(gameId, authToken);
+
+            if (user.color != null) {
+
+                ChessGame game = service.getChessGame(gameId);
+                game.setTeamTurn(null);
+
+                String gameString = JsonRegistrar.getChessGameGson().toJson(game);
+                service.updateChessGame(gameId, gameString);
+
+                String prettyColor = (user.color == ChessGame.TeamColor.WHITE ? "white" : "black");
+                NotificationMessage notification = new NotificationMessage(String.format("%s has resigned from the game as color %s", userName, prettyColor));
+                String notificationString = new Gson().toJson(notification);
+
+                connectionManager.sendMessageToConnection(session, notificationString);
+                connectionManager.broadcastMessage(gameId, authToken, notificationString);
+
+            }
+
+        }
+        catch (Exception ex) {
+            ErrorMessage error = new ErrorMessage(ex.getMessage());
+            String errorMessageString = new Gson().toJson(error);
+            connectionManager.sendMessageToConnection(session, errorMessageString);
+        }
+
+    }
 
 
 

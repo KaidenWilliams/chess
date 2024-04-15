@@ -28,7 +28,7 @@ public class ClientController {
         serverUrl = url;
         serverFacade = new ServerFacade(serverUrl);
         observer = new StateNotifier(this);
-        observer.ChangeStateDefault();
+        observer.ChangeStateDefault(serverUrl);
     }
 
     public String routeInput(String input)  {

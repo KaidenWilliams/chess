@@ -38,22 +38,30 @@ public class ConnectionManager {
         gameConnection.addPerson(authToken, userName, color, session);
     }
 
-    public void removeUser(int gameId, String authToken, ChessGame.TeamColor color) {
+    public void removeUser(int gameId, String authToken) {
         GameConnection gameConnection = connections.get(gameId);
 
-        gameConnection.removePerson(authToken, color);
+        gameConnection.removePerson(authToken);
+    }
+
+    public UserConnection getUser(int gameId, String authToken) {
+        GameConnection gameConnection = connections.get(gameId);
+
+        return gameConnection.getPerson(authToken);
     }
 
 
+    public void sendMessageToConnection(Session session, String msg) throws IOException {
+        session.getRemote().sendString(msg);
+    }
 
-
-    public void sendMessage(int gameId, String authToken, ChessGame.TeamColor color, String message) throws IOException {
+    public void sendMessage(int gameId, String authToken, String message) throws IOException {
         GameConnection gameConnection = connections.get(gameId);
-        UserConnection userConnection = gameConnection.getPerson(authToken, color);
+        UserConnection userConnection = gameConnection.getPerson(authToken);
         userConnection.send(message);
     }
 
-    public void broadcastMessageAll(int gameId, String authToken, ChessGame.TeamColor color, String message) throws IOException {
+    public void broadcastMessage(int gameId, String authToken, String message) throws IOException {
 
         GameConnection gameConnection = connections.get(gameId);
 
