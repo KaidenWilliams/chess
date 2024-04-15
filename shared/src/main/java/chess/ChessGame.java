@@ -14,6 +14,7 @@ public class ChessGame {
 
     private ChessBoard myBoard;
     private TeamColor teamTurn;
+    private boolean gameOver;
 
 
     /**
@@ -59,6 +60,15 @@ public class ChessGame {
             teamTurn = TeamColor.WHITE;
         }
     }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
 
     /**
      * Gets a valid moves for a piece at the given location

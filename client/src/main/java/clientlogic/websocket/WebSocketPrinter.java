@@ -11,7 +11,7 @@ public class WebSocketPrinter {
     }
 
     public static void printError(String input) {
-        System.out.println(SharedBuilder.setStringColor(EscapeSequences.SET_TEXT_COLOR_RED, input + "\n"));
+        System.out.println(SharedBuilder.setStringColor(EscapeSequences.SET_TEXT_COLOR_RED, "Error " + input + "\n"));
     }
 
     public static void printGame(String input) {

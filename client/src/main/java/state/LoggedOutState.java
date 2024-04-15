@@ -30,7 +30,7 @@ public class LoggedOutState extends AState {
     private String Register(String[] params) {
 
         if (params == null || params.length != 3) {
-            return setStringColor(_color, getErrorStringSyntax("register"));
+            return getErrorStringSyntax("register");
         }
 
         try {
@@ -42,14 +42,14 @@ public class LoggedOutState extends AState {
             return setStringColor(_color, getRegisterString(context.username));
 
         } catch (ClientException e) {
-            return setStringColor(_color, getErrorStringRequest(e.toString(), "register"));
+            return getErrorStringRequest(e.toString(), "register");
         }
     }
 
     private String Login(String[] params)  {
 
         if (params == null || params.length != 2) {
-            return setStringColor(_color, getErrorStringSyntax("login"));
+            return getErrorStringSyntax("login");
         }
         try {
             var req = new LoginRequest(params[0], params[1]);
@@ -61,7 +61,7 @@ public class LoggedOutState extends AState {
             return setStringColor(_color, getLoginString(context.username));
         }
         catch (ClientException e) {
-            return setStringColor(_color, getErrorStringRequest(e.toString(), "login"));
+            return getErrorStringRequest(e.toString(), "login");
         }
     }
 

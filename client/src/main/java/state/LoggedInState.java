@@ -44,7 +44,7 @@ public class LoggedInState extends AState {
             return setStringColor(_color, getLogoutString(tempUsername));
         }
         catch (ClientException e) {
-            return setStringColor(_color, getErrorStringRequest(e.toString(), "logout"));
+            return getErrorStringRequest(e.toString(), "logout");
         }
     }
 
@@ -66,14 +66,14 @@ public class LoggedInState extends AState {
             return setStringColor(_color, sb.toString());
         }
         catch (ClientException e) {
-            return setStringColor(_color, getErrorStringRequest(e.toString(), "list"));
+            return getErrorStringRequest(e.toString(), "list");
         }
     }
 
     private String Create(String[] params)  {
 
         if (params == null || params.length != 1) {
-            return setStringColor(_color, getErrorStringSyntax("create"));
+            return getErrorStringSyntax("create");
         }
         try {
             var req = new CreateGameRequest.RequestBody(params[0]);
@@ -82,7 +82,7 @@ public class LoggedInState extends AState {
             return setStringColor(_color, getCreateGameString(params[0]));
         }
         catch (ClientException e) {
-            return setStringColor(_color, getErrorStringRequest(e.toString(), "list"));
+            return getErrorStringRequest(e.toString(), "list");
         }
     }
 
@@ -90,14 +90,14 @@ public class LoggedInState extends AState {
     private String Join(String[] params)  {
 
         if (params == null || params.length != 2) {
-            return setStringColor(_color, getErrorStringSyntax("join"));
+            return getErrorStringSyntax("join");
         }
         try {
             String color = params[1].toLowerCase();
             Integer gameNumber = gameNumberMap.get(Integer.parseInt(params[0]));
 
             if (gameNumber == null) {
-                return setStringColor(_color, getJoinGameErrorString(params[0]));
+                return getJoinGameErrorString(params[0]);
             }
 
             var req = new JoinGameRequest.RequestBody(color, gameNumber);
@@ -110,22 +110,22 @@ public class LoggedInState extends AState {
             return setStringColor(_color, getJoinGameString(gameNumber, color));
         }
         catch (NumberFormatException e) {
-            return setStringColor(_color, getJoinGameErrorString(params[0]));
+            return getJoinGameErrorString(params[0]);
         }
         catch (ClientException e) {
-            return setStringColor(_color, getErrorStringRequest(e.toString(), "join"));
+            return getErrorStringRequest(e.toString(), "join");
         }
     }
 
     private String Spectate(String[] params) {
         if (params == null || params.length != 1) {
-            return setStringColor(_color, getErrorStringSyntax("spectate"));
+            return getErrorStringSyntax("spectate");
         }
         try {
             Integer gameNumber = gameNumberMap.get(Integer.parseInt(params[0]));
 
             if (gameNumber == null) {
-                return setStringColor(_color, getJoinGameErrorString(params[0]));
+                return getJoinGameErrorString(params[0]);
             }
 
             var req = new JoinGameRequest.RequestBody(null, gameNumber);
@@ -138,10 +138,10 @@ public class LoggedInState extends AState {
             return setStringColor(_color, getSpecateGameString(gameNumber));
         }
         catch (NumberFormatException e) {
-            return setStringColor(_color, getJoinGameErrorString(params[0]));
+            return getJoinGameErrorString(params[0]);
         }
         catch (ClientException e) {
-            return setStringColor(_color, getErrorStringRequest(e.toString(), "spectate"));
+            return  getErrorStringRequest(e.toString(), "spectate");
         }
     }
 

@@ -18,11 +18,11 @@ public class SharedBuilder {
 
 
     public static String getErrorStringSyntax(String command) {
-        return String.format(errorStringSyntax, command);
+        return setStringColor(EscapeSequences.SET_TEXT_COLOR_RED, String.format(errorStringSyntax, command));
     }
 
     public static String getErrorStringRequest(String errorMessage, String command) {
-        return String.format(errorStringRequest, command, errorMessage);
+        return setStringColor(EscapeSequences.SET_TEXT_COLOR_RED, String.format(errorStringRequest, command, errorMessage));
     }
 
 

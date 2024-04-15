@@ -77,7 +77,7 @@ public class ChessGameState extends AState {
         // makes move, updates DB, draws Board
 
         if (params == null || params.length != 1) {
-            return setStringColor(_color, getErrorStringSyntax("move"));
+            return getErrorStringSyntax("move");
         }
 
         try {
@@ -96,21 +96,21 @@ public class ChessGameState extends AState {
                 ChessPiece.PieceType promotionPiece = null;
 
                 if (colFrom == null || rowFrom == null || colTo == null || rowTo == null || move.charAt(2) != '-') {
-                    return setStringColor(_color, getErrorStringSyntax("move"));
+                    return getErrorStringSyntax("move");
                 }
 
                 if (move.length() == 7) {
                     promotionPiece = pieceDict.get(move.charAt(6));
 
                     if (promotionPiece == null || move.charAt(5) != '=') {
-                        return setStringColor(_color, getErrorStringSyntax("move"));
+                        return getErrorStringSyntax("move");
                     }
                 }
                 chessMove = new ChessMove(new ChessPosition(rowFrom, colFrom), new ChessPosition(rowTo, colTo), promotionPiece);
             }
 
             else {
-                return setStringColor(_color, getErrorStringSyntax("move"));
+                return getErrorStringSyntax("move");
             }
 
             context.webSocketFacade.MakeMove(chessMove);
@@ -119,17 +119,14 @@ public class ChessGameState extends AState {
 
         }
         catch (Exception ex) {
-            return setStringColor(_color, getErrorStringRequest(ex.getMessage(), "move"));
+            return getErrorStringRequest(ex.getMessage(), "move");
         }
     }
 
 
-
-
-//
 //    private String Highlight(String[] params) {
 //         if (params == null || params.length != 1) {
-//            return setStringColor(_color, getErrorStringSyntax("create"));
+//            return getErrorStringSyntax("create");
 //        }
 //        try {
 //            var req = new CreateGameRequest.RequestBody(params[0]);
@@ -138,10 +135,10 @@ public class ChessGameState extends AState {
 //            return setStringColor(_color, LoggedInBuilder.getCreateGameString(params[0]));
 //        }
 //        catch (ClientException e) {
-//            return setStringColor(_color, getErrorStringRequest(e.toString(), "list"));
+//            return getErrorStringRequest(e.toString(), "list");
 //        }
 //    }
-//
+
 
 
     private String Resign(String[] params) {
@@ -173,7 +170,7 @@ public class ChessGameState extends AState {
             return setStringColor(_color, ChessGameBuilder.leaveString);
         }
         catch (Exception ex) {
-            return setStringColor(_color, getErrorStringRequest(ex.getMessage(), "leave"));
+            return getErrorStringRequest(ex.getMessage(), "leave");
         }
     }
 
@@ -184,7 +181,7 @@ public class ChessGameState extends AState {
             return "";
         }
         catch (Exception ex) {
-            return setStringColor(_color, getErrorStringRequest(ex.getMessage(), "confirm"));
+            return getErrorStringRequest(ex.getMessage(), "confirm");
         }
     }
 
