@@ -26,9 +26,10 @@ public class ClientController {
 
     public ClientController(String url) throws ClientException {
         serverUrl = url;
-        serverFacade = new ServerFacade(serverUrl);
+        serverFacade = new ServerFacade(url);
         observer = new StateNotifier(this);
-        observer.ChangeStateDefault(serverUrl);
+        observer.populateContext(serverFacade, serverUrl);
+        observer.ChangeStateDefault();
     }
 
     public String routeInput(String input)  {

@@ -29,10 +29,13 @@ public class GameConnection {
 
             case null:
                 observers.put(authToken, user);
+                break;
             case ChessGame.TeamColor.WHITE:
                 if (whiteUser == null) whiteUser = user;
+                break;
             case ChessGame.TeamColor.BLACK:
-                if (blackUser == null) blackUser = user;;
+                if (blackUser == null) blackUser = user;
+                break;
         }
     }
 

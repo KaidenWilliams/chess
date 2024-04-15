@@ -1,7 +1,6 @@
 package state;
 
-import chess.ChessGame;
-import clientlogic.ServerFacade;
+
 import clientlogic.websocket.WebSocketFacade;
 import exceptionclient.ClientException;
 import model.JsonRequestObjects.*;
@@ -21,8 +20,8 @@ public class LoggedInState extends AState {
 
     private final String _color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
 
-    public LoggedInState(ServerFacade serverFacade, StateNotifier observer) {
-        super(serverFacade, observer);
+    public LoggedInState(ClientContext context) {
+        super(context);
 
         _commandMethods.put("logout", this::Logout);
         _commandMethods.put("list", this::List);
@@ -36,12 +35,12 @@ public class LoggedInState extends AState {
     private String Logout(String[] params)  {
 
         try {
-            _serverFacade.logoutUser(_authToken);
-            String tempUsername = _username;
+            context.serverFacade.logoutUser(context.authToken);
+            String tempUsername = context.username;
 
-            _username = null;
-            _authToken = null;
-            _observer.ChangeStateLoggedOut();
+            context.username = null;
+            context.authToken = null;
+            context.observer.ChangeStateLoggedOut();
             return setStringColor(_color, getLogoutString(tempUsername));
         }
         catch (ClientException e) {
@@ -53,7 +52,7 @@ public class LoggedInState extends AState {
     private String List(String[] params)  {
 
         try {
-            ListGamesResponse res = _serverFacade.listGames(_authToken);
+            ListGamesResponse res = context.serverFacade.listGames(context.authToken);
 
             StringBuilder sb = new StringBuilder();
             int i = 1;
@@ -78,7 +77,7 @@ public class LoggedInState extends AState {
         }
         try {
             var req = new CreateGameRequest.RequestBody(params[0]);
-            CreateGameResponse res = _serverFacade.createGame(req, _authToken);
+            CreateGameResponse res = context.serverFacade.createGame(req, context.authToken);
 
             return setStringColor(_color, getCreateGameString(params[0]));
         }
@@ -102,12 +101,12 @@ public class LoggedInState extends AState {
             }
 
             var req = new JoinGameRequest.RequestBody(color, gameNumber);
-            _serverFacade.joinGame(req, _authToken);
-            _webSocketFacade = new WebSocketFacade(_URL, _authToken, gameNumber, _observer);
-            _webSocketFacade.JoinPlayer(color);
+            context.serverFacade.joinGame(req, context.authToken);
+            context.webSocketFacade = new WebSocketFacade(context.URL, context.authToken, gameNumber, context.observer);
+            context.webSocketFacade.JoinPlayer(color);
 
-            _observer.ChangeStateChessGame();
-            _gameColor = color;
+            context.observer.ChangeStateChessGame();
+            context.gameColor = color;
             return setStringColor(_color, getJoinGameString(gameNumber, color));
         }
         catch (NumberFormatException e) {
@@ -130,12 +129,12 @@ public class LoggedInState extends AState {
             }
 
             var req = new JoinGameRequest.RequestBody(null, gameNumber);
-            _serverFacade.joinGame(req, _authToken);
-            _webSocketFacade = new WebSocketFacade(_URL, _authToken, gameNumber, _observer);
-            _webSocketFacade.JoinObserver();
+            context.serverFacade.joinGame(req, context.authToken);
+            context.webSocketFacade = new WebSocketFacade(context.URL, context.authToken, gameNumber, context.observer);
+            context.webSocketFacade.JoinObserver();
 
-            _observer.ChangeStateChessGame();
-            _gameColor = null;
+            context.observer.ChangeStateChessGame();
+            context.gameColor = null;
             return setStringColor(_color, getSpecateGameString(gameNumber));
         }
         catch (NumberFormatException e) {

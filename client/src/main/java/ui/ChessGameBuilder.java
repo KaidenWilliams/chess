@@ -139,18 +139,17 @@ public class ChessGameBuilder {
             Type "confirm" to confirm the resign, or "cancel" to cancel the resign
             """;
 
+    public static final String observerResignString =
+
+            """
+            You cannot resign. You are observing the game. If you wish to stop observing, type "leave"
+            """;
+
     public static final String cancelString =
 
             """
             You have successfully cancelled your resignation
             """;
-
-    public static final String confirmString =
-            """
-            You Have Resigned from the Chess Game.
-            You are in the main menu.
-            """;
-
 
     public static final String helpString =
             """

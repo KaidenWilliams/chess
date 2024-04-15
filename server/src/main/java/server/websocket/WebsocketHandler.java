@@ -205,6 +205,9 @@ public class WebsocketHandler {
                 connectionManager.broadcastMessage(gameId, authToken, notificationString);
 
             }
+            else {
+                connectionManager.removeUser(gameId, authToken);
+            }
 
         }
         catch (Exception ex) {
@@ -244,7 +247,9 @@ public class WebsocketHandler {
                 service.updateChessGame(gameId, gameString);
 
                 String prettyColor = (user.color == ChessGame.TeamColor.WHITE ? "white" : "black");
-                NotificationMessage notification = new NotificationMessage(String.format("%s has resigned from the game as color %s", userName, prettyColor));
+                String oppositeColor = (prettyColor.equals("white") ? "Black" : "White");
+
+                NotificationMessage notification = new NotificationMessage(String.format("%s has resigned from the game as color %s.\n %s has won. The game is over", userName, prettyColor, oppositeColor));
                 String notificationString = new Gson().toJson(notification);
 
                 connectionManager.sendMessageToConnection(session, notificationString);
