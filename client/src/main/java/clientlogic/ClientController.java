@@ -24,7 +24,7 @@ public class ClientController {
     private ServerFacade serverFacade;
 
 
-    public ClientController(String url) throws ClientException {
+    public ClientController(String url) {
         serverUrl = url;
         serverFacade = new ServerFacade(url);
         observer = new StateNotifier(this);

@@ -8,7 +8,7 @@ public class LeaveCommand extends UserGameCommand {
 
     public LeaveCommand(String authToken, Integer gameId) {
         super(authToken);
-        commandType = CommandType.JOIN_PLAYER;
+        commandType = CommandType.LEAVE;
         this.gameId = gameId;
     }
 

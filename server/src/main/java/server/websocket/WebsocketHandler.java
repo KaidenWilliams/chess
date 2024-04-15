@@ -104,7 +104,8 @@ public class WebsocketHandler {
                 ChessGame game = service.getChessGame(gameId);
                 LoadGameMessage loadGame = new LoadGameMessage(game);
                 String loadGameString = JsonRegistrar.getChessGameGson().toJson(loadGame);
-                connectionManager.sendMessage(gameId, authToken, loadGameString);
+//                connectionManager.sendMessage(gameId, authToken, loadGameString);
+                connectionManager.sendMessageToConnection(session, loadGameString);
 
                 String prettyColor = (color == ChessGame.TeamColor.WHITE ? "white" : "black");
                 NotificationMessage notification = new NotificationMessage(String.format("%s has joined the game as %s", userName, prettyColor));

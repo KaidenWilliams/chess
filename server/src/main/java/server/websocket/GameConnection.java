@@ -42,10 +42,10 @@ public class GameConnection {
     public void removePerson(String authToken) {
 
 
-        if (Objects.equals(whiteUser.authToken, authToken)) {
+        if (whiteUser != null && Objects.equals(whiteUser.authToken, authToken)) {
             whiteUser = null;
         }
-        else if (Objects.equals(blackUser.authToken, authToken)) {
+        else if (blackUser != null && Objects.equals(blackUser.authToken, authToken)) {
             blackUser = null;
         }
         else {
@@ -56,10 +56,10 @@ public class GameConnection {
 
     public UserConnection getPerson(String authToken) {
 
-        if (Objects.equals(whiteUser.authToken, authToken)) {
+        if (whiteUser != null && Objects.equals(whiteUser.authToken, authToken)) {
             return whiteUser;
         }
-        else if (Objects.equals(blackUser.authToken, authToken)) {
+        else if (blackUser != null && Objects.equals(blackUser.authToken, authToken)) {
             return blackUser;
         }
         else {
