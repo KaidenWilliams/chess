@@ -233,14 +233,12 @@ public class ChessGame {
         if (getTeamTurn() != teamColor) {
             return false;
         }
-        if (!isInCheck(teamColor)) {
-            return false;
-        }
-        if (!validMoves(getKingPosition(teamColor, myBoard)).isEmpty()){
-            return false;
-        }
-        return true;
+
+        if (AreValidMoves(teamColor)) return false;
+
+        return isInCheck(teamColor);
     }
+
 
     /**
      * Determines if the given team is in stalemate, which here is defined as having
@@ -257,11 +255,27 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         }
-        if (!validMoves(getKingPosition(teamColor, myBoard)).isEmpty()){
-            return false;
-        }
-        return true;
+
+        return !AreValidMoves(teamColor);
     }
+
+
+    private boolean AreValidMoves(TeamColor teamColor) {
+        ChessPiece[][] squares = myBoard.getSquares();
+        for (int i = 0; i < squares.length; i++) {
+            for (int j = 0; j < squares[i].length; j++) {
+                ChessPosition currPosition = new ChessPosition(i + 1, j + 1);
+                ChessPiece currPiece = myBoard.getPiece(currPosition);
+                if (currPiece != null && currPiece.getTeamColor() == teamColor) {
+                    if (!validMoves(currPosition).isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
     public ChessPosition getKingPosition(ChessGame.TeamColor teamColor, ChessBoard board) {
         ChessPosition kingPosition = (teamColor == TeamColor.WHITE ? board.whiteKingPosition : board.blackKingPosition);

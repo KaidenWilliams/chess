@@ -4,16 +4,16 @@ import chess.ChessGame;
 
 public class LeaveCommand extends UserGameCommand {
 
-    Integer gameId;
+    Integer gameID;
 
     public LeaveCommand(String authToken, Integer gameId) {
         super(authToken);
         commandType = CommandType.LEAVE;
-        this.gameId = gameId;
+        this.gameID = gameId;
     }
 
     public Integer getGameId() {
-        return this.gameId;
+        return this.gameID;
     }
 
 }

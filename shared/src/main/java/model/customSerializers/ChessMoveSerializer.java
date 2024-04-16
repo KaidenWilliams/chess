@@ -14,9 +14,9 @@ public class ChessMoveSerializer implements JsonSerializer<ChessMove>, JsonDeser
 
         ChessPiece.PieceType promotionPiece = src.getPromotionPiece();
         if (promotionPiece != null) {
-            result.addProperty("promotionPiece", promotionPiece.toString());
+            result.addProperty("promotionPiece", promotionPiece.name());
         } else {
-            result.addProperty("promotionPiece", "");
+            result.addProperty("promotionPiece", (String) null);
         }
 
         return result;
@@ -28,13 +28,11 @@ public class ChessMoveSerializer implements JsonSerializer<ChessMove>, JsonDeser
         ChessPosition startPosition = context.deserialize(jsonObject.get("startPosition"), ChessPosition.class);
         ChessPosition endPosition = context.deserialize(jsonObject.get("endPosition"), ChessPosition.class);
 
-        String promotionPieceStr = jsonObject.has("promotionPiece") && !jsonObject.get("promotionPiece").isJsonNull()
-                ? jsonObject.get("promotionPiece").getAsString()
-                : null;
-
-        ChessPiece.PieceType promotionPiece = promotionPieceStr != null
-                ? ChessPiece.PieceType.valueOf(promotionPieceStr)
-                : null;
+        JsonElement promotionPieceElement = jsonObject.get("promotionPiece");
+        ChessPiece.PieceType promotionPiece = null;
+        if (promotionPieceElement != null && !promotionPieceElement.isJsonNull()) {
+            promotionPiece = ChessPiece.PieceType.valueOf(promotionPieceElement.getAsString());
+        }
 
         return new ChessMove(startPosition, endPosition, promotionPiece);
     }

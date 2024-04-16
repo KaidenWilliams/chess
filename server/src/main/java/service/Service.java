@@ -198,20 +198,4 @@ public class Service {
     }
 
 
-
-
-
-    //2. Service method to get ChessGame by gameId from game table
-    // - a.used to make sure correct user in black/white
-    // - b. used to update Chess Game
-
-    //3. Service method to updateChessgame by gameId from game table
-
-
-
-//    When sending a Notification that refers to one of the clients,
-//    the message should use the Clients username. (E.g., Bob left the game).
-
-
-
 }

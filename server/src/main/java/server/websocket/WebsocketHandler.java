@@ -47,7 +47,7 @@ public class WebsocketHandler {
             case MAKE_MOVE:
                 MakeMoveCommand move = JsonRegistrar.getChessGameGson().fromJson(message, MakeMoveCommand.class);
                 MakeMove(move, session);
-            break;
+                break;
 
             case LEAVE:
                 LeaveCommand leave = new Gson().fromJson(message, LeaveCommand.class);
@@ -151,6 +151,11 @@ public class WebsocketHandler {
             }
 
 
+            //2. verify that there is a white and black user in DB -maybe?
+
+
+
+
             ChessPosition startPosition = chessMove.getStartPosition();
             ChessPosition endPosition = chessMove.getEndPosition();
             ChessBoard currBoard = game.getBoard();
@@ -164,6 +169,8 @@ public class WebsocketHandler {
             if (!moves.contains(chessMove)) {
                 throw new Exception("Not a valid move");
             }
+
+
 
             game.makeMove(chessMove);
 
