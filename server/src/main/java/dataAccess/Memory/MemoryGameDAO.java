@@ -6,7 +6,6 @@ import model.DataAccessException;
 import model.customSerializers.JsonRegistrar;
 import model.models.GameModel;
 
-// TODO error throwing
 
 public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameDAO {
 
@@ -18,8 +17,6 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
         this.currId = 1;
     }
 
-
-    //1. Get all games - already implemented
 
     //2. Insert row
     public GameModel create(GameModel createGame) {
@@ -63,7 +60,7 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
     }
 
 
-    //4. Update username for correct color with id TODO needs work
+    //4. Update username for correct color with id
     public GameModel updateUsername(GameModel oldGame, String usernameNew, String color) {
 
         if (color == null) {
@@ -91,12 +88,10 @@ public class MemoryGameDAO extends GeneralMemoryDAO<GameModel> implements IGameD
             else {
                 return null;
             }
-
         }
 
         return null;
     }
-
 
     private int getGameId() {
         int oldId = currId;

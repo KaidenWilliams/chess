@@ -5,7 +5,6 @@ import ui.EscapeSequences;
 
 public class WebSocketPrinter {
 
-    // TODO make this another color, escape characters, all sorts of nice stuff
     public static void printNotification(String input) {
         System.out.println(SharedBuilder.setStringColor(EscapeSequences.SET_TEXT_COLOR_YELLOW, input + "\n"));
     }
@@ -17,6 +16,5 @@ public class WebSocketPrinter {
     public static void printGame(String input) {
         System.out.println(input);
     }
-
 
 }

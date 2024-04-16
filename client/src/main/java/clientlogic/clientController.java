@@ -1,13 +1,11 @@
 package clientlogic;
 
-import exceptionclient.ClientException;
 import state.*;
-import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Arrays;
 
 
-public class ClientController {
+public class clientController {
 
     // evaluates strings passed in by InputHandler
     // Simple case switch statement to decide what to do based on input Param
@@ -24,12 +22,12 @@ public class ClientController {
     private ServerFacade serverFacade;
 
 
-    public ClientController(String url) {
+    public clientController(String url) {
         serverUrl = url;
         serverFacade = new ServerFacade(url);
         observer = new StateNotifier(this);
         observer.populateContext(serverFacade, serverUrl);
-        observer.ChangeStateDefault();
+        observer.changeStateDefault();
     }
 
     public String routeInput(String input)  {
@@ -43,12 +41,8 @@ public class ClientController {
         return state.eval(commandNameLower, params);
     }
 
-    public void SetState(AState state) {
+    public void setState(AState state) {
         this.state = state;
-    }
-
-    public ServerFacade getServerFacade() {
-        return this.serverFacade;
     }
 
 }

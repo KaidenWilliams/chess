@@ -14,7 +14,6 @@ import java.util.Collection;
 
 public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
 
-    //5 - Delete All doesn't count really
 
     //1. Get all games
     public Collection<GameModel> listAll() throws DataAccessException {
@@ -58,7 +57,7 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
         }
     }
 
-    // TODO Serialization
+
     private GameModel makeGame(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String whiteUsername = rs.getString("whiteusername");
@@ -68,11 +67,6 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
         ChessGame gameDeserialized = JsonRegistrar.getChessGameGson().fromJson(chessGame, ChessGame.class);
         return new GameModel(id, whiteUsername, blackUsername, gameName, gameDeserialized);
     }
-
-
-    //TODO update ChessGame
-//    public updateChessGame();
-
 
 
     //3. Get game from gameID
@@ -179,10 +173,7 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
     }
 
 
-
-
     //5. Delete all
-
     public void deleteAll() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "TRUNCATE game";

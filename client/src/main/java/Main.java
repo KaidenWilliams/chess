@@ -8,7 +8,7 @@ public class Main {
         }
 
         try {
-            new InputHandler(serverUrl).ReadInput();
+            new InputHandler(serverUrl).readInput();
         }
         catch (Exception ex) {
             System.out.println(ex.getMessage());

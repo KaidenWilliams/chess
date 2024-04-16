@@ -36,34 +36,34 @@ public class WebsocketHandler {
 
             case JOIN_PLAYER:
                 JoinPlayerCommand player = new Gson().fromJson(message, JoinPlayerCommand.class);
-                JoinPlayer(player, session);
+                joinPlayer(player, session);
                 break;
 
             case JOIN_OBSERVER:
                 JoinObserverCommand observer = new Gson().fromJson(message, JoinObserverCommand.class);
-                JoinObserver(observer, session);
+                joinObserver(observer, session);
                 break;
 
             case MAKE_MOVE:
                 MakeMoveCommand move = JsonRegistrar.getChessGameGson().fromJson(message, MakeMoveCommand.class);
-                MakeMove(move, session);
+                makeMove(move, session);
                 break;
 
             case LEAVE:
                 LeaveCommand leave = new Gson().fromJson(message, LeaveCommand.class);
-                Leave(leave, session);
+                leave(leave, session);
                 break;
 
             case RESIGN:
                 ResignCommand resign = new Gson().fromJson(message, ResignCommand.class);
-                Resign(resign, session);
+                resign(resign, session);
                 break;
 
         }
     }
 
 
-    private void JoinPlayer(JoinPlayerCommand player, Session session) throws IOException {
+    private void joinPlayer(JoinPlayerCommand player, Session session) throws IOException {
 
         try {
             int gameId = player.getGameId();
@@ -102,7 +102,7 @@ public class WebsocketHandler {
     }
 
 
-    private void JoinObserver(JoinObserverCommand observer, Session session) throws IOException {
+    private void joinObserver(JoinObserverCommand observer, Session session) throws IOException {
 
         try {
             int gameId = observer.getGameId();
@@ -133,7 +133,7 @@ public class WebsocketHandler {
     }
 
 
-    private void MakeMove(MakeMoveCommand move, Session session) throws IOException {
+    private void makeMove(MakeMoveCommand move, Session session) throws IOException {
 
         try {
             int gameId = move.getGameId();
@@ -226,7 +226,7 @@ public class WebsocketHandler {
     }
 
 
-    private void Leave(LeaveCommand leaveCommand, Session session) throws IOException {
+    private void leave(LeaveCommand leaveCommand, Session session) throws IOException {
 
         try {
             int gameId = leaveCommand.getGameId();
@@ -262,7 +262,7 @@ public class WebsocketHandler {
     }
 
 
-    private void Resign(ResignCommand resignCommand, Session session) throws IOException {
+    private void resign(ResignCommand resignCommand, Session session) throws IOException {
 
         try {
             int gameId = resignCommand.getGameId();

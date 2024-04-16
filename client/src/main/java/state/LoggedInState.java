@@ -16,23 +16,23 @@ import java.util.function.Function;
 public class LoggedInState extends AState {
 
 
-    protected static Map<String, Function<String[], String>> _commandMethods = new HashMap<>();
+    protected static final Map<String, Function<String[], String>> _commandMethods = new HashMap<>();
 
-    private final String _color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
+    private static final String _color = EscapeSequences.SET_TEXT_COLOR_MAGENTA;
 
     public LoggedInState(ClientContext context) {
         super(context);
 
-        _commandMethods.put("logout", this::Logout);
-        _commandMethods.put("list", this::List);
-        _commandMethods.put("create", this::Create);
-        _commandMethods.put("join", this::Join);
-        _commandMethods.put("spectate", this::Spectate);
-        _commandMethods.put("help", this::Help);
+        _commandMethods.put("logout", this::logout);
+        _commandMethods.put("list", this::list);
+        _commandMethods.put("create", this::create);
+        _commandMethods.put("join", this::join);
+        _commandMethods.put("spectate", this::spectate);
+        _commandMethods.put("help", this::help);
     }
 
 
-    private String Logout(String[] params)  {
+    private String logout(String[] params)  {
 
         try {
             context.serverFacade.logoutUser(context.authToken);
@@ -40,7 +40,7 @@ public class LoggedInState extends AState {
 
             context.username = null;
             context.authToken = null;
-            context.observer.ChangeStateLoggedOut();
+            context.observer.changeStateLoggedOut();
             return setStringColor(_color, getLogoutString(tempUsername));
         }
         catch (ClientException e) {
@@ -49,7 +49,7 @@ public class LoggedInState extends AState {
     }
 
 
-    private String List(String[] params)  {
+    private String list(String[] params)  {
 
         try {
             ListGamesResponse res = context.serverFacade.listGames(context.authToken);
@@ -70,7 +70,7 @@ public class LoggedInState extends AState {
         }
     }
 
-    private String Create(String[] params)  {
+    private String create(String[] params)  {
 
         if (params == null || params.length != 1) {
             return getErrorStringSyntax("create");
@@ -87,7 +87,7 @@ public class LoggedInState extends AState {
     }
 
 
-    private String Join(String[] params)  {
+    private String join(String[] params)  {
 
         if (params == null || params.length != 2) {
             return getErrorStringSyntax("join");
@@ -102,10 +102,10 @@ public class LoggedInState extends AState {
 
             var req = new JoinGameRequest.RequestBody(color, gameNumber);
             context.serverFacade.joinGame(req, context.authToken);
-            context.webSocketFacade = new WebSocketFacade(context.URL, context.authToken, gameNumber, context.observer);
-            context.webSocketFacade.JoinPlayer(color);
+            context.webSocketFacade = new WebSocketFacade(context.url, context.authToken, gameNumber, context.observer);
+            context.webSocketFacade.joinPlayer(color);
 
-            context.observer.ChangeStateChessGame();
+            context.observer.changeStateChessGame();
             context.gameColor = color;
             return setStringColor(_color, getJoinGameString(gameNumber, color));
         }
@@ -117,7 +117,7 @@ public class LoggedInState extends AState {
         }
     }
 
-    private String Spectate(String[] params) {
+    private String spectate(String[] params) {
         if (params == null || params.length != 1) {
             return getErrorStringSyntax("spectate");
         }
@@ -130,10 +130,10 @@ public class LoggedInState extends AState {
 
             var req = new JoinGameRequest.RequestBody(null, gameNumber);
             context.serverFacade.joinGame(req, context.authToken);
-            context.webSocketFacade = new WebSocketFacade(context.URL, context.authToken, gameNumber, context.observer);
-            context.webSocketFacade.JoinObserver();
+            context.webSocketFacade = new WebSocketFacade(context.url, context.authToken, gameNumber, context.observer);
+            context.webSocketFacade.joinObserver();
 
-            context.observer.ChangeStateChessGame();
+            context.observer.changeStateChessGame();
             context.gameColor = null;
             return setStringColor(_color, getSpecateGameString(gameNumber));
         }
@@ -147,7 +147,7 @@ public class LoggedInState extends AState {
 
 
 
-    private String Help(String[] params) {
+    private String help(String[] params) {
         return setStringColor(_color, helpString);
     }
 
@@ -158,7 +158,7 @@ public class LoggedInState extends AState {
     }
 
     @Override
-    String DefaultCommand(String[] params) {
+    String defaultCommand(String[] params) {
         return setStringColor(_color, defaultString);
     }
 

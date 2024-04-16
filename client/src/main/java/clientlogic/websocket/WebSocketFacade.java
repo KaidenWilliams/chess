@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.net.URI;
 
 
-
-//need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
 
     public Session session;
@@ -52,7 +50,7 @@ public class WebSocketFacade extends Endpoint {
                             ChessGameState state = observer.getChessGameState();
                             if (state != null) {
                                 state.setGame(chessGame);
-                                WebSocketPrinter.printGame(state.DrawBoard(state.getGame().getBoard().getSquares()));
+                                WebSocketPrinter.printGame(state.drawBoard(state.getGame().getBoard().getSquares()));
                             } else {
                                 WebSocketPrinter.printError("Error: Invalid LoadGame Message sent. User is not in ChessGame State");
                             }
@@ -83,28 +81,28 @@ public class WebSocketFacade extends Endpoint {
     }
 
 
-    public void JoinPlayer(String playerColor) throws ClientException {
+    public void joinPlayer(String playerColor) throws ClientException {
         try {
             ChessGame.TeamColor realColor = (playerColor.equals("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK);
             var action = new JoinPlayerCommand(authToken, gameId, realColor);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            sendMessage(action);
         } catch (IOException ex) {
             throw new ClientException(ex.getMessage(), 500);
         }
     }
 
 
-    public void JoinObserver() throws ClientException {
+    public void joinObserver() throws ClientException {
         try {
             var action = new JoinObserverCommand(authToken, gameId);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            sendMessage(action);
         } catch (IOException ex) {
             throw new ClientException(ex.getMessage(), 500);
         }
     }
 
 
-    public void MakeMove(ChessMove move) throws ClientException {
+    public void makeMove(ChessMove move) throws ClientException {
         try {
             var action = new MakeMoveCommand(authToken, gameId, move);
             this.session.getBasicRemote().sendText(JsonRegistrar.getChessGameGson().toJson(action));
@@ -113,22 +111,26 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void Leave() throws ClientException {
+    public void leave() throws ClientException {
         try {
             var action = new LeaveCommand(authToken, gameId);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            sendMessage(action);
         } catch (IOException ex) {
             throw new ClientException(ex.getMessage(), 500);
         }
     }
 
-    public void Resign() throws ClientException {
+    public void resign() throws ClientException {
         try {
             var action = new ResignCommand(authToken, gameId);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            sendMessage(action);
         } catch (IOException ex) {
             throw new ClientException(ex.getMessage(), 500);
         }
+    }
+
+    private void sendMessage(UserGameCommand action) throws IOException {
+        this.session.getBasicRemote().sendText(new Gson().toJson(action));
     }
 
 }

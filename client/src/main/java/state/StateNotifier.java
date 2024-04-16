@@ -1,15 +1,15 @@
 package state;
 
-import clientlogic.ClientController;
+import clientlogic.clientController;
 import clientlogic.ServerFacade;
 
 public class StateNotifier {
 
     private ClientContext context;
-    private final ClientController controller;
+    private final clientController controller;
     private ChessGameState chessGameState;
 
-    public StateNotifier(ClientController controller) {
+    public StateNotifier(clientController controller) {
         this.controller = controller;
     }
 
@@ -17,23 +17,23 @@ public class StateNotifier {
         this.context = new ClientContext(serverFacade, url, this);
     }
 
-    public void ChangeStateLoggedOut() {
+    public void changeStateLoggedOut() {
         var state = new LoggedOutState(context);
-        controller.SetState(state);
+        controller.setState(state);
     }
-    public void ChangeStateLoggedIn() {
+    public void changeStateLoggedIn() {
         var state = new LoggedInState(context);
         chessGameState = null;
-        controller.SetState(state);
+        controller.setState(state);
     }
 
-    public void ChangeStateChessGame() {
+    public void changeStateChessGame() {
         chessGameState = new ChessGameState(context);
-        controller.SetState(chessGameState);
+        controller.setState(chessGameState);
     }
 
-    public void ChangeStateDefault() {
-        ChangeStateLoggedOut();
+    public void changeStateDefault() {
+        changeStateLoggedOut();
     }
 
     // Not optimal, but best I could think of

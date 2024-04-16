@@ -9,12 +9,12 @@ public class ClientContext {
     public String gameColor;
     public final ServerFacade serverFacade;
     public WebSocketFacade webSocketFacade;
-    public final String URL;
+    public final String url;
     public final StateNotifier observer;
 
     public ClientContext(ServerFacade serverFacade, String url, StateNotifier observer) {
         this.serverFacade = serverFacade;
-        this.URL = url;
+        this.url = url;
         this.observer = observer;
     }
 }

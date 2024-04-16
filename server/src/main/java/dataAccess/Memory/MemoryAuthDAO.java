@@ -3,7 +3,6 @@ package dataAccess.Memory;
 import dataAccess.IAuthDAO;
 import model.models.AuthModel;
 
-// TODO error throwing
 
 public class MemoryAuthDAO extends GeneralMemoryDAO<AuthModel> implements IAuthDAO {
 
@@ -12,7 +11,6 @@ public class MemoryAuthDAO extends GeneralMemoryDAO<AuthModel> implements IAuthD
         this.data = MemoryDB.getInstance().getAuthData();
     }
 
-    //1. Insert row - already implemented
 
     //2. Delete row where authtoken equals
     public AuthModel deleteRowByAuthtoken(String providedAuthToken) {
@@ -23,7 +21,5 @@ public class MemoryAuthDAO extends GeneralMemoryDAO<AuthModel> implements IAuthD
     public AuthModel getRowByAuthtoken(String providedAuthToken) {
         return findOne(model -> model.authToken().equals(providedAuthToken));
     }
-
-    //4. Delete all - already implemented
 
 }

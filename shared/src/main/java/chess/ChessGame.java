@@ -234,7 +234,7 @@ public class ChessGame {
             return false;
         }
 
-        if (AreValidMoves(teamColor)) return false;
+        if (areValidMoves(teamColor)) return false;
 
         return isInCheck(teamColor);
     }
@@ -256,11 +256,11 @@ public class ChessGame {
             return false;
         }
 
-        return !AreValidMoves(teamColor);
+        return !areValidMoves(teamColor);
     }
 
 
-    private boolean AreValidMoves(TeamColor teamColor) {
+    private boolean areValidMoves(TeamColor teamColor) {
         ChessPiece[][] squares = myBoard.getSquares();
         for (int i = 0; i < squares.length; i++) {
             for (int j = 0; j < squares[i].length; j++) {

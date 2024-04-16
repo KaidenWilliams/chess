@@ -67,9 +67,6 @@ public class ChessBoard {
     }
 
 
-    public void setSquares(ChessPiece[][] inputSquares) {squares = inputSquares;}
-
-
     //Difference between array (0 indexing) and board (1 indexing)
     public boolean inBounds(ChessPosition position) {
         int x = position.getArrayRow();

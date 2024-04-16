@@ -23,7 +23,6 @@ public class MemoryDB {
         return instance;
     }
 
-    //TODO make sure these actually work like they should
     public ArrayList<UserModel> getUserData() {
         return userData;
     }

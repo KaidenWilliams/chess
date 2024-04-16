@@ -14,20 +14,20 @@ import java.util.function.Function;
 
 public class LoggedOutState extends AState {
 
-    protected static Map<String, Function<String[], String>> _commandMethods = new HashMap<>();
+    protected static final Map<String, Function<String[], String>> _commandMethods = new HashMap<>();
 
-    private final String _color = EscapeSequences.SET_TEXT_COLOR_ORANGE;
+    private static final String _color = EscapeSequences.SET_TEXT_COLOR_ORANGE;
 
 
     public LoggedOutState(ClientContext context) {
         super(context);
-        _commandMethods.put("register", this::Register);
-        _commandMethods.put("login", this::Login);
-        _commandMethods.put("quit", this::Quit);
-        _commandMethods.put("help", this::Help);
+        _commandMethods.put("register", this::register);
+        _commandMethods.put("login", this::login);
+        _commandMethods.put("quit", this::quit);
+        _commandMethods.put("help", this::help);
     }
 
-    private String Register(String[] params) {
+    private String register(String[] params) {
 
         if (params == null || params.length != 3) {
             return getErrorStringSyntax("register");
@@ -38,7 +38,7 @@ public class LoggedOutState extends AState {
             RegisterResponse res = context.serverFacade.registerUser(req);
             context.authToken = res.authToken();
             context.username = params[0];
-            context.observer.ChangeStateLoggedIn();
+            context.observer.changeStateLoggedIn();
             return setStringColor(_color, getRegisterString(context.username));
 
         } catch (ClientException e) {
@@ -46,7 +46,7 @@ public class LoggedOutState extends AState {
         }
     }
 
-    private String Login(String[] params)  {
+    private String login(String[] params)  {
 
         if (params == null || params.length != 2) {
             return getErrorStringSyntax("login");
@@ -57,7 +57,7 @@ public class LoggedOutState extends AState {
 
             context.authToken = res.authToken();
             context.username = params[0];
-            context.observer.ChangeStateLoggedIn();
+            context.observer.changeStateLoggedIn();
             return setStringColor(_color, getLoginString(context.username));
         }
         catch (ClientException e) {
@@ -65,11 +65,11 @@ public class LoggedOutState extends AState {
         }
     }
 
-    private String Quit(String[] params) {
+    private String quit(String[] params) {
         return setStringColor(_color, quitString);
     }
 
-    private String Help(String[] params) {
+    private String help(String[] params) {
         return setStringColor(_color, helpString);
     }
 
@@ -79,7 +79,7 @@ public class LoggedOutState extends AState {
     }
 
     @Override
-    String DefaultCommand(String[] params) {
+    String defaultCommand(String[] params) {
         return setStringColor(_color, defaultString);
     }
 

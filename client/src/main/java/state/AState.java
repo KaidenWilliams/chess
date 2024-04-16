@@ -1,10 +1,5 @@
 package state;
 
-import chess.ChessGame;
-import clientlogic.ServerFacade;
-import clientlogic.websocket.WebSocketFacade;
-import exceptionclient.ClientException;
-
 import java.util.Map;
 import java.util.function.Function;
 
@@ -23,12 +18,12 @@ public abstract class AState {
         if (commandMethod != null) {
             return commandMethod.apply(params);
         } else {
-            return DefaultCommand(params);
+            return defaultCommand(params);
         }
     }
 
     abstract Map<String, Function<String[], String>> getCommandMethods();
 
-    abstract String DefaultCommand(String[] params);
+    abstract String defaultCommand(String[] params);
 
 }

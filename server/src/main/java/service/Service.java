@@ -25,11 +25,6 @@ public class Service {
         this.userDAO= dataAccess.getUserDAO();
     }
 
-    // Need to implement websocket make move methods, don't know if they even need to be here
-    // Just need to call makeMove on ChessBoard, then update GameDAO, then send that new version to everyone in connection
-
-
-
     //1. Register User
     public AuthModel registerUser(RegisterRequest user) throws DataAccessException {
 
@@ -141,8 +136,6 @@ public class Service {
 
 
 
-
-
     public String getUsername(String authToken) throws DataAccessException {
         try {
             AuthModel auth = authDAO.getRowByAuthtoken(authToken);
@@ -171,9 +164,6 @@ public class Service {
         }
     }
 
-
-    // TODO make sure I do strings vs ChessGame right when working with ChessGame.
-    // - Also, when making new game, create a blank ChessGame
 
     public ChessGame getChessGame(int gameId) throws DataAccessException {
         GameModel game = gameDAO.getRowByGameID(gameId);

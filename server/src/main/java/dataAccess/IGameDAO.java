@@ -18,7 +18,7 @@ public interface IGameDAO {
     //3. Get game from gameID
     GameModel getRowByGameID(int gameID) throws DataAccessException;
 
-    //4. Update username for correct color with id TODO needs work
+    //4. Update username for correct color with id
     GameModel updateUsername(GameModel oldGame, String usernameNew, String color) throws DataAccessException;
 
     void updateChessGame(int gameId, String chessGame) throws DataAccessException;
@@ -28,7 +28,4 @@ public interface IGameDAO {
 
     void deleteUsernameFromGame(int gameId, ChessGame.TeamColor color) throws DataAccessException;
 
-    //6. Add Spectator - don't have to yet
-
-    //7. Get game Id when creating new row
 }

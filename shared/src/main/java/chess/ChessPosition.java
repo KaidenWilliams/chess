@@ -35,10 +35,6 @@ public class ChessPosition {
        return this.col;
     }
 
-    public void setRow(int row) {this.row = row;}
-
-    public void setColumn(int column) {this.col = column;}
-
     public int getArrayRow() {return this.row-1;}
 
     public int getArrayColumn() {return this.col-1;}
