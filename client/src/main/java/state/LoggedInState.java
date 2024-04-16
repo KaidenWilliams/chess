@@ -77,7 +77,7 @@ public class LoggedInState extends AState {
         }
         try {
             var req = new CreateGameRequest.RequestBody(params[0]);
-            CreateGameResponse res = context.serverFacade.createGame(req, context.authToken);
+            context.serverFacade.createGame(req, context.authToken);
 
             return setStringColor(_color, getCreateGameString(params[0]));
         }

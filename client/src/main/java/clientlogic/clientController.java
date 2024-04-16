@@ -14,19 +14,13 @@ public class clientController {
     // Handles all logic with inputs and outputs
     // Once handled, passes string to appropriate server facade method
 
-    //calls server facade
 
     private AState state;
-    private StateNotifier observer;
-    private final String serverUrl;
-    private ServerFacade serverFacade;
-
 
     public clientController(String url) {
-        serverUrl = url;
-        serverFacade = new ServerFacade(url);
-        observer = new StateNotifier(this);
-        observer.populateContext(serverFacade, serverUrl);
+        ServerFacade serverFacade = new ServerFacade(url);
+        StateNotifier observer = new StateNotifier(this);
+        observer.populateContext(serverFacade, url);
         observer.changeStateDefault();
     }
 

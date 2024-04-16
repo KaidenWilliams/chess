@@ -93,8 +93,7 @@ public class SQLGameDAO extends GeneralSQLDAO implements IGameDAO {
             var statement = "UPDATE game SET game = ? WHERE id = ?";
 
             int rows = executeUpdateWithNumberRows(conn, statement, chessGame, gameId);
-            if (rows >= 1) {
-            } else {
+            if (rows < 1) {
                 throw new DataAccessException("Error while updating game with new username", 500);
             }
         } catch (SQLException e) {
