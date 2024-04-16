@@ -48,6 +48,7 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         teamTurn = team;
+        gameOver = false;
     }
 
     /**

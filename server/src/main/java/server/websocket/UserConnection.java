@@ -8,7 +8,6 @@ import java.io.IOException;
 public class UserConnection {
 
     public String authToken;
-
     public String userName;
     public Session session;
 

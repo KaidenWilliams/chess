@@ -3,9 +3,12 @@ package state;
 import chess.*;
 import ui.ChessGameBuilder;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import ui.EscapeSequences;
 
@@ -47,18 +50,12 @@ public class ChessGameState extends AState {
         _commandMethods.put("redraw", this::Redraw);
         _commandMethods.put("leave", this::Leave);
         _commandMethods.put("move", this::Move);
-//        _commandMethods.put("highlight", this::Highlight);
+        _commandMethods.put("highlight", this::Highlight);
         _commandMethods.put("resign", this::Resign);
         _commandMethods.put("cancel", this::Cancel);
         _commandMethods.put("confirm", this::Confirm);
         _commandMethods.put("syntax", this::Syntax);
         _commandMethods.put("help", this::Help);
-
-
-//        game = new ChessGame();
-//        var chessBoard = new ChessBoard();
-//        chessBoard.resetBoard();
-//        game.setChessBoard(chessBoard);
 
     }
 
@@ -66,7 +63,7 @@ public class ChessGameState extends AState {
 
     private String Redraw(String[] params) {
 
-        return DrawBoard();
+       return DrawBoard(game.getBoard().getSquares());
     }
 
 
@@ -80,9 +77,12 @@ public class ChessGameState extends AState {
             return getErrorStringSyntax("move");
         }
 
+        if (game.isGameOver()) {
+            return setStringColor(_color, gameOverString);
+        }
+
         try {
             String move = params[0];
-
             ChessMove chessMove;
 
             if (move.length() == 5 || move.length() == 7) {
@@ -106,16 +106,23 @@ public class ChessGameState extends AState {
                         return getErrorStringSyntax("move");
                     }
                 }
+
+                ChessPosition currPosition = new ChessPosition(rowFrom, colFrom);
+                ChessBoard currBoard = game.getBoard();
+                ChessPiece currPiece = currBoard.getPiece(currPosition);
+
+                if (currPiece.getTeamColor() != game.getTeamTurn()) {
+                    return setStringColor(_color, highlightFailString);
+                }
+
                 chessMove = new ChessMove(new ChessPosition(rowFrom, colFrom), new ChessPosition(rowTo, colTo), promotionPiece);
+                context.webSocketFacade.MakeMove(chessMove);
+                return "";
             }
 
             else {
                 return getErrorStringSyntax("move");
             }
-
-            context.webSocketFacade.MakeMove(chessMove);
-
-            return "";
 
         }
         catch (Exception ex) {
@@ -124,20 +131,54 @@ public class ChessGameState extends AState {
     }
 
 
-//    private String Highlight(String[] params) {
-//         if (params == null || params.length != 1) {
-//            return getErrorStringSyntax("create");
-//        }
-//        try {
-//            var req = new CreateGameRequest.RequestBody(params[0]);
-//            CreateGameResponse res = _serverFacade.createGame(req, _authToken);
-//
-//            return setStringColor(_color, LoggedInBuilder.getCreateGameString(params[0]));
-//        }
-//        catch (ClientException e) {
-//            return getErrorStringRequest(e.toString(), "list");
-//        }
-//    }
+    private String Highlight(String[] params) {
+         if (params == null || params.length != 1) {
+            return getErrorStringSyntax("highlight");
+        }
+         if (game.isGameOver()) {
+             return setStringColor(_color, gameOverString);
+         }
+
+        try {
+
+            String move = params[0];
+
+            if (move.length() != 2){
+                return getErrorStringSyntax("highlight");
+            }
+
+            Integer col = colDict.get(move.charAt(0));
+            Integer row = rowDict.get(move.charAt(1));
+
+            if (col == null || row == null) {
+                return getErrorStringSyntax("highlight");
+            }
+
+            ChessPosition currPosition = new ChessPosition(row, col);
+            ChessBoard currBoard = game.getBoard();
+            ChessPiece currPiece = currBoard.getPiece(currPosition);
+
+            if (currPiece.getTeamColor() != game.getTeamTurn()) {
+                return setStringColor(_color, highlightFailString);
+            }
+
+            Collection<ChessMove> moves = game.validMoves(currPosition);
+
+            HashSet<ChessPosition> endPositions = moves.stream()
+                    .map(ChessMove::getEndPosition)
+                    .collect(Collectors.toCollection(HashSet::new));
+            endPositions.add(currPosition);
+
+
+            return HighlightBoard(game.getBoard().getSquares(), endPositions);
+
+
+        }
+        catch (Exception e) {
+            return getErrorStringRequest(e.toString(), "highlight");
+        }
+
+    }
 
 
 
@@ -176,12 +217,16 @@ public class ChessGameState extends AState {
 
 
     private String Confirm(String[] params) {
-        try {
-            context.webSocketFacade.Resign();
-            return "";
+        if (!_resign) {
+            return setStringColor(_color, defaultString);
         }
-        catch (Exception ex) {
-            return getErrorStringRequest(ex.getMessage(), "confirm");
+        else {
+            try {
+                context.webSocketFacade.Resign();
+                return "";
+            } catch (Exception ex) {
+                return getErrorStringRequest(ex.getMessage(), "confirm");
+            }
         }
     }
 
@@ -204,17 +249,23 @@ public class ChessGameState extends AState {
         return setStringColor(_color, helpString);
     }
 
+    public ChessGame getGame() {
+        return game;
+    }
+
     public void setGame(ChessGame newGame) {
         game = newGame;
-
     }
 
-
-    public String DrawBoard() {
-        var board = game.getBoard().getSquares();
+    public String DrawBoard(ChessPiece[][] board) {
         return ChessGameBuilder.printBoard(board, context.gameColor);
-
     }
+
+    public String HighlightBoard(ChessPiece[][] board, HashSet<ChessPosition> moves) {
+        return ChessGameBuilder.printBoardWithHighlights(board, context.gameColor, moves);
+    }
+
+
 
     @Override
     String DefaultCommand(String[] params) {

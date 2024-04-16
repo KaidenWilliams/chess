@@ -2,8 +2,10 @@ package ui;
 
 import chess.ChessGame;
 import chess.ChessPiece;
+import chess.ChessPosition;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import static chess.ChessPiece.PieceType.*;
@@ -45,6 +47,45 @@ public class ChessGameBuilder {
 
         return boardString.toString();
     }
+
+
+    public static String printBoardWithHighlights(ChessPiece[][] squares, String color, HashSet<ChessPosition> legalMoves) {
+        boolean isWhiteView = color == null || color.equalsIgnoreCase("white");
+
+        StringBuilder boardString = new StringBuilder(EscapeSequences.ERASE_SCREEN);
+        printColumnLabels(boardString, isWhiteView);
+        boardString.append("\n");
+
+        for (int row = 0; row < 8; row++) {
+            int rowIndex = isWhiteView ? 7 - row : row;
+            printRowLabelRight(boardString, ROWS[rowIndex]);
+
+            for (int col = 0; col < 8; col++) {
+                int columnIndex = isWhiteView ? col : 7 - col;
+                String squareColor = getSquareColor(row, columnIndex);
+
+                // Check if the current square is a legal move
+                if (legalMoves.contains(new ChessPosition(rowIndex + 1, columnIndex + 1))) {
+                    squareColor = EscapeSequences.HIGHLIGHT_SQUARE_COLOR;
+                }
+
+                String piece = getPieceString(squares[rowIndex][columnIndex]);
+                boardString.append(squareColor)
+                        .append(piece)
+                        .append(EscapeSequences.RESET_COLOR);
+            }
+
+            printRowLabelLeft(boardString, ROWS[rowIndex]);
+            boardString.append("\n");
+        }
+
+        printColumnLabels(boardString, isWhiteView);
+        boardString.append("\n");
+
+        return boardString.toString();
+    }
+
+
 
     private static String getPieceString(ChessPiece piece) {
         if (piece == null) {
@@ -126,10 +167,10 @@ public class ChessGameBuilder {
 
 
     public static final String leaveString =
-        """
-        Leaving the Chess Game.
-        You are in the main menu.
-        """;
+            """
+            Leaving the Chess Game.
+            You are in the main menu.
+            """;
 
 
     public static final String resignString =
@@ -151,13 +192,27 @@ public class ChessGameBuilder {
             You have successfully cancelled your resignation
             """;
 
+
+    public static final String highlightFailString =
+
+            """
+            You cannot higlight moves for this piece, as it is not its color's turn.
+            """;
+
+    public static final String gameOverString =
+
+            """
+            The game is over. No other actions can be performed.
+            """;
+
+
     public static final String helpString =
             """
             Commands:
             < move <COL_START><ROW_START>-<COL_END><ROW_END> -- to move a piece. See "syntax" for info.
             < resign -- to forfeit the chess game. You will be asked to confirm or cancel.
             < redraw -- to draw the board again
-            < highlight -- to highlight the board?
+            < highlight <COL><ROW> -- to highlight a piece on the board who's turn it is to move.
             < leave -- to leave the chess game window
             < syntax -- to get more information about the chess move syntax
             < help -- to get a list of possible commands
@@ -193,7 +248,7 @@ public class ChessGameBuilder {
             < move <COL_START><ROW_START>-<COL_END><ROW_END> -- to move a piece. See "syntax" for info.
             < resign -- to forfeit the chess game. You will be asked to confirm or cancel.
             < redraw -- to draw the board again
-            < highlight -- to highlight the board?
+            < highlight <COL><ROW> -- to highlight a piece on the board who's turn it is to move.
             < leave -- to leave the chess game window
             < syntax -- to get more information about the chess move syntax
             < help -- to get a list of possible commands

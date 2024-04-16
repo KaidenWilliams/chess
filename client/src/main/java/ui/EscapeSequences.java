@@ -12,6 +12,7 @@ public class EscapeSequences {
     public static final String LIGHT_SQUARE_COLOR = "\u001b[48;5;107m";
     public static final String DARK_SQUARE_COLOR = "\u001b[48;5;240m";
     public static final String RESET_COLOR = "\u001b[0m";
+    public static final String HIGHLIGHT_SQUARE_COLOR = "\u001B[43m";
 
     public static final String ROWLABELSPACING = "\u2003\u2004\u2006\u200a";
     public static final String ROWLABELPADDING = "\u2004\u200a";

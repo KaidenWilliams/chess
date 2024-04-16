@@ -1,7 +1,7 @@
 package server.websocket;
 
-import chess.ChessGame;
-import chess.ChessMove;
+import static server.websocket.ChessMoveBuilder.*;
+import chess.*;
 import com.google.gson.Gson;
 import model.customSerializers.JsonRegistrar;
 import org.eclipse.jetty.websocket.api.Session;
@@ -14,17 +14,8 @@ import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
+import java.util.Collection;
 
-
-
-// Corresponds to all endpoints from WebsocketFacade
-// calls correct functionality for each endpoint
-
-// Keeps list of connections (people in shop) to notify when something happens
-// - don't know how I will implement this, because need list of connections for every gam
-// - I see need for ConnectionManager, implement as necessary
-
-//Unlike example, mine needs to call service methods to update DB, specifically for Chess moves
 
 @WebSocket
 public class WebsocketHandler {
@@ -37,12 +28,6 @@ public class WebsocketHandler {
         this.service = newService;
     }
 
-//    JOIN_PLAYER
-//    JOIN_OBSERVER
-//    MAKE_MOVE
-//    LEAVE
-//    RESIGN
-//
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
@@ -59,10 +44,10 @@ public class WebsocketHandler {
                 JoinObserver(observer, session);
                 break;
 
-//            case MAKE_MOVE:
-//                MakeMoveCommand move = new Gson().fromJson(message, MakeMoveCommand.class);
-//                MakeMove(move, session);
-//            break;
+            case MAKE_MOVE:
+                MakeMoveCommand move = JsonRegistrar.getChessGameGson().fromJson(message, MakeMoveCommand.class);
+                MakeMove(move, session);
+            break;
 
             case LEAVE:
                 LeaveCommand leave = new Gson().fromJson(message, LeaveCommand.class);
@@ -77,15 +62,6 @@ public class WebsocketHandler {
         }
     }
 
-
-
-    //    //1.
-//    //        -JOIN_PLAYER sent to server
-//    //-server send LOAD_GAME message back to root client
-//    //-server sends NOTIFICATION to all other clients, informs them what color root client is joining as
-//    //---- needs to check what they are joining is actually valid in DB, can't steal spot they aren't in, client hacking protection
-
-    //1. Join_Player: Integer gameID, ChessGame.TeamColor playerColor
 
     private void JoinPlayer(JoinPlayerCommand player, Session session) throws IOException {
 
@@ -123,16 +99,6 @@ public class WebsocketHandler {
     }
 
 
-
-    //
-//    //2.
-//    //        -JOIN_OBSERVER sent to server
-//    //-server sends LOAD_GAME back to root client
-//    //-server sends NOTIFICATION to all other clients in game
-//    //---- needs to check what they are joining is actually valid in DB, can't steal spot they aren't in, client hacking protection
-//
-    //2. Join_Observer: Integer gameID
-
     private void JoinObserver(JoinObserverCommand observer, Session session) throws IOException {
 
         try {
@@ -165,27 +131,98 @@ public class WebsocketHandler {
     }
 
 
+    private void MakeMove(MakeMoveCommand move, Session session) throws IOException {
+
+        try {
+            int gameId = move.getGameId();
+            String authToken = move.getAuthString();
+            ChessMove chessMove = move.getMove();
+
+            UserConnection user = connectionManager.getUser(gameId, authToken);
+            ChessGame game = service.getChessGame(gameId);
+
+            //1. verify if correct color + game not over + valid move
+
+            if (user.color != game.getTeamTurn()) {
+               throw new Exception("It is not your turn to move");
+            }
+            if (game.isGameOver()) {
+                throw new Exception("The game is over. No more moves can be made");
+            }
 
 
+            ChessPosition startPosition = chessMove.getStartPosition();
+            ChessPosition endPosition = chessMove.getEndPosition();
+            ChessBoard currBoard = game.getBoard();
+            ChessPiece currPiece = currBoard.getPiece(startPosition);
 
-//    //3.
-//    //        -MAKE_MOVE sent to server
-//    //-server verifies validity of move
-//    //-game is updated in DB to represent the move
-//    //-server sends a LOAD_GAME message to all clients in the game with updated game
-//    //-server sends NOTIFICATION to all other clients informing what move was made
-//
-//    //3. Make_Move: Integer gameID, ChessMove move
+            if (currPiece.pieceColor != game.getTeamTurn()) {
+                throw new Exception("You cannot move this piece, it is of the wrong color");
+            }
+
+            Collection<ChessMove> moves = game.validMoves(startPosition);
+            if (!moves.contains(chessMove)) {
+                throw new Exception("Not a valid move");
+            }
+
+            game.makeMove(chessMove);
+
+            //1. Board sends Load_Game to all clients
+
+            LoadGameMessage loadGame = new LoadGameMessage(game);
+            String loadGameString = JsonRegistrar.getChessGameGson().toJson(loadGame);
+            connectionManager.sendMessageToConnection(session, loadGameString);
+            connectionManager.broadcastMessage(gameId, authToken, loadGameString);
 
 
+            //2. server sends Notification to all other clients notifying them of what move has been made
 
-//
-//    //4.
-//    //        -LEAVE send to server
-//    //-game connection updated so root client is no longer in it
-//    //-NOTIFICATION sent to all other clients informing them client has left
-//
-//    //4. Leave: Integer gameID
+            String prettyColor = (user.color == ChessGame.TeamColor.WHITE ? "white" : "black");
+            String oppositeColor = (prettyColor.equals("white") ? "Black" : "White");
+
+            String pieceTypeString = getPieceTypeString(currPiece.getPieceType());
+            String startPositionString = getPositionString(startPosition);
+            String endPositionString = getPositionString(endPosition);
+
+            String moveString = String.format("%s moved %s piece from %s-%s as %s", user.userName, pieceTypeString, startPositionString, endPositionString, prettyColor);
+
+            NotificationMessage notification = new NotificationMessage(moveString);
+            String notificationString = new Gson().toJson(notification);
+            connectionManager.broadcastMessage(gameId, authToken, notificationString);
+
+            //3. If in checkmate or stalemate, send Notification to all clients
+
+            String eventString = "";
+            if (game.isInCheckmate(game.getTeamTurn())) {
+                eventString = "checkmate";
+            }
+
+            else if (game.isInStalemate(game.getTeamTurn())) {
+                eventString = "stalemate";
+            }
+
+            if (!eventString.isEmpty()) {
+
+                game.setGameOver(true);
+                String endString = String.format("%s is in %s. The game is over", oppositeColor, eventString);
+                NotificationMessage notificationEnd = new NotificationMessage(endString);
+                String notificationEndString = new Gson().toJson(notificationEnd);
+                connectionManager.sendMessageToConnection(session, notificationEndString);
+                connectionManager.broadcastMessage(gameId, authToken, notificationEndString);
+            }
+
+            String stringGame = JsonRegistrar.getChessGameGson().toJson(game);
+            service.updateChessGame(gameId, stringGame);
+
+
+        } catch (Exception ex) {
+            ErrorMessage error = new ErrorMessage(ex.getMessage());
+            String errorMessageString = new Gson().toJson(error);
+            connectionManager.sendMessageToConnection(session, errorMessageString);
+        }
+
+    }
+
 
     private void Leave(LeaveCommand leaveCommand, Session session) throws IOException {
 
@@ -220,16 +257,6 @@ public class WebsocketHandler {
     }
 
 
-
-
-
-//
-//    //5.
-//    //        -RESIGN sent so server
-//    //-server marks the game as over (can modify ChessGame class, or set nextmove to null, think that is easiest)
-//    //- NOTIFICATION sent to all clients informing what client has resigned
-//    //5. Resign: Integer gameID
-
     private void Resign(ResignCommand resignCommand, Session session) throws IOException {
 
         try {
@@ -242,7 +269,7 @@ public class WebsocketHandler {
             if (user.color != null) {
 
                 ChessGame game = service.getChessGame(gameId);
-                game.setTeamTurn(null);
+                game.setGameOver(true);
 
                 String gameString = JsonRegistrar.getChessGameGson().toJson(game);
                 service.updateChessGame(gameId, gameString);
