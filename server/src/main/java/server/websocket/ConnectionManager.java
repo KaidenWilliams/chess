@@ -66,11 +66,22 @@ public class ConnectionManager {
         GameConnection gameConnection = connections.get(gameId);
 
         if (gameConnection.blackUser != null && !Objects.equals(gameConnection.blackUser.authToken, authToken)) {
-            gameConnection.blackUser.send(message);
+
+            if (gameConnection.blackUser.session.isOpen()) {
+                gameConnection.blackUser.send(message);
+            }
+            else {
+                gameConnection.blackUser = null;
+            }
         }
 
         if (gameConnection.whiteUser != null && !Objects.equals(gameConnection.whiteUser.authToken, authToken)) {
-            gameConnection.whiteUser.send(message);
+            if (gameConnection.whiteUser.session.isOpen()) {
+                gameConnection.whiteUser.send(message);
+            }
+            else {
+                gameConnection.whiteUser = null;
+            }
         }
 
 

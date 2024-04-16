@@ -90,6 +90,10 @@ public class WebsocketHandler {
 
             }
 
+            else {
+                throw new Exception("Cannot steal another user's spot");
+            }
+
         } catch (Exception ex) {
             ErrorMessage error = new ErrorMessage(ex.getMessage());
             String errorMessageString = new Gson().toJson(error);
@@ -169,7 +173,6 @@ public class WebsocketHandler {
             if (!moves.contains(chessMove)) {
                 throw new Exception("Not a valid move");
             }
-
 
 
             game.makeMove(chessMove);
@@ -252,6 +255,9 @@ public class WebsocketHandler {
             }
             else {
                 connectionManager.removeUser(gameId, authToken);
+                NotificationMessage notification = new NotificationMessage(String.format("%s has left the game as an observer", userName));
+                String notificationString = new Gson().toJson(notification);
+                connectionManager.broadcastMessage(gameId, authToken, notificationString);
             }
 
         }
@@ -290,6 +296,10 @@ public class WebsocketHandler {
                 connectionManager.sendMessageToConnection(session, notificationString);
                 connectionManager.broadcastMessage(gameId, authToken, notificationString);
 
+            }
+
+            else {
+                throw new Exception("Cannot resign as observer");
             }
 
         }
