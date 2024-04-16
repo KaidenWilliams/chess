@@ -192,26 +192,37 @@ public class WebsocketHandler {
             String notificationString = new Gson().toJson(notification);
             connectionManager.broadcastMessage(gameId, authToken, notificationString);
 
+            if (game.isInCheck(game.getTeamTurn())) {
+                String endStringCheck = String.format("%s is in check.", oppositeColor);
+                NotificationMessage notificationCheck = new NotificationMessage(endStringCheck);
+                String notificationEndStringCheck = new Gson().toJson(notificationCheck);
+                connectionManager.sendMessageToConnection(session, notificationEndStringCheck);
+                connectionManager.broadcastMessage(gameId, authToken, notificationEndStringCheck);
+            }
+
+            else {
+                String eventString = "";
+                if (game.isInCheckmate(game.getTeamTurn())) {
+                    eventString = "checkmate";
+                }
+
+                else if (game.isInStalemate(game.getTeamTurn())) {
+                    eventString = "stalemate";
+                }
+
+                if (!eventString.isEmpty()) {
+
+                    game.setGameOver(true);
+                    String endString = String.format("%s is in %s. The game is over", oppositeColor, eventString);
+                    NotificationMessage notificationEnd = new NotificationMessage(endString);
+                    String notificationEndString = new Gson().toJson(notificationEnd);
+                    connectionManager.sendMessageToConnection(session, notificationEndString);
+                    connectionManager.broadcastMessage(gameId, authToken, notificationEndString);
+                }
+            }
+
+
             //3. If in checkmate or stalemate, send Notification to all clients
-
-            String eventString = "";
-            if (game.isInCheckmate(game.getTeamTurn())) {
-                eventString = "checkmate";
-            }
-
-            else if (game.isInStalemate(game.getTeamTurn())) {
-                eventString = "stalemate";
-            }
-
-            if (!eventString.isEmpty()) {
-
-                game.setGameOver(true);
-                String endString = String.format("%s is in %s. The game is over", oppositeColor, eventString);
-                NotificationMessage notificationEnd = new NotificationMessage(endString);
-                String notificationEndString = new Gson().toJson(notificationEnd);
-                connectionManager.sendMessageToConnection(session, notificationEndString);
-                connectionManager.broadcastMessage(gameId, authToken, notificationEndString);
-            }
 
             String stringGame = JsonRegistrar.getChessGameGson().toJson(game);
             service.updateChessGame(gameId, stringGame);
