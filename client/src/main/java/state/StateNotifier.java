@@ -1,15 +1,15 @@
 package state;
 
-import clientlogic.clientController;
+import clientlogic.ClientController;
 import clientlogic.ServerFacade;
 
 public class StateNotifier {
 
     private ClientContext context;
-    private final clientController controller;
+    private final ClientController controller;
     private ChessGameState chessGameState;
 
-    public StateNotifier(clientController controller) {
+    public StateNotifier(ClientController controller) {
         this.controller = controller;
     }
 

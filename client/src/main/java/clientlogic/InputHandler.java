@@ -5,10 +5,10 @@ import java.util.Scanner;
 
 public class InputHandler {
 
-    private final clientController client;
+    private final ClientController client;
 
     public InputHandler(String serverUrl) {
-        client = new clientController(serverUrl);
+        client = new ClientController(serverUrl);
     }
 
     public void readInput() {

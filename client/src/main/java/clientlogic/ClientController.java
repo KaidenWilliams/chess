@@ -5,7 +5,7 @@ import state.*;
 import java.util.Arrays;
 
 
-public class clientController {
+public class ClientController {
 
     // evaluates strings passed in by InputHandler
     // Simple case switch statement to decide what to do based on input Param
@@ -17,7 +17,7 @@ public class clientController {
 
     private AState state;
 
-    public clientController(String url) {
+    public ClientController(String url) {
         ServerFacade serverFacade = new ServerFacade(url);
         StateNotifier observer = new StateNotifier(this);
         observer.populateContext(serverFacade, url);
