@@ -1,12 +1,9 @@
 package server.websocket;
 
 import chess.ChessGame;
-import model.DataAccessException;
-import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,11 +22,6 @@ public class ConnectionManager {
             connections.put(gameId, connection);
         }
     }
-
-    public void removeGame(int gameId) {
-        connections.remove(gameId);
-    }
-
 
     public void addUser(int gameId, String authToken, String userName, ChessGame.TeamColor color, Session session) {
         GameConnection gameConnection = connections.get(gameId);
@@ -55,11 +47,6 @@ public class ConnectionManager {
         session.getRemote().sendString(msg);
     }
 
-    public void sendMessage(int gameId, String authToken, String message) throws IOException {
-        GameConnection gameConnection = connections.get(gameId);
-        UserConnection userConnection = gameConnection.getPerson(authToken);
-        userConnection.send(message);
-    }
 
     public void broadcastMessage(int gameId, String authToken, String message) throws IOException {
 

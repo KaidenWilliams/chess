@@ -80,7 +80,6 @@ public class WebsocketHandler {
                 ChessGame game = service.getChessGame(gameId);
                 LoadGameMessage loadGame = new LoadGameMessage(game);
                 String loadGameString = JsonRegistrar.getChessGameGson().toJson(loadGame);
-//                connectionManager.sendMessage(gameId, authToken, loadGameString);
                 connectionManager.sendMessageToConnection(session, loadGameString);
 
                 String prettyColor = (color == ChessGame.TeamColor.WHITE ? "white" : "black");
@@ -118,7 +117,6 @@ public class WebsocketHandler {
             ChessGame game = service.getChessGame(gameId);
             LoadGameMessage loadGame = new LoadGameMessage(game);
             String loadGameString = JsonRegistrar.getChessGameGson().toJson(loadGame);
-//            connectionManager.sendMessage(gameId, authToken, loadGameString);
             connectionManager.sendMessageToConnection(session, loadGameString);
 
             NotificationMessage notification = new NotificationMessage(String.format("%s has joined the game as an observer", userName));
@@ -153,12 +151,6 @@ public class WebsocketHandler {
             if (game.isGameOver()) {
                 throw new Exception("The game is over. No more moves can be made");
             }
-
-
-            //2. verify that there is a white and black user in DB -maybe?
-
-
-
 
             ChessPosition startPosition = chessMove.getStartPosition();
             ChessPosition endPosition = chessMove.getEndPosition();
@@ -310,8 +302,6 @@ public class WebsocketHandler {
         }
 
     }
-
-
 
 }
 
