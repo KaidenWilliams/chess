@@ -88,7 +88,7 @@ public class ChessGameState extends AState {
                 ChessPiece currPiece = currBoard.getPiece(currPosition);
 
                 if (currPiece.getTeamColor() != game.getTeamTurn()) {
-                    return setStringColor(_color, highlightFailString);
+                    return setStringColor(_color, moveFailString);
                 }
 
                 chessMove = new ChessMove(new ChessPosition(rowFrom, colFrom), new ChessPosition(rowTo, colTo), promotionPiece);

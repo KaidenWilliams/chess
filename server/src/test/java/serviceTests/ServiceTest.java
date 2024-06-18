@@ -36,8 +36,7 @@ public class ServiceTest {
         AuthModel outputRegisterObject = service.registerUser(inputRegisterObject);
         AuthModel criteriaRegisterObject = new MemoryAuthDAO().getRowByAuthtoken(outputRegisterObject.authToken());
 
-        String criteriaUsername = criteriaRegisterObject.username();
-        assertEquals(inputUsername, criteriaUsername);
+        assertEquals(inputUsername, criteriaRegisterObject.username());
 
         List<UserModel> userModelList = new MemoryUserDAO().findAll(model -> model.username().equals(inputUsername));
         assertEquals(1, userModelList.size());

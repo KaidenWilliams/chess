@@ -193,10 +193,16 @@ public class ChessGameBuilder {
             """;
 
 
+    public static final String moveFailString =
+
+            """
+            You cannot make a move for this piece, as it is not your turn.
+            """;
+
     public static final String highlightFailString =
 
             """
-            You cannot higlight moves for this piece, as it is not its color's turn.
+            You cannot highlight moves for this piece, as it is not its color's turn.
             """;
 
     public static final String gameOverString =

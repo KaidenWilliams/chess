@@ -148,6 +148,9 @@ public class WebsocketHandler {
             if (user.color != game.getTeamTurn()) {
                throw new Exception("It is not your turn to move");
             }
+            if (user.color == null) {
+                throw new Exception("You cannot move, you are an observer");
+            }
             if (game.isGameOver()) {
                 throw new Exception("The game is over. No more moves can be made");
             }
